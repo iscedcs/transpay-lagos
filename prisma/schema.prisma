@@ -1,0 +1,600 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ApiKey {
+  id        String    @id
+  userId    String
+  apiKey    String    @unique
+  expiresAt DateTime?
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime
+  deletedAt DateTime?
+  User      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AppSetting {
+  id          String    @id
+  name        String    @unique
+  description String?
+  value       String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime
+  deletedAt   DateTime?
+}
+
+model AuditTrail {
+  id          String   @id
+  name        String
+  description String
+  userId      String
+  vehicleId   String
+  meta        Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime
+  User        User     @relation(fields: [userId], references: [id])
+  Vehicle     Vehicle  @relation(fields: [vehicleId], references: [id])
+}
+
+model Driver {
+  id             String       @id
+  vehicleId      String
+  name           String
+  phone          String
+  email          String?      @unique
+  password       String?
+  gender         String?
+  blacklisted    Boolean?
+  status         DriverStatus @default(ACTIVE)
+  maritalStatus  String?
+  whatsapp       String?
+  address        Json?
+  identification Json?
+  license        Json?
+  nextOfKin      Json?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime
+  deletedAt      DateTime?
+  Vehicle        Vehicle      @relation(fields: [vehicleId], references: [id])
+}
+
+model DuplicatePaymentLog {
+  id               String    @id
+  paymentReference String    @db.VarChar(100)
+  customerName     String    @db.VarChar(255)
+  paymentDate      DateTime  @db.Timestamp(6)
+  vCode            String    @db.VarChar(50)
+  revenueName      String    @db.VarChar(255)
+  revenueCode      String    @db.VarChar(50)
+  amount           Decimal   @db.Decimal(15, 2)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime
+  deletedAt        DateTime?
+}
+
+model EmailVerify {
+  id         String   @id
+  email      String   @unique
+  verifyCode String
+  isVerified Boolean  @default(false)
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime
+
+  @@index([email])
+}
+
+model Fine {
+  id          String        @id
+  title       String
+  category    String
+  description String
+  amount      Float         @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime
+  deletedAt   DateTime?
+  VehicleFine VehicleFine[]
+}
+
+model LivePaymentNotification {
+  id               String    @id
+  paymentReference String    @unique @db.VarChar(100)
+  customerName     String    @db.VarChar(255)
+  paymentDate      DateTime  @db.Timestamp(6)
+  vCode            String    @db.VarChar(50)
+  revenueName      String    @db.VarChar(255)
+  revenueCode      String    @db.VarChar(50)
+  amount           Decimal   @db.Decimal(15, 2)
+  vehicleId        String
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime
+  deletedAt        DateTime?
+  Vehicle          Vehicle   @relation(fields: [vehicleId], references: [id])
+}
+
+model PasswordReset {
+  id        String   @id
+  userId    String   @unique
+  email     String?  @unique
+  phone     String?  @unique
+  resetCode String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+  User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model PaymentNotification {
+  id               String    @id
+  paymentReference String    @db.VarChar(100)
+  customerName     String    @db.VarChar(255)
+  paymentDate      DateTime  @db.Timestamp(6)
+  vCode            String    @db.VarChar(50)
+  revenueName      String    @db.VarChar(255)
+  revenueCode      String    @db.VarChar(50)
+  amount           Decimal   @db.Decimal(15, 2)
+  vehicleId        String
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime
+  deletedAt        DateTime?
+  Vehicle          Vehicle   @relation(fields: [vehicleId], references: [id])
+}
+
+model StickerPaymentNotification {
+  id               String    @id
+  paymentReference String    @unique @db.VarChar(100)
+  customerName     String    @db.VarChar(255)
+  paymentDate      DateTime  @db.Timestamp(6)
+  stateCode        String    @db.VarChar(50)
+  revenueName      String    @db.VarChar(255)
+  revenueCode      String    @db.VarChar(50)
+  amount           Decimal   @db.Decimal(15, 2)
+  paymentMethod    String    @db.VarChar(100)
+  depositSlip      String?   @db.VarChar(100)
+  chequeValueDate  String?   @db.VarChar(100)
+  bank             String?   @db.VarChar(100)
+  vehicleId        String
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime
+  deletedAt        DateTime?
+  Vehicle          Vehicle   @relation(fields: [vehicleId], references: [id])
+}
+
+model StickerRequest {
+  id          String               @id
+  stateCode   String
+  plateNumber String?
+  status      StickerRequestStatus @default(PENDING)
+  stickerCost Decimal
+  approvedAt  DateTime?
+  vehicleId   String
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime
+  deletedAt   DateTime?
+  Vehicle     Vehicle              @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id                                                 String               @id
+  firstName                                          String
+  lastName                                           String
+  phone                                              String               @unique
+  password                                           String
+  email                                              String               @unique
+  role                                               Role                 @default(VEHICLE_OWNER)
+  gender                                             String?
+  marital_status                                     String?
+  whatsapp                                           String?
+  nok_name                                           String?
+  nok_phone                                          String?
+  nok_relationship                                   String?
+  maiden_name                                        String?
+  blacklisted                                        Boolean              @default(false)
+  address                                            Json?
+  identification                                     Json?
+  createdAt                                          DateTime             @default(now())
+  updatedAt                                          DateTime
+  deletedAt                                          DateTime?
+  lastLogin                                          DateTime?
+  createdBy                                          String?
+  lgaId                                              String?
+  status                                             UserStatus           @default(ACTIVE)
+  ApiKey                                             ApiKey[]
+  AuditTrail                                         AuditTrail[]
+  PasswordReset                                      PasswordReset?
+  Scan                                               Scan[]
+  LGA                                                LGA?                 @relation(fields: [lgaId], references: [id])
+  UserUnblockRequest                                 UserUnblockRequest[]
+  Vehicle                                            Vehicle[]
+  VehicleWaiver                                      VehicleWaiver[]
+  WaiverRequest_WaiverRequest_decisionMadeByIdToUser WaiverRequest[]      @relation("WaiverRequest_decisionMadeByIdToUser")
+  WaiverRequest_WaiverRequest_requestedByIdToUser    WaiverRequest[]      @relation("WaiverRequest_requestedByIdToUser")
+}
+
+model Vehicle {
+  id                         String                       @id
+  color                      String?
+  category                   String?
+  plateNumber                String                       @unique
+  image                      String?
+  blacklisted                Boolean                      @default(false)
+  status                     VehicleStatus                @default(ACTIVE)
+  type                       String?
+  vin                        String?
+  barcode                    String?                      @unique
+  fairFlexImei               String?
+  ownerId                    String?
+  stateCode                  String?                      @unique
+  vCode                      String?                      @unique
+  securityCode               String?                      @unique @db.VarChar(5)
+  startDate                  DateTime                     @default(now())
+  groupId                    String?
+  createdAt                  DateTime                     @default(now())
+  updatedAt                  DateTime
+  deletedAt                  DateTime?
+  registeredLgaId            String?
+  last_payment_date          DateTime?
+  AuditTrail                 AuditTrail[]
+  Driver                     Driver[]
+  LivePaymentNotification    LivePaymentNotification[]
+  PaymentNotification        PaymentNotification[]
+  Scan                       Scan[]
+  StickerPaymentNotification StickerPaymentNotification[]
+  StickerRequest             StickerRequest[]
+  VehicleGroup               VehicleGroup?                @relation(fields: [groupId], references: [id])
+  User                       User?                        @relation(fields: [ownerId], references: [id])
+  LGA                        LGA?                         @relation(fields: [registeredLgaId], references: [id])
+  VehicleFine                VehicleFine[]
+  VehicleImage               VehicleImage[]
+  VehicleRoute               VehicleRoute[]
+  VehicleTracker             VehicleTracker?
+  VehicleTransaction         VehicleTransaction[]
+  VehicleWaiver              VehicleWaiver[]
+  VehicleWallet              VehicleWallet?
+  WaiverRequest              WaiverRequest[]
+}
+
+model VehicleFine {
+  id        String            @id
+  vehicleId String
+  fineId    String
+  status    VehicleFineStatus @default(PENDING)
+  createdAt DateTime          @default(now())
+  updatedAt DateTime
+  deletedAt DateTime?
+  Fine      Fine              @relation(fields: [fineId], references: [id], onDelete: Cascade)
+  Vehicle   Vehicle           @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+}
+
+model VehicleGroup {
+  id          String    @id
+  groupName   String    @unique
+  totalCharge Float     @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime
+  deletedAt   DateTime?
+  Vehicle     Vehicle[]
+}
+
+model VehicleImage {
+  id        String    @id
+  vehicleId String
+  name      String
+  image     String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime
+  deletedAt DateTime?
+  Vehicle   Vehicle   @relation(fields: [vehicleId], references: [id])
+}
+
+model VehicleScan {
+  id        String    @id
+  scan      String
+  vehicleId String
+  agentId   String
+  ipAddress String
+  agent     String
+  location  String
+  country   String
+  city      String
+  state     String
+  postcode  String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime
+  deletedAt DateTime?
+}
+
+model VehicleTracker {
+  id         String    @id
+  vehicleId  String    @unique
+  terminalId String
+  info       Json?
+  stats      Json?
+  url        String    @default("https://api.gwgps12580.com/v1/Ch_manage_controller/api")
+  fee        Decimal   @default(0)
+  unpaid     Decimal   @default(0)
+  total      Decimal   @default(0)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime
+  deletedAt  DateTime?
+  Vehicle    Vehicle   @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+}
+
+model VehicleTransaction {
+  id                   String                  @id
+  vehicleId            String
+  lgaId                String?
+  transactionReference String                  @unique
+  inReference          String?
+  outReference         String?
+  description          String                  @default("")
+  type                 VehicleTransactionTypes @default(CREDIT)
+  paymentType          PaymentTypes            @default(CVOF)
+  paymentDate          DateTime?
+  transactionType      TransactionTypes        @default(BASE_FEE)
+  transactionDate      DateTime                @default(now())
+  transactionCategory  TransactionCategories?
+  sender               Json?
+  recipient            Json?
+  amount               Decimal                 @default(0)
+  currency             String
+  revenueAmount        Decimal                 @default(0)
+  trackerAmount        Decimal                 @default(0)
+  walletCharges        Decimal                 @default(0)
+  gatewayFeeIn         Decimal                 @default(0)
+  gatewayFeeOut        Decimal                 @default(0)
+  walletBefore         Decimal                 @default(0)
+  walletAfter          Decimal                 @default(0)
+  status               TransactionStatus
+  meta                 Json?
+  createdAt            DateTime                @default(now())
+  updatedAt            DateTime
+  deletedAt            DateTime?
+  LGA                  LGA?                    @relation(fields: [lgaId], references: [id])
+  Vehicle              Vehicle                 @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  Webhook              Webhook[]
+}
+
+model VehicleWaiver {
+  id             String       @id
+  vehicleId      String
+  approvedById   String?
+  reason         String?
+  additionalInfo String?
+  startDate      DateTime
+  endDate        DateTime
+  status         WaiverStatus @default(PENDING)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime
+  deletedAt      DateTime?
+  User           User?        @relation(fields: [approvedById], references: [id])
+  Vehicle        Vehicle      @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+}
+
+model VehicleWallet {
+  id                  String            @id
+  vehicleId           String            @unique
+  walletBalance       Decimal           @default(0)
+  amountOwed          Decimal           @default(0)
+  netTotal            Decimal           @default(0)
+  lastTransactionDate DateTime          @default(now())
+  nextTransactionDate DateTime          @default(now())
+  cvofBalance         Decimal           @default(0)
+  fareflexBalance     Decimal           @default(0)
+  isceBalance         Decimal           @default(0)
+  cvofOwing           Decimal           @default(0)
+  fareflexOwing       Decimal           @default(0)
+  isceOwing           Decimal           @default(0)
+  accountNumber       String?
+  bankCode            String?
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime
+  deletedAt           DateTime?
+  Vehicle             Vehicle           @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+  VirtualAccounts     VirtualAccounts[]
+}
+
+model WaiverRequest {
+  id                                        String       @id
+  vehicleId                                 String
+  reason                                    String?
+  additionalInfo                            String?
+  requestedById                             String?
+  decisionMadeById                          String?
+  status                                    WaiverStatus @default(PENDING)
+  decisionDetails                           String?
+  startDate                                 DateTime?    @db.Date
+  endDate                                   DateTime?    @db.Date
+  amount                                    Decimal      @default(0) @db.Decimal(15, 2)
+  createdAt                                 DateTime     @default(now())
+  updatedAt                                 DateTime
+  deletedAt                                 DateTime?
+  User_WaiverRequest_decisionMadeByIdToUser User?        @relation("WaiverRequest_decisionMadeByIdToUser", fields: [decisionMadeById], references: [id])
+  User_WaiverRequest_requestedByIdToUser    User?        @relation("WaiverRequest_requestedByIdToUser", fields: [requestedById], references: [id])
+  Vehicle                                   Vehicle      @relation(fields: [vehicleId], references: [id])
+}
+
+model WhitelistedIP {
+  id        String    @id
+  ip        String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime
+  deletedAt DateTime?
+}
+
+model LGA {
+  id                 String               @id
+  name               String               @unique
+  fee                Json?
+  boundary           Json
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime
+  deletedAt          DateTime?
+  Scan               Scan[]
+  User               User[]
+  Vehicle            Vehicle[]
+  VehicleRoute       VehicleRoute[]
+  VehicleTransaction VehicleTransaction[]
+}
+
+model Scan {
+  id               String   @id
+  vehicleId        String
+  userId           String
+  latitude         Float
+  longitude        Float
+  detectedLgaId    String
+  declaredRouteHit Boolean
+  extraCharge      Int
+  createdAt        DateTime @default(now())
+  LGA              LGA      @relation(fields: [detectedLgaId], references: [id])
+  User             User     @relation(fields: [userId], references: [id])
+  Vehicle          Vehicle  @relation(fields: [vehicleId], references: [id])
+}
+
+model UserUnblockRequest {
+  id         String    @id
+  userId     String
+  reason     String?
+  resolved   Boolean   @default(false)
+  createdAt  DateTime  @default(now())
+  resolvedAt DateTime?
+  User       User      @relation(fields: [userId], references: [id])
+}
+
+model VehicleRoute {
+  id        String    @id
+  vehicleId String
+  lgaId     String
+  order     Int
+  createdAt DateTime  @default(now())
+  updatedAt DateTime
+  deletedAt DateTime?
+  LGA       LGA       @relation(fields: [lgaId], references: [id])
+  Vehicle   Vehicle   @relation(fields: [vehicleId], references: [id])
+
+  @@unique([vehicleId, lgaId])
+  @@index([vehicleId, order])
+}
+
+model VirtualAccounts {
+  id            String        @id
+  accountNumber String        @unique
+  accountName   String
+  reference     String?       @unique
+  bankCode      String?
+  accountType   String?
+  email         String?
+  phone         String?
+  creationDate  String?
+  bankName      String
+  active        Boolean?
+  walletId      String
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime
+  deletedAt     DateTime?
+  VehicleWallet VehicleWallet @relation(fields: [walletId], references: [id])
+}
+
+model Webhook {
+  id                   String              @id
+  event                String
+  transactionId        String?
+  metadata             Json
+  processed            Boolean             @default(false)
+  verificationResponse Json?
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime
+  deletedAt            DateTime?
+  VehicleTransaction   VehicleTransaction? @relation(fields: [transactionId], references: [id])
+
+  @@index([event, createdAt(sort: Desc)])
+}
+
+enum DriverStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum PaymentTypes {
+  CVOF
+  FAREFLEX
+  ISCE
+  STICKER
+}
+
+enum Role {
+  SUPERADMIN
+  ADMIN
+  EIRS_ADMIN
+  EIRS_AGENT
+  LGA_ADMIN
+  LGA_AGENT
+  LGA_C_AGENT
+  VEHICLE_OWNER
+}
+
+enum StickerRequestStatus {
+  APPROVED
+  REJECTED
+  PENDING
+}
+
+enum TransactionCategories {
+  TRICYCLE
+  SHUTTLE_BUS
+  BUS_INTRASTATE
+  TRUCKS
+  TAXIS
+  MASS_TRANSIT
+  BUS_INTERSTATE
+  OTHERS
+}
+
+enum TransactionTypes {
+  BASE_FEE
+  LGA_FEE
+}
+
+enum VehicleFineStatus {
+  PENDING
+  CANCELLED
+  PAID
+}
+
+enum VehicleStatus {
+  INACTIVE
+  ACTIVE
+  CLEARED
+  OWING
+}
+
+enum WaiverStatus {
+  APPROVED
+  REJECTED
+  PENDING
+  CANCELLED
+}
+
+enum TransactionStatus {
+  PAID
+  OWING
+  SUCCESS
+  FAILED
+}
+
+enum UserStatus {
+  ACTIVE
+  BLOCKED
+}
+
+enum VehicleTransactionTypes {
+  CREDIT
+  DEBIT
+}

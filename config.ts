@@ -1,0 +1,28 @@
+const CONFIG = {
+  stateName: "Edo State",
+  shortName: "Edo",
+  capital: "Benin City",
+  country: "Nigeria",
+  logoUrl: "/edo-logo.png",
+  lgas: [
+    "Akoko-Edo",
+    "Egor",
+    "Esan Central",
+    "Esan North-East",
+    "Esan South-East",
+    "Esan West",
+    "Etsako Central",
+    "Etsako East",
+    "Etsako West",
+    "Igueben",
+    "Ikpoba-Okha",
+    "Oredo",
+    "Orhionmwon",
+    "Ovia North-East",
+    "Ovia South-West",
+    "Owan East",
+    "Owan West",
+    "Uhunmwonde",
+  ],
+};
+export default CONFIG;
