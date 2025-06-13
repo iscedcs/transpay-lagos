@@ -7,10 +7,51 @@ import { API } from "@/lib/const";
 import { auth } from "@/auth";
 import { CreateVehicleRequest } from "@/app/(root)/vehicles/vehicle-form-validation";
 import { revalidatePath } from "next/cache";
+import { VehicleOwner } from "@/types/vehicles";
 
 interface FetchVehicleParams {
   page?: number;
   pageSize?: number;
+}
+
+export interface VehicleWallet {
+  id: string;
+  vehicleId: string;
+  walletBalance: string;
+  amountOwed: string;
+  netTotal: string;
+  lastTransactionDate: string;
+  nextTransactionDate: string;
+  cvofBalance: string;
+  fareflexBalance: string;
+  isceBalance: string;
+  cvofOwing: string;
+  fareflexOwing: string;
+  isceOwing: string;
+  accountNumber: string | null;
+  bankCode: string | null;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
+  accounts: WalletAccount[];
+}
+
+export interface WalletAccount {
+  id: string;
+  accountNumber: string;
+  accountName: string;
+  reference: string;
+  bankCode: string;
+  accountType: "INBOUND" | "OUTBOUND"; // expand if needed
+  email: string;
+  phone: string;
+  creationDate: string;
+  bankName: string;
+  active: boolean;
+  walletId: string;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string | null;
 }
 
 export interface Vehicle {
@@ -37,56 +78,12 @@ export interface Vehicle {
   registeredLgaId: string;
   last_payment_date: string | null;
   // Populated fields
-  owner?: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone: string;
-    password?: string;
-    role?: string;
-    gender?: string;
-    marital_status?: string;
-    whatsapp?: string;
-    nok_name?: string;
-    nok_phone?: string;
-    nok_relationship?: string;
-    maiden_name?: string;
-    blacklisted?: boolean;
-    address?: string;
-    identification?: string | null;
-    createdAt?: string;
-    updatedAt?: string;
-    deletedAt?: string | null;
-    lastLogin?: string | null;
-    createdBy?: string | null;
-    lgaId?: string;
-    status?: string;
-  };
+  owner?: VehicleOwner;
   registeredLga?: {
     id: string;
     name: string;
   };
-  wallet?: {
-    id: string;
-    vehicleId: string;
-    walletBalance: string;
-    amountOwed: string;
-    netTotal: string;
-    lastTransactionDate: string;
-    nextTransactionDate: string;
-    cvofBalance: string;
-    fareflexBalance: string;
-    isceBalance: string;
-    cvofOwing: string;
-    fareflexOwing: string;
-    isceOwing: string;
-    accountNumber: string | null;
-    bankCode: string | null;
-    createdAt: string;
-    updatedAt: string;
-    deletedAt: string | null;
-  };
+  wallet?: VehicleWallet;
   tracker?: {
     id: string;
     vehicleId: string;
@@ -311,7 +308,7 @@ export async function vehicleWithStickerCount() {
     where: {
       NOT: [
         {
-          barcode: null,
+          BarCodes: null,
         },
       ],
     },
@@ -474,7 +471,9 @@ export const getVehicleBySticker = async (barcode: string) => {
   try {
     const vehicle = await db.vehicle.findFirst({
       where: {
-        barcode,
+        BarCodes: {
+          code: barcode,
+        },
       },
     });
     if (vehicle) {
@@ -593,7 +592,7 @@ export const getFullVehicleById = async (id: string) => {
       select: {
         vin: true,
         AuditTrail: true,
-        barcode: true,
+        BarCodes: true,
         blacklisted: true,
         category: true,
         color: true,

@@ -24,10 +24,10 @@ import { useSession } from "next-auth/react";
 import { formatCurrency } from "@/lib/utils";
 import { PublicVehicleView } from "@/components/public-vehicle-view";
 
-export default function BarcodePage() {
+export default function QrIdPage() {
   const params = useParams();
   const session = useSession();
-  const id = String(params.id);
+  const id = String(params.qrid);
   const user = session.data?.user;
   const router = useRouter();
   const [vehicle, setVehicle] = useState<Vehicle | null>(null);
@@ -133,6 +133,8 @@ export default function BarcodePage() {
       </div>
     );
   }
+
+  console.log({ vehicle });
 
   // Public View (Default)
   if (!userRole) {

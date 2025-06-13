@@ -73,6 +73,10 @@ export default function VehiclePage() {
   if (!id) {
     return notFound();
   }
+  const account = vehicle?.wallet?.accounts;
+  const accountNumber =
+    account && account.length > 0 ? account[0].accountNumber : null;
+  const hasAccount = !!accountNumber;
 
   // Format date
   const formatDate = (dateString: string | null) => {
@@ -203,6 +207,8 @@ export default function VehiclePage() {
       </div>
     );
   }
+
+  console.log({ vehicle });
 
   return (
     <div className="container mx-auto py-8 space-y-6">
@@ -378,19 +384,24 @@ export default function VehiclePage() {
                     {formatCurrency(Number(vehicle.wallet.netTotal))}
                   </span>
                 </div>
-                {vehicle.wallet.accountNumber ? (
+                {account && hasAccount ? (
                   <div className="pt-2 border-t">
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm text-muted-foreground">
+                        Bank:
+                      </span>
+                      <div className="flex items-center gap-1 font-mono text-sm">
+                        {account[0].bankName}
+                      </div>
+                    </div>
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-muted-foreground">
                         Account:
                       </span>
                       <div className="flex items-center gap-1">
                         <span className="font-mono text-sm">
-                          {vehicle.wallet.accountNumber}
+                          {accountNumber}
                         </span>
-                        <Badge variant="default" className="text-xs">
-                          Active
-                        </Badge>
                       </div>
                     </div>
                   </div>
@@ -833,7 +844,7 @@ export default function VehiclePage() {
                           <h4 className="text-sm font-medium">
                             Account Details
                           </h4>
-                          {!vehicle.wallet.accountNumber && (
+                          {!hasAccount && (
                             <Button
                               onClick={() => setShowGenerateModal(true)}
                               size="sm"
@@ -855,7 +866,7 @@ export default function VehiclePage() {
                             </p>
                           </div>
 
-                          {vehicle.wallet.accountNumber ? (
+                          {account && hasAccount ? (
                             <>
                               <div className="space-y-1">
                                 <Label className="text-sm font-medium text-muted-foreground">
@@ -863,20 +874,17 @@ export default function VehiclePage() {
                                 </Label>
                                 <div className="flex items-center gap-2">
                                   <p className="text-sm font-mono bg-green-50 text-green-700 px-2 py-1 rounded border border-green-200">
-                                    {vehicle.wallet.accountNumber}
+                                    {account[0].accountNumber}
                                   </p>
-                                  <Badge variant="default" className="text-xs">
-                                    Active
-                                  </Badge>
                                 </div>
                               </div>
-                              {vehicle.wallet.bankCode && (
+                              {account[0].bankName && (
                                 <div className="space-y-1">
                                   <Label className="text-sm font-medium text-muted-foreground">
-                                    Bank Code
+                                    Bank
                                   </Label>
                                   <p className="text-sm font-mono bg-muted px-2 py-1 rounded">
-                                    {vehicle.wallet.bankCode}
+                                    {account[0].bankName} {account[0].bankCode}
                                   </p>
                                 </div>
                               )}
@@ -937,7 +945,7 @@ export default function VehiclePage() {
                       </div>
 
                       {/* Virtual Account Requirements */}
-                      {!vehicle.wallet.accountNumber && (
+                      {!hasAccount && (
                         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
                           <h4 className="text-sm font-medium text-blue-800 flex items-center gap-2 mb-2">
                             <CreditCard className="h-4 w-4" />
