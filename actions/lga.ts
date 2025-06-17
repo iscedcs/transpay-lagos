@@ -845,7 +845,7 @@ export async function updateLGA(
   id: string,
   data: {
     name: string;
-    fee: VehicleFee[];
+    fees: VehicleFee[];
     boundary: {
       type: string;
       coordinates: number[][][];
@@ -858,11 +858,19 @@ export async function updateLGA(
     "api-secret": process.env.API_SECRET || "",
     Authorization: `Bearer ${session?.user.access_token}`,
   };
+
   try {
+    // Prepare the data with stringified fee array
+    const requestData = {
+      ...data,
+      boundary: data.boundary,
+      fees: JSON.stringify(data.fees), // Convert fee array to string
+    };
+
     const response = await fetch(`${API}/api/lga/update/${id}`, {
       method: "PATCH",
       headers,
-      body: JSON.stringify(data),
+      body: JSON.stringify(requestData),
       cache: "no-store",
     });
 
@@ -870,12 +878,27 @@ export async function updateLGA(
       if (response.status === 404) {
         throw new Error("LGA not found");
       }
-      throw new Error(
-        `Failed to update LGA: ${response.status} ${response.statusText}`
-      );
+
+      // Try to get error details from response
+      let errorMessage = `Failed to update LGA: ${response.status} ${response.statusText}`;
+      try {
+        const errorData = await response.json();
+        if (errorData.message) {
+          errorMessage = errorData.message;
+        }
+      } catch {
+        // If we can't parse the error response, use the default message
+      }
+
+      throw new Error(errorMessage);
     }
 
     const result = await response.json();
+
+    // Revalidate related pages
+    revalidatePath(`/lgas/${id}`);
+    revalidatePath("/lgas");
+
     return {
       success: true,
       message: result.message || "LGA updated successfully",
@@ -889,24 +912,71 @@ export async function updateLGA(
   }
 }
 
+// export async function updateLGAFee(
+//   id: string,
+//   vehicleCategory: string,
+//   newFee: number
+// ): Promise<{ success: boolean; message: string; data?: any }> {
+//   try {
+//     const session = await auth();
+//     const headers = {
+//       "Content-Type": "application/json",
+//       "api-secret": process.env.API_SECRET || "",
+//       Authorization: `Bearer ${session?.user.access_token}`,
+//     };
+//     const response = await fetch(`${API}/api/lga/update/fee/${id}`, {
+//       method: "PATCH",
+//       headers,
+//       body: JSON.stringify({
+//         vehicleCategory,
+//         newFee,
+//       }),
+//       cache: "no-store",
+//     });
+
+//     if (!response.ok) {
+//       if (response.status === 404) {
+//         throw new Error("LGA not found");
+//       }
+//       throw new Error(
+//         `Failed to update LGA fee: ${response.status} ${response.statusText}`
+//       );
+//     }
+
+//     const result = await response.json();
+//     return {
+//       success: true,
+//       message: result.message || "Fee updated successfully",
+//       data: result.data,
+//     };
+//   } catch (error) {
+//     console.error("Error updating LGA fee:", error);
+//     throw new Error(
+//       error instanceof Error ? error.message : "Failed to update LGA fee"
+//     );
+//   }
+// }
+
 export async function updateLGAFee(
-  id: string,
+  lgaId: string,
   vehicleCategory: string,
-  newFee: number
+  fee: number
 ): Promise<{ success: boolean; message: string; data?: any }> {
+  const session = await auth();
+  const headers = {
+    "Content-Type": "application/json",
+    "api-secret": process.env.API_SECRET || "",
+    Authorization: `Bearer ${session?.user.access_token}`,
+    accept: "*/*",
+  };
+
   try {
-    const session = await auth();
-    const headers = {
-      "Content-Type": "application/json",
-      "api-secret": process.env.API_SECRET || "",
-      Authorization: `Bearer ${session?.user.access_token}`,
-    };
-    const response = await fetch(`${API}/api/lga/update/fee/${id}`, {
+    const response = await fetch(`${API}/api/lga/${lgaId}/fee`, {
       method: "PATCH",
       headers,
       body: JSON.stringify({
         vehicleCategory,
-        newFee,
+        fee,
       }),
       cache: "no-store",
     });
@@ -915,15 +985,31 @@ export async function updateLGAFee(
       if (response.status === 404) {
         throw new Error("LGA not found");
       }
-      throw new Error(
-        `Failed to update LGA fee: ${response.status} ${response.statusText}`
-      );
+
+      // Try to get error details from response
+      let errorMessage = `Failed to update LGA fee: ${response.status} ${response.statusText}`;
+      try {
+        const errorData = await response.json();
+        if (errorData.message) {
+          errorMessage = errorData.message;
+        }
+      } catch {
+        // If we can't parse the error response, use the default message
+      }
+
+      throw new Error(errorMessage);
     }
 
     const result = await response.json();
+
+    // Revalidate related pages
+    revalidatePath(`/lgas/${lgaId}`);
+    revalidatePath(`/lgas/${lgaId}/edit`);
+    revalidatePath("/lgas");
+
     return {
       success: true,
-      message: result.message || "Fee updated successfully",
+      message: result.message || `LGA fee updated for ${vehicleCategory}`,
       data: result.data,
     };
   } catch (error) {
