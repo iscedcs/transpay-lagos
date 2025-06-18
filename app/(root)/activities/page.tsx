@@ -11,12 +11,23 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Activity, BarChart3, Calendar, TrendingUp, Users } from "lucide-react";
 import { getActivityStats } from "@/actions/activities";
 import { ActivitiesContent } from "@/components/activities-content";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
 export default async function ActivitiesPage({
   searchParams,
 }: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }) {
+  const session = await auth();
+  if (!session?.user) {
+    redirect("/sign-in");
+  }
+
+  // if (!ADMIN_ROLES.includes(String(session?.user.role))) {
+  //   redirect{'/unauthorized'}
+  // }
+  const resolvedSearchParams = await searchParams;
   const stats = await getActivityStats();
 
   return (
@@ -122,7 +133,7 @@ export default async function ActivitiesPage({
 
       {/* Activities Content */}
       <Suspense fallback={<ActivitiesLoading />}>
-        <ActivitiesContent searchParams={searchParams} />
+        <ActivitiesContent searchParams={resolvedSearchParams} />
       </Suspense>
     </div>
   );

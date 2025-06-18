@@ -17,11 +17,12 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import {
-  MANAGE_SIDEBAR_LINKS,
   SIDEBAR_LINKS,
   SIDEBAR_LINKS_ADMIN,
   SIDEBAR_LINKS_AGENT,
+  SIDEBAR_LINKS_EIRS_ADMIN,
 } from "@/lib/const";
+import { Role } from "@prisma/client";
 
 export function UserNav() {
   const session = useSession();
@@ -80,53 +81,35 @@ export function UserNav() {
                 </AvatarFallback>
               </Avatar>
             </div>
-            <div
-              // href='/manage/profile'
-              className="flex flex-col space-y-1"
-            >
-              <p className="text-sm font-medium leading-none">
-                {user.name || "Agent User"}
+            <Link href="/profile" className="grid">
+              <p className="text-xs font-medium leading-none line-clamp-1">
+                {user.name || "User Name"}
               </p>
-              <p className="text-xs leading-none text-primary-foreground">
+              <p className="text-xs text-primary-foreground line-clamp-1">
                 {user.email}
               </p>
-            </div>
+            </Link>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          {pathName.startsWith("/manager")
-            ? MANAGE_SIDEBAR_LINKS.map((link, k) => (
-                <DropdownMenuItem className="md:hidden " asChild key={k}>
-                  <Link href={link.href}>
-                    {link.name}
-                    <DropdownMenuShortcut className="h-4 w-4">
-                      {link.icon}
-                    </DropdownMenuShortcut>
-                  </Link>
-                </DropdownMenuItem>
-              ))
-            : (user.role.toLowerCase() === "agent"
-                ? SIDEBAR_LINKS_AGENT
-                : user.role.toLowerCase() === "admin"
-                ? SIDEBAR_LINKS_ADMIN
-                : SIDEBAR_LINKS
-              ).map((link, k) => (
-                <DropdownMenuItem className="md:hidden" asChild key={k}>
-                  <Link href={link.href}>
-                    {link.title}
-                    <DropdownMenuShortcut className="h-4 w-4">
-                      {link.icon}
-                    </DropdownMenuShortcut>
-                  </Link>
-                </DropdownMenuItem>
-              ))}
-          {/* <DropdownMenuItem asChild>
-                              <Link href="/manage">
-                                   Manage My Account
-                                   <DropdownMenuShortcut className="h-4 w-4"></DropdownMenuShortcut>
-                              </Link>
-                         </DropdownMenuItem> */}
+          {(user.role === Role.LGA_AGENT
+            ? SIDEBAR_LINKS_AGENT
+            : user.role === Role.EIRS_ADMIN
+            ? SIDEBAR_LINKS_EIRS_ADMIN
+            : user.role === Role.ADMIN
+            ? SIDEBAR_LINKS_ADMIN
+            : SIDEBAR_LINKS
+          ).map((link, k) => (
+            <DropdownMenuItem className="md:hidden" asChild key={k}>
+              <Link href={link.href}>
+                {link.title}
+                <DropdownMenuShortcut className="h-4 w-4">
+                  {link.icon}
+                </DropdownMenuShortcut>
+              </Link>
+            </DropdownMenuItem>
+          ))}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={() => signOut()}>Log out</DropdownMenuItem>
