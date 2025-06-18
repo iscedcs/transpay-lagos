@@ -40,13 +40,23 @@ import {
   parseAddress,
 } from "@/lib/utils";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
+import { ADMIN_ROLES, READONLY_ADMIN_ROLES } from "@/lib/const";
 
 interface UserDetailContentProps {
   user: UserType;
 }
 
 export function UserDetailContent({ user }: UserDetailContentProps) {
+  const session = useSession();
   const router = useRouter();
+  if (!session.data?.user) {
+    router.push("/sign-in");
+  }
+
+  if (!READONLY_ADMIN_ROLES.includes(String(session.data?.user.role))) {
+    router.push("/unauthorized");
+  }
   const [showSensitiveInfo, setShowSensitiveInfo] = useState(false);
 
   // Get user initials
@@ -98,22 +108,24 @@ export function UserDetailContent({ user }: UserDetailContentProps) {
             <p className="text-muted-foreground">User Profile & Information</p>
           </div>
         </div>
-        <div className="flex gap-2">
-          <Link
-            href={`/users/${user.id}/edit`}
-            className={cn(
-              buttonVariants({ variant: "outline" }),
-              "flex items-center gap-2"
-            )}
-          >
-            <Edit className="h-4 w-4" />
-            Edit User
-          </Link>
-          <Button variant="destructive" className="flex items-center gap-2">
-            <Trash2 className="h-4 w-4" />
-            Delete
-          </Button>
-        </div>
+        {ADMIN_ROLES.includes(String(session.data?.user.role)) && (
+          <div className="flex gap-2">
+            <Link
+              href={`/users/${user.id}/edit`}
+              className={cn(
+                buttonVariants({ variant: "outline" }),
+                "flex items-center gap-2"
+              )}
+            >
+              <Edit className="h-4 w-4" />
+              Edit User
+            </Link>
+            <Button variant="destructive" className="flex items-center gap-2">
+              <Trash2 className="h-4 w-4" />
+              Delete
+            </Button>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

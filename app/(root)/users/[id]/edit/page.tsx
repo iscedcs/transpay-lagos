@@ -39,6 +39,8 @@ import {
 import { parseAddressExtended } from "@/lib/utils";
 import { getLGAs } from "@/actions/lga";
 import { toast } from "sonner";
+import { useSession } from "next-auth/react";
+import { ADMIN_ROLES } from "@/lib/const";
 
 // Update the identification handling
 interface IdentificationData {
@@ -48,7 +50,12 @@ interface IdentificationData {
 
 export default function EditUserPage() {
   const params = useParams();
+  const session = useSession();
   const router = useRouter();
+  if (!session.data?.user) router.push("/sign-in");
+  if (!ADMIN_ROLES.includes(String(session.data?.user.role))) {
+    router.push("/unauthorized");
+  }
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);

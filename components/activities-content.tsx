@@ -39,7 +39,7 @@ import { ActivityIcon } from "lucide-react";
 import { toast } from "sonner";
 
 interface ActivitiesContentProps {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+  searchParams: { [key: string]: string | string[] | undefined };
 }
 
 export function ActivitiesContent({ searchParams }: ActivitiesContentProps) {

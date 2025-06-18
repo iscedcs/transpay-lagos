@@ -44,8 +44,36 @@ import { DeleteLGADialog } from "./delete-lga-dailogue";
 import { LGABoundariesMap } from "./lga-boundaries-map";
 import CONFIG from "@/config";
 import { formatFees } from "@/lib/utils";
+import { useSession } from "next-auth/react";
+import { isAuthorized } from "@/lib/auth";
+import { Role } from "@prisma/client";
+import { useRouter } from "next/navigation";
 
 export default function AllLGAsPage() {
+  const session = useSession();
+  const user = session.data?.user;
+  const router = useRouter();
+
+  useEffect(() => {
+    // If no user, redirect to sign-in
+    if (!user) {
+      router.push("/sign-in");
+      return;
+    }
+
+    // Check authorization
+    const authorized = isAuthorized(user.role as Role, [
+      "SUPERADMIN",
+      "ADMIN",
+      "EIRS_ADMIN",
+    ]);
+
+    if (!authorized) {
+      router.push("/unauthorized");
+      return;
+    }
+  }, [user, router]);
+
   const [lgas, setLgas] = useState<LGA[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -166,13 +194,15 @@ export default function AllLGAsPage() {
             <MapPin className="h-4 w-4" />
             {showMap ? "Hide Map" : "Show Map"}
           </Button>
-          <Button
-            onClick={() => setIsImportModalOpen(true)}
-            className="flex items-center gap-2"
-          >
-            <Plus className="h-4 w-4" />
-            Import LGAs
-          </Button>
+          {["ADMIN", "SUPERADMIN"].includes(String(session.data?.user.role)) ? (
+            <Button
+              onClick={() => setIsImportModalOpen(true)}
+              className="flex items-center gap-2"
+            >
+              <Plus className="h-4 w-4" />
+              Import LGAs
+            </Button>
+          ) : null}
         </div>
       </div>
 
@@ -340,10 +370,13 @@ export default function AllLGAsPage() {
                   {filteredLGAs.map((lga) => (
                     <TableRow key={lga.id}>
                       <TableCell className="font-medium">
-                        <div className="flex items-center gap-2">
+                        <Link
+                          href={`/lgas/${lga.id}`}
+                          className="flex items-center gap-2"
+                        >
                           <MapPin className="h-4 w-4 text-muted-foreground" />
                           {lga.name}
-                        </div>
+                        </Link>
                       </TableCell>
                       <TableCell>
                         <div className="max-w-xs">

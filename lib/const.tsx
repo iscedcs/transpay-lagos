@@ -85,6 +85,88 @@ export const SIDEBAR_LINKS_ADMIN = [
     href: "/dashboard",
     icon: dashboardIcon,
   },
+  {
+    title: "LGAS",
+    href: "/lgas",
+    icon: <MapPin className="h-5 w-5" />,
+  },
+  {
+    title: "Users",
+    href: "/users",
+    icon: adminIcon,
+  },
+  {
+    title: "Activities",
+    href: "/activities",
+    icon: <ActivitySquareIcon className="h-5 w-5" />,
+  },
+  {
+    title: "Vehicles",
+    href: "/vehicles?page=1&limit=15",
+    icon: <CarTaxiFront className="h-5 w-5" />,
+  },
+  {
+    title: "Scan",
+    href: "/scan",
+    icon: scanIcon,
+  },
+  {
+    title: "Search",
+    href: "/search",
+    icon: searchIcon,
+  },
+  {
+    title: "Revenue",
+    href: "/revenue",
+    icon: revenueIcon,
+  },
+  {
+    title: "Fund Vehicle",
+    href: "/fund-vehicle",
+    icon: <CreditCard className="h-5 w-5" />,
+  },
+];
+export const SIDEBAR_LINKS_EIRS_ADMIN = [
+  {
+    title: "Dashboard",
+    href: "/dashboard",
+    icon: dashboardIcon,
+  },
+  {
+    title: "LGAS",
+    href: "/lgas",
+    icon: <MapPin className="h-5 w-5" />,
+  },
+  {
+    title: "Users",
+    href: "/users",
+    icon: adminIcon,
+  },
+  {
+    title: "Vehicles",
+    href: "/vehicles?page=1&limit=15",
+    icon: <CarTaxiFront className="h-5 w-5" />,
+  },
+  {
+    title: "Scan",
+    href: "/scan",
+    icon: scanIcon,
+  },
+  {
+    title: "Search",
+    href: "/search",
+    icon: searchIcon,
+  },
+  {
+    title: "Revenue",
+    href: "/revenue",
+    icon: revenueIcon,
+  },
+  {
+    title: "Fund Vehicle",
+    href: "/fund-vehicle",
+    icon: <CreditCard className="h-5 w-5" />,
+  },
 ];
 export const SIDEBAR_LINKS_AGENT = [
   {
@@ -2333,7 +2415,14 @@ export const MONTHLY = [
   },
 ];
 export const ADMIN_ROLES: string[] = [Role.SUPERADMIN, Role.ADMIN];
+export const READONLY_ADMIN_ROLES: string[] = [
+  Role.SUPERADMIN,
+  Role.ADMIN,
+  Role.EIRS_ADMIN,
+];
 export const SUPER_ADMIN_ROLES: string[] = [Role.SUPERADMIN];
+
+export const GENERAL_ACCESS = [Role.SUPERADMIN];
 
 export const freqArray = ["all", "yearly", "monthly", "weekly", "daily"];
 

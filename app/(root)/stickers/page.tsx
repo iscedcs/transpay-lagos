@@ -10,6 +10,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { StickersContent } from "@/components/stickers-content";
 import { StickerUpload } from "@/components/sticker-upload";
 import { Package, Upload, BarChart3, QrCode } from "lucide-react";
+import { auth } from "@/auth";
+import { isAuthorized } from "@/lib/auth";
+import { redirect } from "next/navigation";
+import { Role } from "@prisma/client";
 
 interface SearchParams {
   tab?: string;
@@ -37,6 +41,10 @@ export async function generateMetadata({ searchParams }: StickersPageProps) {
 export default async function StickersPage({
   searchParams,
 }: StickersPageProps) {
+  const session = await auth();
+  if (!isAuthorized(session?.user.role as Role, ["SUPERADMIN"])) {
+    redirect("/unauthorized");
+  }
   const params = await searchParams;
   const activeTab = params.tab || "overview";
 
