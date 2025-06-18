@@ -90,19 +90,6 @@ export default async function LGAPage({
     }
   };
 
-  const getScanResultBadgeVariant = (result: string) => {
-    switch (result) {
-      case "compliant":
-        return "default";
-      case "violation":
-        return "destructive";
-      case "warning":
-        return "outline";
-      default:
-        return "outline";
-    }
-  };
-
   const optionalLocations = scans;
 
   return (

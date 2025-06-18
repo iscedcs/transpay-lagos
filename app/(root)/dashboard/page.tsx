@@ -2,7 +2,6 @@ import { getMe } from "@/actions/users";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import SuperadminDashboard from "./superadmin-dashboard.tsx";
-import { Role } from "@prisma/client";
 
 export default async function DashboardPage() {
   const session = await auth();
@@ -10,7 +9,7 @@ export default async function DashboardPage() {
     redirect("/sign-in");
   }
   const user = await getMe();
-  if (!user || user.role !== Role.SUPERADMIN) {
+  if (!user) {
     redirect("/sign-in");
   }
 

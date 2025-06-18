@@ -1,16 +1,18 @@
 "use client";
 
 import {
-     SIDEBAR_LINKS,
-     SIDEBAR_LINKS_ADMIN,
-     SIDEBAR_LINKS_AGENT,
-     SIDEBAR_LINKS_GREEN,
-     SIDEBAR_NO_USER,
+  SIDEBAR_LINKS,
+  SIDEBAR_LINKS_ADMIN,
+  SIDEBAR_LINKS_AGENT,
+  SIDEBAR_LINKS_EIRS_ADMIN,
+  SIDEBAR_LINKS_GREEN,
+  SIDEBAR_NO_USER,
 } from "@/lib/const";
 import { useSession } from "next-auth/react";
 import { ModeToggle } from "../dark-mode-toggle";
 import { Separator } from "../ui/separator";
 import { NavbarButton } from "./navbar-button";
+import { Role } from "@prisma/client";
 
 export default function Sidebar() {
   const session = useSession();
@@ -38,9 +40,11 @@ export default function Sidebar() {
           ? SIDEBAR_LINKS_AGENT
           : ROLE?.toLowerCase() === "green_engine"
           ? SIDEBAR_LINKS_GREEN
-          : ROLE?.toLowerCase() === "admin"
+          : ROLE === Role.EIRS_ADMIN
+          ? SIDEBAR_LINKS_EIRS_ADMIN
+          : ROLE === Role.ADMIN
           ? SIDEBAR_LINKS_ADMIN
-          : ROLE?.toLowerCase() === "superadmin"
+          : ROLE === Role.SUPERADMIN
           ? SIDEBAR_LINKS
           : SIDEBAR_NO_USER
         ).map((link, i) => (

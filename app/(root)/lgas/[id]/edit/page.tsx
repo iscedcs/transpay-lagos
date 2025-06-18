@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { LGAEditForm } from "@/components/lga-edit-form";
 import {
   Card,
@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getLGAById } from "@/actions/lga";
+import { ADMIN_ROLES } from "@/lib/const";
+import { auth } from "@/auth";
 
 interface LGAEditPageProps {
   params: Promise<{ id: string }>;
@@ -96,6 +98,13 @@ function LGAEditSkeleton() {
 }
 
 export default async function LGAEditPage({ params }: LGAEditPageProps) {
+  const session = await auth();
+  if (!session?.user) {
+    redirect("/sign-in");
+  }
+  if (!ADMIN_ROLES.includes(session?.user.role)) {
+    redirect("/unauthorized");
+  }
   const id = (await params).id;
   return (
     <Suspense fallback={<LGAEditSkeleton />}>

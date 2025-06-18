@@ -14,6 +14,9 @@ import { getUsers } from "@/actions/users";
 import { UsersContent } from "@/components/users-content";
 import { UsersStats } from "@/components/users-stats";
 import { Skeleton } from "@/components/ui/skeleton";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
+import { ADMIN_ROLES, READONLY_ADMIN_ROLES } from "@/lib/const";
 
 interface UsersPageProps {
   searchParams: Promise<{
@@ -31,6 +34,13 @@ export const metadata = {
 };
 
 export default async function UsersPage({ searchParams }: UsersPageProps) {
+  const session = await auth();
+  if (!session?.user) {
+    redirect("/sign-in");
+  }
+  if (!READONLY_ADMIN_ROLES.includes(String(session.user.role))) {
+    redirect("/unauthorized");
+  }
   const resolvedSearchParams = await searchParams;
   // Parse search params with defaults
   const search = resolvedSearchParams.search || "";
@@ -65,16 +75,18 @@ export default async function UsersPage({ searchParams }: UsersPageProps) {
             <Download className="h-4 w-4" />
             Export
           </Button>
-          <Link
-            href="/users/add"
-            className={cn(
-              buttonVariants({ variant: "default" }),
-              "flex items-center gap-2"
-            )}
-          >
-            <Plus className="h-4 w-4" />
-            Add User
-          </Link>
+          {ADMIN_ROLES.includes(session.user.role) && (
+            <Link
+              href="/users/add"
+              className={cn(
+                buttonVariants({ variant: "default" }),
+                "flex items-center gap-2"
+              )}
+            >
+              <Plus className="h-4 w-4" />
+              Add User
+            </Link>
+          )}
         </div>
       </div>
 

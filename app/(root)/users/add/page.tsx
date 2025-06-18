@@ -32,6 +32,8 @@ import { toast } from "sonner";
 import { createUser } from "@/actions/users";
 import { USER_ROLES } from "@/lib/constants";
 import { formatRoleName } from "@/lib/utils";
+import { useSession } from "next-auth/react";
+import { ADMIN_ROLES } from "@/lib/const";
 
 // Define the form schema with Zod
 const userFormSchema = z
@@ -77,7 +79,17 @@ const userFormSchema = z
 type UserFormValues = z.infer<typeof userFormSchema>;
 
 export default function AddUserPage() {
+  const session = useSession();
   const router = useRouter();
+  if (!session?.data?.user) {
+    router.push("/sign-in");
+  }
+  const role = session.data?.user.role;
+  if (!ADMIN_ROLES.includes(String(role))) {
+    toast.error("You do not have edit permission");
+    router.push("/unauthorized");
+  }
+
   const [isLoading, setIsLoading] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [nin, setNin] = useState("");
