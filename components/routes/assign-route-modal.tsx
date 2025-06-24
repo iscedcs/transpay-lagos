@@ -64,7 +64,7 @@ export function AssignRouteModal({ isOpen, onClose, onSubmit }: AssignRouteModal
       const vehicleData = await getAvailableVehicles()
       setVehicles(vehicleData)
     } catch (error) {
-      console.error("Failed to load vehicles:", error)
+      console.log("Failed to load vehicles:", error);
     }
   }
 
@@ -134,7 +134,7 @@ export function AssignRouteModal({ isOpen, onClose, onSubmit }: AssignRouteModal
       await onSubmit(routeData)
       handleClose()
     } catch (error) {
-      console.error("Failed to create route:", error)
+      console.log("Failed to create route:", error);
       form.setError("root", { message: "Failed to create route. Please try again." })
     } finally {
       setIsLoading(false)

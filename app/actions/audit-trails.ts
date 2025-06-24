@@ -37,7 +37,7 @@ export const getAgentRegisteredByAdminId = async ({ userId, page = 1, pageSize =
                },
           };
      } catch (error) {
-          console.error("Error fetching users:", error);
+          console.log("Error fetching users:", error);
           return { error: "Something went wrong!!!" };
      }
 };

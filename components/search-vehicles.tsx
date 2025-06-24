@@ -41,12 +41,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { getVehicles, type Vehicle } from "@/actions/vehicles";
-import { LGA, getLGAs } from "@/actions/lga";
+import { type LGA, getLGAs } from "@/actions/lga";
 import type { DateRange } from "react-day-picker";
 import { format } from "date-fns";
 import { getVehicleCategories, getVehicleTypes } from "@/lib/constants";
 import { DatePickerWithRange } from "./ui/date-range-picker";
 import { formatVehicleStatus, getStatusColor } from "@/lib/utils";
+import { isValid } from "date-fns";
 
 interface SearchVehiclesProps {
   enableAdvancedSearch?: boolean;
@@ -213,11 +214,25 @@ export function SearchVehicles({
         // Apply date range filter
         if (filters.dateRange?.from) {
           filteredVehicles = filteredVehicles.filter((vehicle: Vehicle) => {
-            const vehicleDate = new Date(vehicle.createdAt);
-            const fromDate = filters.dateRange!.from!;
-            const toDate = filters.dateRange!.to || new Date();
+            try {
+              const vehicleDate = new Date(vehicle.createdAt);
+              // Check if the date is valid
+              if (isNaN(vehicleDate.getTime())) {
+                return false;
+              }
 
-            return vehicleDate >= fromDate && vehicleDate <= toDate;
+              const fromDate = filters.dateRange!.from!;
+              const toDate = filters.dateRange!.to || new Date();
+
+              return vehicleDate >= fromDate && vehicleDate <= toDate;
+            } catch (error) {
+              console.warn(
+                "Invalid date for vehicle:",
+                vehicle.id,
+                vehicle.createdAt
+              );
+              return false;
+            }
           });
         }
 
@@ -810,10 +825,12 @@ export function SearchVehicles({
                           {vehicle.vin && <span>VIN: {vehicle.vin}</span>}
                           <span>
                             Registered:{" "}
-                            {format(
-                              new Date(vehicle.createdAt),
-                              "MMM dd, yyyy"
-                            )}
+                            {(() => {
+                              const date = new Date(vehicle.createdAt);
+                              return isValid(date)
+                                ? format(date, "MMM dd, yyyy")
+                                : "Invalid Date";
+                            })()}
                           </span>
                         </div>
                       </div>

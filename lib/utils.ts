@@ -770,11 +770,12 @@ export const formatAddress = (
   return addressParts.length > 0 ? addressParts.join(", ") : "N/A";
 };
 
-export function formatRoleName(role: string) {
-  return role
-    .replace(/_/g, " ")
-    .toLowerCase()
-    .replace(/\b\w/g, (l) => l.toUpperCase());
+export function formatRoleName(role?: string) {
+  return role ? role.replace(/_/g, " ").toUpperCase() : "NOT DEFINED";
+}
+
+export function formatCategoryName(role?: string) {
+  return role ? role.replace(/_/g, " ").toUpperCase() : "NOT DEFINED";
 }
 
 export function parseAddress(addressString: string | null): Address | null {
@@ -810,7 +811,7 @@ export function parseAddressExtended(addressString: string | null): {
       postal_code: parsed.POSTAL_CODE,
     };
   } catch (error) {
-    console.error("Error parsing address:", error);
+    console.log("Error parsing address:", error);
     return {};
   }
 }

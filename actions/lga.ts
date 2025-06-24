@@ -221,7 +221,7 @@ export async function getLGAs(
 
     return data;
   } catch (error) {
-    console.error("Error fetching LGAs:", error);
+    console.log("Error fetching LGAs:", error);
     throw new Error(
       error instanceof Error ? error.message : "Failed to fetch LGAs"
     );
@@ -256,7 +256,7 @@ export async function getLGAById(id: string): Promise<LGA> {
       fee: lga.fee,
     };
   } catch (error) {
-    console.error("Error fetching LGA by ID:", error);
+    console.log("Error fetching LGA by ID:", error);
     throw new Error(
       error instanceof Error ? error.message : "Failed to fetch LGA"
     );
@@ -360,7 +360,7 @@ export async function getLGAUsers(
 
     return data;
   } catch (error) {
-    console.error("Error fetching LGA users:", error);
+    console.log("Error fetching LGA users:", error);
     return {
       success: false,
       message:
@@ -473,7 +473,7 @@ export async function getLGAVehicles(
 
     return data;
   } catch (error) {
-    console.error("Error fetching LGA vehicles:", error);
+    console.log("Error fetching LGA vehicles:", error);
     return {
       success: false,
       message:
@@ -542,7 +542,7 @@ export async function getLGAScans(
 
     if (!response.ok) {
       const errorMessage = `Failed to fetch LGA scans: ${response.status} ${response.statusText}`;
-      console.error(errorMessage);
+      console.log(errorMessage);
       return {
         success: false,
         message: errorMessage,
@@ -560,7 +560,7 @@ export async function getLGAScans(
 
     if (!data.success) {
       const errorMessage = data.message || "Failed to fetch LGA scans";
-      console.error(errorMessage);
+      console.log(errorMessage);
       return {
         success: false,
         message: errorMessage,
@@ -578,7 +578,7 @@ export async function getLGAScans(
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "Failed to fetch LGA scans";
-    console.error("Error fetching LGA scans:", error);
+    console.log("Error fetching LGA scans:", error);
     return {
       success: false,
       message: errorMessage,
@@ -646,7 +646,7 @@ export async function getLGARoutes(
 
     if (!response.ok) {
       const errorMessage = `Failed to fetch LGA routes: ${response.status} ${response.statusText}`;
-      console.error(errorMessage);
+      console.log(errorMessage);
       return {
         success: false,
         message: errorMessage,
@@ -663,7 +663,7 @@ export async function getLGARoutes(
 
     if (!data.success) {
       const errorMessage = data.message || "Failed to fetch LGA routes";
-      console.error(errorMessage);
+      console.log(errorMessage);
       return {
         success: false,
         message: errorMessage,
@@ -680,7 +680,7 @@ export async function getLGARoutes(
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "Failed to fetch LGA routes";
-    console.error("Error fetching LGA routes:", error);
+    console.log("Error fetching LGA routes:", error);
     return {
       success: false,
       message: errorMessage,
@@ -723,7 +723,7 @@ export async function createLGAsBulk(
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error creating LGAs in bulk:", error);
+    console.log("Error creating LGAs in bulk:", error);
     throw new Error(
       error instanceof Error ? error.message : "Failed to create LGAs"
     );
@@ -757,7 +757,7 @@ export async function softDeleteLGA(
       message: data.message || "LGA soft deleted successfully",
     };
   } catch (error) {
-    console.error("Error soft deleting LGA:", error);
+    console.log("Error soft deleting LGA:", error);
     throw new Error(
       error instanceof Error ? error.message : "Failed to soft delete LGA"
     );
@@ -791,7 +791,7 @@ export async function hardDeleteLGA(
       message: data.message || "LGA permanently deleted",
     };
   } catch (error) {
-    console.error("Error permanently deleting LGA:", error);
+    console.log("Error permanently deleting LGA:", error);
     throw new Error(
       error instanceof Error
         ? error.message
@@ -836,7 +836,7 @@ export async function createLga(
 
     return { success: true, data };
   } catch (error) {
-    console.error("Error creating lga:", error);
+    console.log("Error creating lga:", error);
     return { success: false, error: "Failed to create lga" };
   }
 }
@@ -905,7 +905,7 @@ export async function updateLGA(
       data: result.data,
     };
   } catch (error) {
-    console.error("Error updating LGA:", error);
+    console.log("Error updating LGA:", error);
     throw new Error(
       error instanceof Error ? error.message : "Failed to update LGA"
     );
@@ -950,7 +950,7 @@ export async function updateLGA(
 //       data: result.data,
 //     };
 //   } catch (error) {
-//     console.error("Error updating LGA fee:", error);
+//     console.log("Error updating LGA fee:", error);
 //     throw new Error(
 //       error instanceof Error ? error.message : "Failed to update LGA fee"
 //     );
@@ -1013,7 +1013,7 @@ export async function updateLGAFee(
       data: result.data,
     };
   } catch (error) {
-    console.error("Error updating LGA fee:", error);
+    console.log("Error updating LGA fee:", error);
     throw new Error(
       error instanceof Error ? error.message : "Failed to update LGA fee"
     );

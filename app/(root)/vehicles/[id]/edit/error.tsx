@@ -14,7 +14,7 @@ export default function VehicleEditError({
   reset: () => void
 }) {
   useEffect(() => {
-    console.error("Vehicle edit error:", error)
+    console.log("Vehicle edit error:", error);
   }, [error])
 
   return (

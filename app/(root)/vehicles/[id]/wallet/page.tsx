@@ -35,50 +35,53 @@ export default function VehicleWalletPage({
      }, [status, session, router, params]);
 
      const fetchWalletData = async () => {
-          try {
-               const response = await fetch(`/api/vehicle-wallet/${params}`);
-               const currentVehicle = await getFullVehicleById((await params).id);
-               if (!response.ok) throw new Error("Failed to fetch wallet data");
-               const data = await response.json();
-               setWallet(data);
-               // @ts-expect-error
-               setVehicle(currentVehicle?.success?.data.vehicle);
-          } catch (error) {
-               console.error("Error fetching wallet data:", error);
-               toast({
-                    title: "Error",
-                    description: "Failed to fetch wallet data. Please try again.",
-                    variant: "destructive",
-               });
-          } finally {
-               setLoading(false);
-          }
+       try {
+         const response = await fetch(`/api/vehicle-wallet/${params}`);
+         const currentVehicle = await getFullVehicleById((await params).id);
+         if (!response.ok) throw new Error("Failed to fetch wallet data");
+         const data = await response.json();
+         setWallet(data);
+         // @ts-expect-error
+         setVehicle(currentVehicle?.success?.data.vehicle);
+       } catch (error) {
+         console.log("Error fetching wallet data:", error);
+         toast({
+           title: "Error",
+           description: "Failed to fetch wallet data. Please try again.",
+           variant: "destructive",
+         });
+       } finally {
+         setLoading(false);
+       }
      };
 
      const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-          e.preventDefault();
-          setLoading(true);
-          try {
-               const response = await fetch(`/api/vehicle-wallet/${(await params).id}`, {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(wallet),
-               });
-               if (!response.ok) throw new Error("Failed to update wallet");
-               toast({
-                    title: "Success",
-                    description: "Vehicle wallet updated successfully.",
-               });
-          } catch (error) {
-               console.error("Error updating wallet:", error);
-               toast({
-                    title: "Error",
-                    description: "Failed to update wallet. Please try again.",
-                    variant: "destructive",
-               });
-          } finally {
-               setLoading(false);
-          }
+       e.preventDefault();
+       setLoading(true);
+       try {
+         const response = await fetch(
+           `/api/vehicle-wallet/${(await params).id}`,
+           {
+             method: "PUT",
+             headers: { "Content-Type": "application/json" },
+             body: JSON.stringify(wallet),
+           }
+         );
+         if (!response.ok) throw new Error("Failed to update wallet");
+         toast({
+           title: "Success",
+           description: "Vehicle wallet updated successfully.",
+         });
+       } catch (error) {
+         console.log("Error updating wallet:", error);
+         toast({
+           title: "Error",
+           description: "Failed to update wallet. Please try again.",
+           variant: "destructive",
+         });
+       } finally {
+         setLoading(false);
+       }
      };
 
      const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {

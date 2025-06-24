@@ -70,7 +70,7 @@ export function InviteUserForm({ isOpen, onClose, onSubmit, userRole }: InviteUs
       form.reset()
       onClose()
     } catch (error) {
-      console.error("Failed to create user:", error)
+      console.log("Failed to create user:", error);
     } finally {
       setIsLoading(false)
     }

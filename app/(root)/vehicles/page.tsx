@@ -6,7 +6,7 @@ export default function VehiclesPage() {
   return (
     <Suspense
       fallback={
-        <div className="container mx-auto py-4 px-4 space-y-4 md:py-8 md:space-y-6">
+        <div className="p-5 space-y-4 ">
           <div className="space-y-4">
             {Array.from({ length: 5 }).map((_, i) => (
               <Skeleton key={i} className="h-20 w-full" />

@@ -6,12 +6,14 @@ import { Separator } from "@/components/ui/separator";
 import { type Vehicle } from "@/actions/vehicles";
 import VehicleWalletSummary from "./vehicle-wallet-summary";
 import VehicleQuickActions from "./vehicle-quick-actions";
+import { formatCategoryName } from "@/lib/utils";
 
 interface VehicleSidebarProps {
   vehicle: Vehicle;
 }
 
 export default function VehicleSidebar({ vehicle }: VehicleSidebarProps) {
+  console.log({ vehicle });
   // Format date
   const formatDate = (dateString: string | null) => {
     if (!dateString) return "Not set";
@@ -41,7 +43,7 @@ export default function VehicleSidebar({ vehicle }: VehicleSidebarProps) {
             <div className="text-center space-y-2 space-x-2">
               <h2 className="text-xl font-semibold">{vehicle.plateNumber}</h2>
               <Badge variant="outline" className="text-sm">
-                {vehicle.category.split("_").join(" ").toUpperCase()}
+                {formatCategoryName(vehicle.category)}
               </Badge>
               <Badge variant={"outline"} className="text-sm">
                 {vehicle.status.toUpperCase()}

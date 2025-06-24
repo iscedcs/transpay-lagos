@@ -12,7 +12,7 @@ import {
   Filter,
   RefreshCw,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Card,
@@ -45,12 +45,14 @@ import { toast } from "sonner";
 import { getVehicles, getVehicleStats, type Vehicle } from "@/actions/vehicles";
 import { getLGAs } from "@/actions/lga";
 import {
+  cn,
   formatRoleName,
   formatVehicleStatus,
   getStatusColor,
 } from "@/lib/utils";
 import { getVehicleCategories } from "@/lib/constants";
 import { VehicleActionButtons } from "@/app/(root)/vehicles/vehicle-action-buttons";
+import Link from "next/link";
 
 export function VehiclesContent() {
   const router = useRouter();
@@ -96,7 +98,7 @@ export function VehiclesContent() {
         const response = await getLGAs({ limit: 100, page: 1 });
         setLgas(response.data.map((lga) => ({ id: lga.id, name: lga.name })));
       } catch (error) {
-        console.error("Failed to fetch LGAs:", error);
+        console.log("Failed to fetch LGAs:", error);
       }
     };
 
@@ -119,7 +121,7 @@ export function VehiclesContent() {
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to fetch vehicle stats";
-      console.error("Error fetching vehicle stats:", errorMessage);
+      console.log("Error fetching vehicle stats:", errorMessage);
       // Don't show error toast for stats, just log it
     } finally {
       setStatsLoading(false);
@@ -289,7 +291,7 @@ export function VehiclesContent() {
   };
 
   return (
-    <div className="container mx-auto py-4 px-4 space-y-4 md:py-8 md:space-y-6">
+    <div className="p-4 space-y-4 md:py-8 md:space-y-6">
       {/* Header */}
       <div className="flex flex-col space-y-4 md:flex-row md:justify-between md:items-start md:space-y-0">
         <div>
@@ -321,10 +323,16 @@ export function VehiclesContent() {
             <Download className="h-4 w-4" />
             Export
           </Button>
-          <Button size="sm" className="flex items-center gap-2">
+          <Link
+            href={"/vehicles/add"}
+            className={cn(
+              buttonVariants({ size: "sm" }),
+              "flex items-center gap-2"
+            )}
+          >
             <Plus className="h-4 w-4" />
             Add Vehicle
-          </Button>
+          </Link>
         </div>
       </div>
 

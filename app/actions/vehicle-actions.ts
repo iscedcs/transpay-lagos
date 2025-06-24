@@ -41,7 +41,7 @@ export async function checkExistingVehicle(field: string, value: string): Promis
           };
      } catch (error) {
           console.log({error})
-          console.error(`Error checking existing vehicle for ${field}:`, error);
+          console.log(`Error checking existing vehicle for ${field}:`, error);
           throw new Error(`Failed to check existing vehicle for ${field}`);
      }
 }

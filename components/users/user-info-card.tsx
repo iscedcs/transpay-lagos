@@ -30,7 +30,7 @@ export function UserInfoCard({ user, permissions, onUpdate }: UserInfoCardProps)
       await onUpdate(editData)
       setIsEditing(false)
     } catch (error) {
-      console.error("Failed to update user:", error)
+      console.log("Failed to update user:", error);
     } finally {
       setIsLoading(false)
     }

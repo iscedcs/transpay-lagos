@@ -47,7 +47,7 @@ export function QRCodeScanner({ onSuccess, onError }: QRCodeScannerProps) {
         const history = JSON.parse(savedHistory);
         setScannedHistory(history);
       } catch (error) {
-        console.error("Error loading scan history:", error);
+        console.log("Error loading scan history:", error);
       }
     }
   }, []);
@@ -68,7 +68,7 @@ export function QRCodeScanner({ onSuccess, onError }: QRCodeScannerProps) {
       }
       return undefined;
     } catch (error) {
-      console.error("Error extracting vehicle ID:", error);
+      console.log("Error extracting vehicle ID:", error);
       return undefined;
     }
   };
@@ -147,7 +147,7 @@ export function QRCodeScanner({ onSuccess, onError }: QRCodeScannerProps) {
       await scannerRef.current.start();
       console.log("QR Scanner started successfully");
     } catch (error) {
-      console.error("Error starting QR scanner:", error);
+      console.log("Error starting QR scanner:", error);
       setError(
         `Unable to start camera: ${
           error instanceof Error ? error.message : "Unknown error"

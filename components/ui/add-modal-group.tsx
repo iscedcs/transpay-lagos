@@ -165,7 +165,7 @@ export function AddGroupModal() {
   //       });
   //     }
   //   } catch (error) {
-  //     console.error(`Error checking existing vehicle for ${field}:`, error);
+  //     console.log(`Error checking existing vehicle for ${field}:`, error);
   //     toast.error(`Failed to check existing ${field.replace("_", " ")}`);
   //   }
   // };
@@ -199,7 +199,7 @@ export function AddGroupModal() {
     //     });
     //   }
     // } catch (error) {
-    //   console.error("Error creating group:", error);
+    //   console.log("Error creating group:", error);
     //   toast.error("An error occurred while creating the group");
     // } finally {
     //   setIsLoading(false);

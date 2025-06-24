@@ -40,7 +40,7 @@ export function DeleteConfirmationModal({
       onClose();
       setHardDelete(false);
     } catch (error) {
-      console.error("Failed to delete LGA:", error);
+      console.log("Failed to delete LGA:", error);
     } finally {
       setIsLoading(false);
     }

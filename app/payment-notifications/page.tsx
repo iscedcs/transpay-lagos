@@ -20,33 +20,35 @@ export default function PaymentNotifications() {
      const NEW_PAYMENT_THRESHOLD_SECONDS = 1;
 
      const fetchCvofPayments = useCallback(async () => {
-          try {
-               const res = await fetch("/api/payment-notifications/cvof");
-               const data = await res.json();
-               setcvofPaymentData(data);
-          } catch (error) {
-               console.error("Error fetching payments:", error);
-          }
+       try {
+         const res = await fetch("/api/payment-notifications/cvof");
+         const data = await res.json();
+         setcvofPaymentData(data);
+       } catch (error) {
+         console.log("Error fetching payments:", error);
+       }
      }, []);
 
      const fetchdmPayments = useCallback(async () => {
-          try {
-               const res = await fetch("/api/payment-notifications/device-maintenance");
-               const data = await res.json();
-               setdmPaymentData(data);
-          } catch (error) {
-               console.error("Error fetching payments:", error);
-          }
+       try {
+         const res = await fetch(
+           "/api/payment-notifications/device-maintenance"
+         );
+         const data = await res.json();
+         setdmPaymentData(data);
+       } catch (error) {
+         console.log("Error fetching payments:", error);
+       }
      }, []);
 
      const fetchffPayments = useCallback(async () => {
-          try {
-               const res = await fetch("/api/payment-notifications/fareflex");
-               const data = await res.json();
-               setffPaymentData(data);
-          } catch (error) {
-               console.error("Error fetching payments:", error);
-          }
+       try {
+         const res = await fetch("/api/payment-notifications/fareflex");
+         const data = await res.json();
+         setffPaymentData(data);
+       } catch (error) {
+         console.log("Error fetching payments:", error);
+       }
      }, []);
 
      useEffect(() => {

@@ -10,18 +10,18 @@ export async function getStickerRequest(id: string) {
   try {
     const request = await prisma.stickerRequest.findUnique({
       where: { id },
-    })
-    return { success: true, data: request }
+    });
+    return { success: true, data: request };
   } catch (error) {
-    console.error('Failed to fetch sticker request:', error)
-    return { success: false, error: 'Failed to fetch sticker request' }
+    console.log("Failed to fetch sticker request:", error);
+    return { success: false, error: "Failed to fetch sticker request" };
   }
 }
 
 // Fetch all sticker requests with optional filtering
 export async function getAllStickerRequests(filters?: {
-  status?: StickerRequestStatus
-  vehicleId?: string
+  status?: StickerRequestStatus;
+  vehicleId?: string;
 }) {
   try {
     const requests = await prisma.stickerRequest.findMany({
@@ -33,13 +33,13 @@ export async function getAllStickerRequests(filters?: {
         Vehicle: true,
       },
       orderBy: {
-        createdAt: 'desc',
+        createdAt: "desc",
       },
-    })
-    return { success: true, data: requests }
+    });
+    return { success: true, data: requests };
   } catch (error) {
-    console.error('Failed to fetch sticker requests:', error)
-    return { success: false, error: 'Failed to fetch sticker requests' }
+    console.log("Failed to fetch sticker requests:", error);
+    return { success: false, error: "Failed to fetch sticker requests" };
   }
 }
 
@@ -51,12 +51,12 @@ export async function deleteStickerRequest(id: string) {
       data: {
         deletedAt: new Date(),
       },
-    })
-    revalidatePath('/sticker-requests')
-    return { success: true, data: deletedRequest }
+    });
+    revalidatePath("/sticker-requests");
+    return { success: true, data: deletedRequest };
   } catch (error) {
-    console.error('Failed to delete sticker request:', error)
-    return { success: false, error: 'Failed to delete sticker request' }
+    console.log("Failed to delete sticker request:", error);
+    return { success: false, error: "Failed to delete sticker request" };
   }
 }
 
@@ -66,16 +66,16 @@ export async function approveStickerRequest(id: string) {
     const approvedRequest = await prisma.stickerRequest.update({
       where: { id },
       data: {
-        status: 'APPROVED',
+        status: "APPROVED",
         approvedAt: new Date(),
         updatedAt: new Date(),
       },
-    })
-    revalidatePath('/sticker-requests')
-    return { success: true, data: approvedRequest }
+    });
+    revalidatePath("/sticker-requests");
+    return { success: true, data: approvedRequest };
   } catch (error) {
-    console.error('Failed to approve sticker request:', error)
-    return { success: false, error: 'Failed to approve sticker request' }
+    console.log("Failed to approve sticker request:", error);
+    return { success: false, error: "Failed to approve sticker request" };
   }
 }
 

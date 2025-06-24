@@ -86,7 +86,7 @@ export async function PATCH(req: NextRequest) {
    }
    return NextResponse.json(result);
  } catch (error: any) {
-   console.error("Error updating agent:", error);
+   console.log("Error updating agent:", error);
    return NextResponse.json({ error: error.message }, { status: 500 });
  }
      }}
