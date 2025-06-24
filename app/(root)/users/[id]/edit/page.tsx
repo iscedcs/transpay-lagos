@@ -145,7 +145,7 @@ export default function EditUserPage() {
     try {
       return JSON.parse(identification) as IdentificationData;
     } catch (error) {
-      console.error("Error parsing identification:", error);
+      console.log("Error parsing identification:", error);
       return null;
     }
   };
@@ -207,7 +207,7 @@ export default function EditUserPage() {
         setError(
           err instanceof Error ? err.message : "Failed to fetch user data"
         );
-        console.error("Error fetching data:", err);
+        console.log("Error fetching data:", err);
       } finally {
         setIsFetching(false);
       }
@@ -271,7 +271,7 @@ export default function EditUserPage() {
         });
       }
     } catch (error) {
-      console.error("Failed to update user:", error);
+      console.log("Failed to update user:", error);
       toast.error("Error", {
         description:
           error instanceof Error

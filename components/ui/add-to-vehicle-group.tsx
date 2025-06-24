@@ -118,7 +118,7 @@ export function AddVehicleToGroupModal({ group }: { group: any }) {
               });
          }
     } catch (error) {
-         console.error("Error creating group:", error);
+         console.log("Error creating group:", error);
          toast.error("An error occurred while creating the group");
     } finally {
          setIsLoading(false);

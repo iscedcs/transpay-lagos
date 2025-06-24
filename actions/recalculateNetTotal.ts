@@ -24,7 +24,7 @@ export async function recalculateNetTotal(tCode: string) {
     const result = await response.json()
     return { success: true, message: result.data.message }
   } catch (error) {
-    console.error("Failed to recalculate net total:", error)
+    console.log("Failed to recalculate net total:", error);
     return { success: false, message: "Failed to recalculate net total. Please try again." }
   }
 }

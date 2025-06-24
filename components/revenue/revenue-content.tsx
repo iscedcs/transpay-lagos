@@ -80,7 +80,7 @@ export default function RevenueContent({
           toast.success("Revenue data refreshed successfully");
         }
       } catch (error) {
-        console.error("Failed to fetch revenue data:", error);
+        console.log("Failed to fetch revenue data:", error);
         toast.error("Failed to load revenue data");
       } finally {
         setLoading(false);
@@ -122,7 +122,7 @@ export default function RevenueContent({
 
       toast.success(`Revenue data exported as ${format.toUpperCase()}`);
     } catch (error) {
-      console.error("Export failed:", error);
+      console.log("Export failed:", error);
       toast.error(`Failed to export as ${format.toUpperCase()}`);
     } finally {
       setExporting(false);

@@ -32,7 +32,7 @@ export async function updateStartDate(tCode: string, startDate: string) {
 
     return { success: true, data }
   } catch (error) {
-    console.error('Error updating start date:', error)
+    console.log("Error updating start date:", error);
     return { success: false, error: 'Failed to update start date' }
   }
 }

@@ -112,7 +112,7 @@ export async function requireAuth(config: AuthConfig = {}) {
 
     return user;
   } catch (error) {
-    console.error("Authorization error:", error);
+    console.log("Authorization error:", error);
     redirect(redirectTo);
   }
 }

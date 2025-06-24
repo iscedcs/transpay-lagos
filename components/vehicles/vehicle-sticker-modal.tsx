@@ -35,7 +35,7 @@ export function VehicleStickerModal({ vehicle, isOpen, onClose, onSuccess }: Veh
       onClose()
       setBarcode("")
     } catch (error) {
-      console.error("Failed to update vehicle sticker:", error)
+      console.log("Failed to update vehicle sticker:", error);
     } finally {
       setIsLoading(false)
     }

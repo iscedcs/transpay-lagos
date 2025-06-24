@@ -57,7 +57,7 @@ export function BarcodeScanner({
 
       return null;
     } catch (error) {
-      console.error("Error extracting barcode:", error);
+      console.log("Error extracting barcode:", error);
       return null;
     }
   };
@@ -77,7 +77,7 @@ export function BarcodeScanner({
         videoRef.current.srcObject = stream;
       }
     } catch (error) {
-      console.error("Error accessing camera:", error);
+      console.log("Error accessing camera:", error);
       setError(
         "Unable to access camera. Please check permissions or enter barcode manually."
       );
@@ -158,7 +158,7 @@ export function BarcodeScanner({
       // Refresh the page to show the updated vehicle
       window.location.reload();
     } catch (error) {
-      console.error("Error attaching barcode:", error);
+      console.log("Error attaching barcode:", error);
       setError(
         error instanceof Error ? error.message : "Failed to attach barcode"
       );

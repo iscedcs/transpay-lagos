@@ -49,7 +49,7 @@ export async function sendResetTokenEmail(
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error sending reset token to email:", error);
+    console.log("Error sending reset token to email:", error);
     throw new Error(
       error instanceof Error
         ? error.message
@@ -87,7 +87,7 @@ export async function sendResetTokenPhone(
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error sending reset token to phone:", error);
+    console.log("Error sending reset token to phone:", error);
     throw new Error(
       error instanceof Error
         ? error.message
@@ -133,7 +133,7 @@ export async function resetPasswordEmail(
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error resetting password via email:", error);
+    console.log("Error resetting password via email:", error);
     throw new Error(
       error instanceof Error ? error.message : "Failed to reset password"
     );
@@ -177,7 +177,7 @@ export async function resetPasswordPhone(
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error resetting password via phone:", error);
+    console.log("Error resetting password via phone:", error);
     throw new Error(
       error instanceof Error ? error.message : "Failed to reset password"
     );

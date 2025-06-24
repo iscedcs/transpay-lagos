@@ -35,7 +35,7 @@ export const getComplianceRate = async () => {
   };
   const res = await fetch(URL, { headers, cache: "no-store" });
   if (!res.ok) {
-    console.error("Failed to fetch compliance rate:", res.statusText);
+    console.log("Failed to fetch compliance rate:", res.statusText);
     return {
       totalVehicles: 0,
       owingVehicles: 0,
@@ -87,7 +87,7 @@ export const getTransactionSummary = async () => {
   };
   const res = await fetch(URL, { headers, cache: "no-store" });
   if (!res.ok) {
-    console.error("Failed to fetch transaction summary:", res.statusText);
+    console.log("Failed to fetch transaction summary:", res.statusText);
     return {
       totalAmount: 0,
       totalCount: 0,
@@ -130,7 +130,7 @@ export const getOutstandingFees = async () => {
   };
   const res = await fetch(URL, { headers, cache: "no-store" });
   if (!res.ok) {
-    console.error("Failed to fetch Owing summary:", res.statusText);
+    console.log("Failed to fetch Owing summary:", res.statusText);
     return {
       totalAmount: 0,
       totalCount: 0,
@@ -178,7 +178,7 @@ export const getMonthlyRevenueChange = async () => {
   };
   const res = await fetch(URL, { headers, cache: "no-store" });
   if (!res.ok) {
-    console.error("Failed to fetch monthly revenue change:", res.statusText);
+    console.log("Failed to fetch monthly revenue change:", res.statusText);
     return {
       currentMonthRevenue: 0,
       lastMonthRevenue: 0,
@@ -238,7 +238,7 @@ export const getUsersByRole = async () => {
   };
   const res = await fetch(URL, { headers, cache: "no-store" });
   if (!res.ok) {
-    console.error("Failed to fetch users by role:", res.statusText);
+    console.log("Failed to fetch users by role:", res.statusText);
     return [
       { role: "ADMIN", count: 0 },
       { role: "EIRS_ADMIN", count: 0 },
@@ -291,7 +291,7 @@ export async function fetchVehicleTypes() {
   };
   const res = await fetch(URL, { headers, cache: "no-store" });
   if (!res.ok) {
-    console.error("Failed to fetch vehicle category:", res.statusText);
+    console.log("Failed to fetch vehicle category:", res.statusText);
     return [
       { type: "TRICYCLE", count: 0 },
       { type: "BUS_INTRASTATE", count: 0 },
@@ -334,7 +334,7 @@ export async function fetchLGARevenue() {
   };
   const res = await fetch(URL, { headers, cache: "no-store" });
   if (!res.ok) {
-    console.error("Failed to fetch vehicle count by lga:", res.statusText);
+    console.log("Failed to fetch vehicle count by lga:", res.statusText);
     return [
       { lga: "ESAN SOUTH-EAST", count: 1, percentage: 50 },
       { lga: "OREDO", count: 1, percentage: 50 },
@@ -380,7 +380,7 @@ export async function fetchVehicleDistribution() {
   };
   const res = await fetch(URL, { headers, cache: "no-store" });
   if (!res.ok) {
-    console.error("Failed to fetch vehicle count by lga:", res.statusText);
+    console.log("Failed to fetch vehicle count by lga:", res.statusText);
     return [
       { lga: "ESAN SOUTH-EAST", count: 1, percentage: 50 },
       { lga: "OREDO", count: 1, percentage: 50 },
@@ -523,7 +523,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
       },
     };
   } catch (error) {
-    console.error("Error fetching dashboard stats:", error);
+    console.log("Error fetching dashboard stats:", error);
     throw new Error("Failed to fetch dashboard statistics");
   }
 }
@@ -561,7 +561,7 @@ export async function getRecentScans(limit = 10) {
 
     return scans;
   } catch (error) {
-    console.error("Error fetching recent scans:", error);
+    console.log("Error fetching recent scans:", error);
     throw new Error("Failed to fetch recent scans");
   }
 }
@@ -665,7 +665,7 @@ export async function getLGAAgentDashboardStats(): Promise<DashboardStats> {
       },
     };
   } catch (error) {
-    console.error("Error fetching LGA agent dashboard stats:", error);
+    console.log("Error fetching LGA agent dashboard stats:", error);
     throw new Error("Failed to fetch dashboard statistics");
   }
 }
@@ -712,7 +712,7 @@ export async function getLGAAgentRecentScans(limit = 10) {
 
     return scans;
   } catch (error) {
-    console.error("Error fetching LGA agent recent scans:", error);
+    console.log("Error fetching LGA agent recent scans:", error);
     throw new Error("Failed to fetch recent scans");
   }
 }
@@ -893,7 +893,7 @@ export async function getLGAAdminDashboardStats(): Promise<
       monthlyRevenue: Number(monthlyRevenue._sum.amount || 0),
     };
   } catch (error) {
-    console.error("Error fetching LGA admin dashboard stats:", error);
+    console.log("Error fetching LGA admin dashboard stats:", error);
     throw new Error("Failed to fetch dashboard statistics");
   }
 }
@@ -981,7 +981,7 @@ export async function getLGAAdminAgentPerformance() {
 
     return agentPerformance;
   } catch (error) {
-    console.error("Error fetching agent performance:", error);
+    console.log("Error fetching agent performance:", error);
     throw new Error("Failed to fetch agent performance data");
   }
 }
@@ -1041,7 +1041,7 @@ export async function getLGAAdminActivities(limit = 20) {
 
     return activities;
   } catch (error) {
-    console.error("Error fetching LGA admin activities:", error);
+    console.log("Error fetching LGA admin activities:", error);
     throw new Error("Failed to fetch activities");
   }
 }

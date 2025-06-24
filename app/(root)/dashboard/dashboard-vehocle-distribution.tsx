@@ -50,7 +50,7 @@ export function VehicleDistribution() {
           setData([]);
         }
       } catch (err) {
-        console.error("Error fetching vehicle distribution:", err);
+        console.log("Error fetching vehicle distribution:", err);
         setError("Failed to load vehicle distribution data");
         setData([]);
       } finally {

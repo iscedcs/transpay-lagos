@@ -69,7 +69,7 @@ export const getAgentRegisteredByAdminId = async ({
      const res = await fetch(url, { headers, cache: "no-store" });
    
      if (!res.ok) {
-       console.error(`Failed to fetch agents: ${res.status} ${res.statusText}`);
+       console.log(`Failed to fetch agents: ${res.status} ${res.statusText}`);
        return undefined;
      }
    

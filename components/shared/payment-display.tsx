@@ -15,34 +15,34 @@ export default function PaymentDisplay({ check }: PaymentDisplayProps) {
     const [error, setError] = useState<string | null>(null);
 
      const fetchCVOFDailyDisplay = useCallback(async () => {
-          try {
-               const CVOF = await getPaymentTotals({ revenueType: "CVOF" });
-               setCvofDaily(Number(CVOF.dayToDateTotal));
-          } catch (e) {
-               console.error("Error fetching payments:", e);
-               setError("Failed to fetch CVOG payments")
-          }
+       try {
+         const CVOF = await getPaymentTotals({ revenueType: "CVOF" });
+         setCvofDaily(Number(CVOF.dayToDateTotal));
+       } catch (e) {
+         console.log("Error fetching payments:", e);
+         setError("Failed to fetch CVOG payments");
+       }
      }, []);
 
      const fetchDMFDailyDisplay = useCallback(async () => {
-          try {
-               const ISCE = await getPaymentTotals({ revenueType: "ISCE" });
-               setDmfDaily(Number(ISCE.dayToDateTotal));
-          } catch (e) {
-               console.error("Error fetching payments:", e);
-               setError("Failed to fetch DFM payments")
-          }
+       try {
+         const ISCE = await getPaymentTotals({ revenueType: "ISCE" });
+         setDmfDaily(Number(ISCE.dayToDateTotal));
+       } catch (e) {
+         console.log("Error fetching payments:", e);
+         setError("Failed to fetch DFM payments");
+       }
      }, []);
 
      const fetchFFDailyDisplay = useCallback(async () => {
-          try {
-               const FAREFLEX = await getPaymentTotals({ revenueType: "FAREFLEX" });
+       try {
+         const FAREFLEX = await getPaymentTotals({ revenueType: "FAREFLEX" });
 
-               setFfDaily(Number(FAREFLEX.dayToDateTotal));
-          } catch (e) {
-               console.error("Error fetching payments:", e);
-               setError("Failed to fetch FF payments")
-          }
+         setFfDaily(Number(FAREFLEX.dayToDateTotal));
+       } catch (e) {
+         console.log("Error fetching payments:", e);
+         setError("Failed to fetch FF payments");
+       }
      }, []);
 
      useEffect(() => {

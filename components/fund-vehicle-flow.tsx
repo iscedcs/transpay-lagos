@@ -139,7 +139,7 @@ export function FundVehicleFlow() {
       toast.success("Virtual account generated successfully!");
     } catch (error) {
       toast.error("Failed to generate virtual account. Please try again.");
-      console.error("Virtual account generation failed:", error);
+      console.log("Virtual account generation failed:", error);
     } finally {
       setIsProcessing(false);
     }
@@ -167,7 +167,7 @@ export function FundVehicleFlow() {
       }
     } catch (error) {
       toast.error("Failed to confirm payment. Please try again.");
-      console.error("Payment confirmation failed:", error);
+      console.log("Payment confirmation failed:", error);
     } finally {
       setIsProcessing(false);
     }

@@ -29,7 +29,7 @@ export function UpdateStartDate({ tCode }: { tCode: string }) {
       }
     } catch (error) {
       toast.error("Failed to update start date")
-      console.error("Error:", error)
+      console.log("Error:", error);
     } finally {
       setIsLoading(false)
     }

@@ -25,7 +25,7 @@ export function StickerStats() {
         setStats(result.data.stats);
       }
     } catch (error) {
-      console.error("Error loading stats:", error);
+      console.log("Error loading stats:", error);
     } finally {
       setLoading(false);
     }

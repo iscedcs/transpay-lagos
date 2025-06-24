@@ -33,7 +33,7 @@ export const getUsers = async (o: {
     const result = await res.json();
 
     if (!res.ok || !result.success) {
-      console.error(
+      console.log(
         `Failed to fetch users: ${res.status} ${res.statusText}`,
         result
       );
@@ -51,7 +51,7 @@ export const getUsers = async (o: {
       },
     };
   } catch (error: any) {
-    console.error("Error fetching users:", error.message, error);
+    console.log("Error fetching users:", error.message, error);
     return undefined;
   }
 };
@@ -71,13 +71,13 @@ export const getUser = async (id: string) => {
     const result = await res.json();
     console.log({ result });
     if (!res.ok || !result.success) {
-      console.error("API error:", result);
+      console.log("API error:", result);
       return undefined;
     }
     const user: IUserExtended = result.data;
     return user;
   } catch (error) {
-    console.error("Error fetching user:", error);
+    console.log("Error fetching user:", error);
     return null;
   }
 };

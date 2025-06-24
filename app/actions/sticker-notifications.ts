@@ -17,7 +17,7 @@ export async function getAllStickerPayments({
   plateNumber,
   asin,
   status,
-  includeDeleted = false
+  includeDeleted = false,
 }: StickerRequestParams) {
   try {
     const stickerPayments = await prisma.stickerRequest.findMany({
@@ -27,30 +27,35 @@ export async function getAllStickerPayments({
         ...(status && { status }),
         ...(!includeDeleted && { deletedAt: null }),
       },
-    })
-    return stickerPayments
+    });
+    return stickerPayments;
   } catch (error) {
-    console.error('Error fetching all sticker payments:', error)
-    throw new Error('Failed to fetch all sticker payments')
+    console.log("Error fetching all sticker payments:", error);
+    throw new Error("Failed to fetch all sticker payments");
   } finally {
-    await prisma.$disconnect()
+    await prisma.$disconnect();
   }
 }
 
-export async function getDeletedStickerRequestsByPlateNumber(plateNumber: string) {
+export async function getDeletedStickerRequestsByPlateNumber(
+  plateNumber: string
+) {
   try {
     const deletedRequests = await prisma.stickerRequest.findMany({
       where: {
         plateNumber,
         deletedAt: { not: null },
       },
-    })
-    return deletedRequests
+    });
+    return deletedRequests;
   } catch (error) {
-    console.error('Error fetching deleted sticker requests by plate number:', error)
-    throw new Error('Failed to fetch deleted sticker requests by plate number')
+    console.log(
+      "Error fetching deleted sticker requests by plate number:",
+      error
+    );
+    throw new Error("Failed to fetch deleted sticker requests by plate number");
   } finally {
-    await prisma.$disconnect()
+    await prisma.$disconnect();
   }
 }
 
@@ -59,21 +64,23 @@ export async function getCountNotDeletedByPlateNumber(plateNumber: string) {
     const count = await prisma.stickerRequest.count({
       where: {
         plateNumber,
-            deletedAt: null,
-            status: {
-            notIn: ['PENDING', 'REJECTED']
-        }
+        deletedAt: null,
+        status: {
+          notIn: ["PENDING", "REJECTED"],
+        },
       },
-    })
-    return count
+    });
+    return count;
   } catch (error) {
-    console.error('Error counting not deleted sticker requests by plate number:', error)
-    return 0
+    console.log(
+      "Error counting not deleted sticker requests by plate number:",
+      error
+    );
+    return 0;
   } finally {
-    await prisma.$disconnect()
+    await prisma.$disconnect();
   }
 }
-
 
 export async function getCountByStatus(
   status: StickerRequestStatus,
@@ -88,7 +95,7 @@ export async function getCountByStatus(
     });
     return count;
   } catch (error) {
-    console.error("Error counting sticker requests by status:", error);
+    console.log("Error counting sticker requests by status:", error);
     throw new Error("Failed to count sticker requests by status");
   } finally {
     await prisma.$disconnect();
@@ -115,7 +122,7 @@ export async function getTotalStickerCost({
     });
     return totalCost._sum.stickerCost || 0;
   } catch (error) {
-    console.error("Error calculating total sticker cost:", error);
+    console.log("Error calculating total sticker cost:", error);
     throw new Error("Failed to calculate total sticker cost");
   } finally {
     await prisma.$disconnect();
@@ -142,7 +149,7 @@ export async function getLatestStickerRequest({
     });
     return latestRequest;
   } catch (error) {
-    console.error("Error fetching latest sticker request:", error);
+    console.log("Error fetching latest sticker request:", error);
     throw new Error("Failed to fetch latest sticker request");
   } finally {
     await prisma.$disconnect();

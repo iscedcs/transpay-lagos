@@ -38,7 +38,7 @@ export async function fetchUserByNIN(nin: string): Promise<any | null> {
     // For any other NIN, return null to indicate no user found
     return null;
   } catch (error) {
-    console.error("Error fetching user by NIN:", error);
+    console.log("Error fetching user by NIN:", error);
     throw new Error(
       error instanceof Error ? error.message : "Failed to verify NIN"
     );

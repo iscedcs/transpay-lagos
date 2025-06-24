@@ -16,7 +16,7 @@ export async function getVehicleByPlate(
 		const vehicle = await v.json();
 		return vehicle.v;
 	} catch (error) {
-		console.error('Failed to fetch Vehicle:', error);
+		console.log("Failed to fetch Vehicle:", error);
 		throw new Error('Failed to fetch Vehicle.');
 	}
 }

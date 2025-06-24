@@ -102,7 +102,7 @@ export function GenerateAccountModal({
         description: "Virtual account has been successfully created",
       });
     } catch (error) {
-      console.error("Error creating virtual account:", error);
+      console.log("Error creating virtual account:", error);
 
       // Show error toast
       toast.error("Error", {

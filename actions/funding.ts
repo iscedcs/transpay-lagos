@@ -108,7 +108,7 @@ export async function generateFundingVirtualAccount(
       expiryInSeconds,
     };
   } catch (error) {
-    console.error("Error generating virtual account:", error);
+    console.log("Error generating virtual account:", error);
     throw new Error("Failed to generate virtual account");
   }
 }
@@ -162,7 +162,7 @@ export async function confirmFundingPayment(
       newBalance: 5000 + Math.random() * 10000, // Dummy new balance
     };
   } catch (error) {
-    console.error("Error confirming payment:", error);
+    console.log("Error confirming payment:", error);
     throw new Error("Failed to confirm payment");
   }
 }
@@ -199,7 +199,7 @@ export async function getFundingSessionStatus(sessionId: string): Promise<{
       paymentReceived: Math.random() > 0.7, // 30% chance payment is received
     };
   } catch (error) {
-    console.error("Error fetching session status:", error);
+    console.log("Error fetching session status:", error);
     return {
       success: false,
       session: null,
@@ -233,7 +233,7 @@ export async function cancelFundingSession(sessionId: string): Promise<{
       message: "Funding session cancelled successfully",
     };
   } catch (error) {
-    console.error("Error cancelling session:", error);
+    console.log("Error cancelling session:", error);
     throw new Error("Failed to cancel funding session");
   }
 }
@@ -275,7 +275,7 @@ export async function getVehicleFundingHistory(vehicleId: string): Promise<{
       transactions,
     };
   } catch (error) {
-    console.error("Error fetching funding history:", error);
+    console.log("Error fetching funding history:", error);
     throw new Error("Failed to fetch funding history");
   }
 }

@@ -28,7 +28,7 @@ export default async function VehiclePage({ params }: VehiclePageProps) {
     vehicle = await getVehicleById(id);
   } catch (err) {
     error = err instanceof Error ? err.message : "Failed to fetch vehicle";
-    console.error("Error fetching vehicle:", err);
+    console.log("Error fetching vehicle:", err);
   }
 
   // Handle error state
@@ -55,7 +55,7 @@ export default async function VehiclePage({ params }: VehiclePageProps) {
   }
 
   // Handle not found
-  if (!vehicle) {
+  if (!vehicle?.success) {
     notFound();
   }
 
@@ -63,21 +63,21 @@ export default async function VehiclePage({ params }: VehiclePageProps) {
     <div className="container mx-auto py-8 space-y-6">
       {/* Header */}
       <Suspense fallback={<HeaderSkeleton />}>
-        <VehicleHeader vehicle={vehicle} />
+        <VehicleHeader vehicle={vehicle.data} />
       </Suspense>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left Column - Vehicle Profile Card */}
         <div className="lg:col-span-1">
           <Suspense fallback={<SidebarSkeleton />}>
-            <VehicleSidebar vehicle={vehicle} />
+            <VehicleSidebar vehicle={vehicle.data} />
           </Suspense>
         </div>
 
         {/* Right Column - Detailed Information */}
         <div className="lg:col-span-2">
           <Suspense fallback={<TabsSkeleton />}>
-            <VehicleDetailTabs vehicle={vehicle} />
+            <VehicleDetailTabs vehicle={vehicle.data} />
           </Suspense>
         </div>
       </div>
