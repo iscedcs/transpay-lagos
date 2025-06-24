@@ -7,7 +7,11 @@ import { db } from "@/lib/db";
 import { $Enums, Role } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 
-// Types for the User dat
+// Types for the User data
+
+type CreateUserResult =
+  | { success: true; data: User }
+  | { success: false; error: string };
 
 export interface Address {
   country?: string;
@@ -132,7 +136,7 @@ export async function getUsers(
 
     return processedData;
   } catch (error) {
-    console.error("Error fetching users:", error);
+    console.log("Error fetching users:", error);
     throw new Error(
       error instanceof Error ? error.message : "Failed to fetch users"
     );
@@ -174,7 +178,7 @@ export async function getUserById(id: string): Promise<User> {
 
     return data.data;
   } catch (error) {
-    console.error("Error fetching user by ID:", error);
+    console.log("Error fetching user by ID:", error);
     throw new Error(
       error instanceof Error ? error.message : "Failed to fetch user"
     );
@@ -225,7 +229,7 @@ export async function updateUser(
 
     return data.data;
   } catch (error) {
-    console.error("Error updating user:", error);
+    console.log("Error updating user:", error);
     throw new Error(
       error instanceof Error ? error.message : "Failed to update user"
     );
@@ -303,7 +307,7 @@ export const allUsers = async ({
         },
       };
     } catch (error) {
-      console.error("Error fetching users:", error);
+      console.log("Error fetching users:", error);
       return { error: "Something went wrong!!!" };
     }
 };
@@ -357,7 +361,7 @@ export const allAgentsCreatedByAdminId = async ({
       },
     };
   } catch (error) {
-    console.error("Error fetching users:", error);
+    console.log("Error fetching users:", error);
     return { error: "Something went wrong!!!" };
   }
 };
@@ -390,23 +394,24 @@ export const getMe = async () => {
     }
     return user;
   } catch (error) {
-    console.error("Error fetching user data:", error);
+    console.log("Error fetching user data:", error);
     return { error: "Something went wrong while fetching user data" };
   }
 };
 
-export async function createUser(userData: Partial<any>): Promise<User> {
+export async function createUser(
+  userData: Partial<any>
+): Promise<CreateUserResult> {
   const session = await auth();
   if (!session || !session.user) {
-    throw new Error("Unauthorized access: No session found");
+    return { success: false, error: "Unauthorized access: No session found" };
   }
-  // if (session.user.role !== "SUPERADMIN") {
-  //   throw new Error("Unauthorized access: Only SUPERADMIN can create users");
-  // }
-  const token = session?.user.access_token;
+
+  const token = session.user.access_token;
   if (!token) {
-    throw new Error("Unauthorized access: No token found");
+    return { success: false, error: "Unauthorized access: No token found" };
   }
+
   try {
     const response = await fetch(`${API}/api/user/create`, {
       method: "POST",
@@ -418,28 +423,27 @@ export async function createUser(userData: Partial<any>): Promise<User> {
       body: JSON.stringify(userData),
     });
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(
-        errorData.message ||
-          `Failed to create user: ${response.status} ${response.statusText}`
-      );
-    }
+    const result = await response.json();
 
-    const data = await response.json();
-
-    if (!data.success) {
-      throw new Error(data.message || "Failed to create user");
+    if (!response.ok || !result.success) {
+      return {
+        success: false,
+        error:
+          result.message ||
+          `Failed to create user: ${response.status} ${response.statusText}`,
+      };
     }
 
     // Revalidate the users page to reflect the new user
     revalidatePath("/users");
 
-    return data.data;
+    return { success: true, data: result.data };
   } catch (error) {
-    console.error("Error creating user:", error);
-    throw new Error(
-      error instanceof Error ? error.message : "Failed to create user"
-    );
+    console.log("Error creating user:", error);
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "Unknown error creating user",
+    };
   }
 }

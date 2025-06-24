@@ -50,61 +50,71 @@ export function AddVehicleToGroup({ vehicleId }: AddVehicleToGroupProps) {
 
   const fetchGroups = async () => {
     try {
-      const groups = await getGroups()
-      
+      const groups = await getGroups();
+
       if (groups && groups.length > 0) {
-        setGroups(groups)
+        setGroups(groups);
       } else {
-        throw new Error('Failed to fetch groups')
+        throw new Error("Failed to fetch groups");
       }
     } catch (error) {
-      console.error('Error fetching groups:', error)
-      toast.error('Failed to load groups')
+      console.log("Error fetching groups:", error);
+      toast.error("Failed to load groups");
     }
-  }
+  };
 
   const handleAddToGroup = async () => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
-      let groupId = selectedGroup
+      let groupId = selectedGroup;
 
       if (isCreatingNewGroup) {
         // Create new group
         const createGroupResponse = await fetch(`${API}${URLS.group.all}`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ groupName: newGroupName, vehicleIds: [vehicleId] }),
-        })
-        const createGroupData = await createGroupResponse.json()
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            groupName: newGroupName,
+            vehicleIds: [vehicleId],
+          }),
+        });
+        const createGroupData = await createGroupResponse.json();
         if (!createGroupData.status) {
-          throw new Error(createGroupData.message || 'Failed to create new group')
+          throw new Error(
+            createGroupData.message || "Failed to create new group"
+          );
         }
-        groupId = createGroupData.data.id
+        groupId = createGroupData.data.id;
       }
 
       // Add vehicle to group
-      const addToGroupResponse = await fetch(`${API}${URLS.group.all}/${groupId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          vehicleIds: [vehicleId]
-        }),
-      })
-      const addToGroupData = await addToGroupResponse.json()
+      const addToGroupResponse = await fetch(
+        `${API}${URLS.group.all}/${groupId}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            vehicleIds: [vehicleId],
+          }),
+        }
+      );
+      const addToGroupData = await addToGroupResponse.json();
       if (!addToGroupData.status) {
-        throw new Error(addToGroupData.message || 'Failed to add vehicle to group')
+        throw new Error(
+          addToGroupData.message || "Failed to add vehicle to group"
+        );
       }
 
-      toast.success('Vehicle added to group successfully')
-      setOpen(false)
-      router.refresh()
+      toast.success("Vehicle added to group successfully");
+      setOpen(false);
+      router.refresh();
     } catch (error) {
-      console.error('Error adding vehicle to group:', error)
-      toast.error('Failed to add vehicle to group')
+      console.log("Error adding vehicle to group:", error);
+      toast.error("Failed to add vehicle to group");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

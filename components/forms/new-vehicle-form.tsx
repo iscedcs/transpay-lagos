@@ -236,7 +236,7 @@ export default function CreateVehicleForm() {
         });
       }
     } catch (error) {
-      console.error("Error creating vehicle:", error);
+      console.log("Error creating vehicle:", error);
       toast.error("An error occurred while creating the vehicle");
     } finally {
       setIsLoading(false);

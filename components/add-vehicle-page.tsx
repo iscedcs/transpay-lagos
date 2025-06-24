@@ -46,13 +46,13 @@ import {
   type VehicleFormValues,
   genderOptions,
   maritalStatusOptions,
-  CreateVehicleRequest,
-} from "../vehicle-form-validation";
-import { getLGAs } from "@/actions/lga";
+  type CreateVehicleRequest,
+} from "@/components/vehicle-form-validation";
+import { getLGAs } from "@/app/actions/lgas";
 import { toast } from "sonner";
-import { createVehicleWithOwner } from "@/actions/vehicles";
+import { createVehicleWithOwner } from "@/app/actions/vehicles";
 import { VEHICLE_CATEGORIES } from "@/lib/const";
-import AvatarUploader from "@/components/shared/avatar-uploader";
+import AvatarUploader from "@/components/avatar-uploader";
 
 interface RegistrationStep {
   id: string;
@@ -62,13 +62,22 @@ interface RegistrationStep {
   current: boolean;
 }
 
+// Updated owner form schema without BVN and DOB
+const updatedOwnerFormSchema = ownerFormSchema.omit({
+  bvn: true,
+  dateOfBirth: true,
+});
+
+type UpdatedOwnerFormValues = Omit<OwnerFormValues, "bvn" | "dateOfBirth">;
+
 export default function AddVehiclePage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [lgas, setLgas] = useState<{ id: string; name: string }[]>([]);
   const [activeTab, setActiveTab] = useState("owner");
   const [registrationProgress, setRegistrationProgress] = useState(0);
-  const [createdVehicle, setCreatedVehicle] = useState<any>(null);
+
+  // Registration steps (removed virtual account step)
   const [steps, setSteps] = useState<RegistrationStep[]>([
     {
       id: "form",
@@ -85,13 +94,6 @@ export default function AddVehiclePage() {
       current: false,
     },
     {
-      id: "wallet",
-      title: "Virtual Account",
-      description: "Create payment wallet",
-      completed: false,
-      current: false,
-    },
-    {
       id: "complete",
       title: "Complete",
       description: "Registration finished",
@@ -100,9 +102,9 @@ export default function AddVehiclePage() {
     },
   ]);
 
-  // Owner form
-  const ownerForm = useForm<OwnerFormValues>({
-    resolver: zodResolver(ownerFormSchema),
+  // Owner form (without BVN and DOB)
+  const ownerForm = useForm<UpdatedOwnerFormValues>({
+    resolver: zodResolver(updatedOwnerFormSchema),
     defaultValues: {
       firstName: "",
       lastName: "",
@@ -135,10 +137,21 @@ export default function AddVehiclePage() {
     resolver: zodResolver(vehicleFormSchema),
     defaultValues: {
       plateNumber: "",
+      color: "",
       category: "TRICYCLE",
+      type: "PASSENGER",
+      status: "ACTIVE",
       registeredLgaId: "",
+      stateCode: "",
       vin: "",
+      barcode: "",
+      fairFlexImei: "",
+      vCode: "",
+      securityCode: "",
+      startDate: "",
+      groupId: "",
       image: "",
+      blacklisted: false,
     },
   });
 
@@ -152,27 +165,12 @@ export default function AddVehiclePage() {
         );
       } catch (error) {
         console.log("Failed to fetch LGAs:", error);
-        toast.error("Error", {
-          description: "Failed to load LGAs. Please try again later.",
-        });
+        toast.error("Failed to load LGAs. Please try again later.");
       }
     };
 
     fetchLGAs();
-  }, [toast]);
-
-  const resetFormState = () => {
-    setIsLoading(false);
-    setRegistrationProgress(0);
-    setCreatedVehicle(null);
-    setSteps((prev) =>
-      prev.map((step) => ({
-        ...step,
-        completed: false,
-        current: step.id === "form",
-      }))
-    );
-  };
+  }, []);
 
   // Update step status
   const updateStepStatus = (
@@ -189,37 +187,24 @@ export default function AddVehiclePage() {
     );
   };
 
-  // Handle vehicle creation (first step)
+  // Handle vehicle creation
   const onSubmit = async () => {
     setIsLoading(true);
     setRegistrationProgress(0);
 
     try {
       // Validate all forms
-      const [ownerValid, nextOfKinValid, vehicleValid] = await Promise.all([
-        ownerForm.trigger(),
-        nextOfKinForm.trigger(),
-        vehicleForm.trigger(),
-      ]);
+      const ownerValid = await ownerForm.trigger();
+      const nextOfKinValid = await nextOfKinForm.trigger();
+      const vehicleValid = await vehicleForm.trigger();
 
-      if (!ownerValid) {
-        toast.error("Owner details are incomplete or invalid");
-        return; // Stop early if invalid
-      }
-
-      if (!nextOfKinValid) {
-        toast.error("Next of Kin details are incomplete or invalid");
-        return;
-      }
-
-      if (!vehicleValid) {
-        toast.error("Vehicle details are incomplete or invalid");
-        return;
+      if (!ownerValid || !nextOfKinValid || !vehicleValid) {
+        throw new Error("Please fill in all required fields correctly");
       }
 
       // Step 1: Form validation complete
       updateStepStatus("form", true);
-      setRegistrationProgress(25);
+      setRegistrationProgress(33);
 
       // Get form data
       const ownerData = ownerForm.getValues();
@@ -228,7 +213,7 @@ export default function AddVehiclePage() {
 
       // Step 2: Create vehicle with owner
       updateStepStatus("create", false, true);
-      setRegistrationProgress(50);
+      setRegistrationProgress(66);
 
       // Get the selected LGA name for address
       const selectedLga = lgas.find((lga) => lga.id === ownerData.lgaId);
@@ -251,61 +236,69 @@ export default function AddVehiclePage() {
             postal_code: ownerData.postalCode,
           },
           gender: ownerData.gender,
-          marital_status: ownerData.maritalStatus,
+          marital_status: ownerData.maritalStatus.toLowerCase(),
           whatsapp: ownerData.whatsappNumber,
           email: ownerData.email,
           nok_name: nextOfKinData.name,
           nok_phone: nextOfKinData.phone,
           nok_relationship: nextOfKinData.relationship,
           maiden_name: ownerData.maidenName,
+          // BVN and DOB will be collected in generate-account page
         },
+        stateCode: vehicleData.stateCode,
         lgaId: vehicleData.registeredLgaId,
+        color: vehicleData.color,
         image: vehicleData.image,
         status: vehicleData.status,
+        type: vehicleData.type,
         vin: vehicleData.vin,
+        trackerId: vehicleData.fairFlexImei,
+        fairFlexImei: vehicleData.fairFlexImei,
+        barcode: vehicleData.barcode,
+        vCode: vehicleData.vCode,
+        securityCode: vehicleData.securityCode,
+        startDate: vehicleData.startDate,
+        groupId: vehicleData.groupId,
         blacklisted: vehicleData.blacklisted,
       };
 
       // Create vehicle with owner
-      const vehicle = await createVehicleWithOwner(vehicleRequest);
+      const result = await createVehicleWithOwner(vehicleRequest);
 
-      if (!vehicle.success) {
-        toast.error("Registration Failed", {
-          description: vehicle.error
-            ? vehicle.error
-            : "Failed to register. Please try again.",
-        });
-        resetFormState();
-        setActiveTab("vehicle");
-        return null;
+      if (!result.success) {
+        throw new Error(result.error || "Failed to create vehicle");
       }
 
       // Step 3: Vehicle created successfully
-      updateStepStatus("create", false, true);
+      updateStepStatus("create", true);
+      updateStepStatus("complete", true, true);
       setRegistrationProgress(100);
-      setCreatedVehicle(vehicle);
-      console.log("Vehicle created:", vehicle);
 
-      // Show success message
-      toast.success("Success", {
-        description: "Vehicle and owner created successfully!",
-      });
-      if (createdVehicle?.id) {
-        router.push(`/vehicles/${createdVehicle.id}`);
-      } else {
-        router.push("/vehicles");
-      }
-      router.refresh();
+      toast.success("Vehicle and owner created successfully!");
+
+      // Redirect to generate account page
+      setTimeout(() => {
+        router.push(`/vehicles/${result.data.id}/generate-account`);
+      }, 1500);
     } catch (error) {
       console.log("Failed to create vehicle:", error);
-      toast.error("Registration Failed", {
-        description:
-          error instanceof Error
-            ? error.message
-            : "Failed to register. Please try again.",
-      });
-      resetFormState();
-      setActiveTab("vehicle");
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to register. Please try again."
+      );
+
+      // Reset progress
+      setRegistrationProgress(0);
+      setSteps((prev) =>
+        prev.map((step) => ({
+          ...step,
+          completed: false,
+          current: step.id === "form",
+        }))
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -316,22 +309,22 @@ export default function AddVehiclePage() {
   };
 
   return (
-    <div className="container mx-auto py-8 space-y-6">
+    <div className="container mx-auto py-4 px-4 sm:py-8 space-y-4 sm:space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Vehicle Owner Onboarding
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+            Vehicle Owner Registration
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground text-sm sm:text-base">
             Complete registration for vehicle owner and vehicle
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 w-full sm:w-auto">
           <Button
             variant="outline"
             onClick={() => router.back()}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 flex-1 sm:flex-none"
           >
             <ArrowLeft className="h-4 w-4" />
             Back
@@ -342,8 +335,8 @@ export default function AddVehiclePage() {
       {/* Registration Progress */}
       {(isLoading || registrationProgress > 0) && (
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+          <CardHeader className="pb-4">
+            <CardTitle className="flex items-center gap-2 text-lg">
               {isLoading ? (
                 <Loader2 className="h-5 w-5 animate-spin" />
               ) : (
@@ -359,19 +352,19 @@ export default function AddVehiclePage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <Progress value={registrationProgress} className="w-full" />
-            <div className="space-y-2">
+            <div className="space-y-3">
               {steps.map((step) => (
                 <div key={step.id} className="flex items-center gap-3">
                   {step.completed ? (
-                    <CheckCircle className="h-5 w-5 text-green-500" />
+                    <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
                   ) : step.current ? (
-                    <Loader2 className="h-5 w-5 animate-spin text-blue-500" />
+                    <Loader2 className="h-5 w-5 animate-spin text-blue-500 flex-shrink-0" />
                   ) : (
-                    <div className="h-5 w-5 rounded-full border-2 border-gray-300" />
+                    <div className="h-5 w-5 rounded-full border-2 border-gray-300 flex-shrink-0" />
                   )}
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <p
-                      className={`font-medium ${
+                      className={`font-medium text-sm ${
                         step.completed
                           ? "text-green-600"
                           : step.current
@@ -381,7 +374,7 @@ export default function AddVehiclePage() {
                     >
                       {step.title}
                     </p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs text-muted-foreground">
                       {step.description}
                     </p>
                   </div>
@@ -394,27 +387,40 @@ export default function AddVehiclePage() {
 
       {/* Registration Form */}
       {!isLoading && registrationProgress === 0 && (
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid grid-cols-4 w-full sm:w-auto">
-              <TabsTrigger value="owner" className="flex items-center gap-2">
-                <User className="h-4 w-4" />
-                Owner Info
+            <TabsList className="grid grid-cols-4 w-full h-auto p-1">
+              <TabsTrigger
+                value="owner"
+                className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-2 text-xs sm:text-sm"
+              >
+                <User className="h-4 w-4 flex-shrink-0" />
+                <span className="hidden sm:inline">Owner Info</span>
+                <span className="sm:hidden">Owner</span>
               </TabsTrigger>
               <TabsTrigger
                 value="nextofkin"
-                className="flex items-center gap-2"
+                className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-2 text-xs sm:text-sm"
               >
-                <Users className="h-4 w-4" />
-                Next of Kin
+                <Users className="h-4 w-4 flex-shrink-0" />
+                <span className="hidden sm:inline">Next of Kin</span>
+                <span className="sm:hidden">NOK</span>
               </TabsTrigger>
-              <TabsTrigger value="vehicle" className="flex items-center gap-2">
-                <Car className="h-4 w-4" />
-                Vehicle Info
+              <TabsTrigger
+                value="vehicle"
+                className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-2 text-xs sm:text-sm"
+              >
+                <Car className="h-4 w-4 flex-shrink-0" />
+                <span className="hidden sm:inline">Vehicle Info</span>
+                <span className="sm:hidden">Vehicle</span>
               </TabsTrigger>
-              <TabsTrigger value="review" className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4" />
-                Review
+              <TabsTrigger
+                value="review"
+                className="flex flex-col sm:flex-row items-center gap-1 sm:gap-2 py-2 px-2 text-xs sm:text-sm"
+              >
+                <CheckCircle className="h-4 w-4 flex-shrink-0" />
+                <span className="hidden sm:inline">Review</span>
+                <span className="sm:hidden">Review</span>
               </TabsTrigger>
             </TabsList>
 
@@ -422,67 +428,88 @@ export default function AddVehiclePage() {
             <TabsContent value="owner" className="space-y-4 mt-4">
               <Card>
                 <CardHeader>
-                  <CardTitle>Owner Information</CardTitle>
-                  <CardDescription>
+                  <CardTitle className="text-lg sm:text-xl">
+                    Owner Information
+                  </CardTitle>
+                  <CardDescription className="text-sm">
                     Enter the vehicle owner's personal details
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {/* Basic Information */}
                   <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Basic Information</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <h3 className="text-base sm:text-lg font-medium">
+                      Basic Information
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                       <div className="space-y-2">
-                        <Label htmlFor="firstName">First Name *</Label>
+                        <Label
+                          htmlFor="firstName"
+                          className="text-sm font-medium"
+                        >
+                          First Name *
+                        </Label>
                         <Input
                           id="firstName"
                           placeholder="Enter owner firstname"
+                          className="h-10"
                           {...ownerForm.register("firstName")}
                         />
                         {ownerForm.formState.errors.firstName && (
-                          <p className="text-sm text-destructive">
+                          <p className="text-xs text-destructive">
                             {ownerForm.formState.errors.firstName.message}
                           </p>
                         )}
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="lastName">Last Name *</Label>
+                        <Label
+                          htmlFor="lastName"
+                          className="text-sm font-medium"
+                        >
+                          Last Name *
+                        </Label>
                         <Input
                           id="lastName"
                           placeholder="Enter owner lastname"
+                          className="h-10"
                           {...ownerForm.register("lastName")}
                         />
                         {ownerForm.formState.errors.lastName && (
-                          <p className="text-sm text-destructive">
+                          <p className="text-xs text-destructive">
                             {ownerForm.formState.errors.lastName.message}
                           </p>
                         )}
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="phone">Phone *</Label>
+                        <Label htmlFor="phone" className="text-sm font-medium">
+                          Phone *
+                        </Label>
                         <Input
                           id="phone"
                           placeholder="+234"
+                          className="h-10"
                           {...ownerForm.register("phone")}
                         />
                         {ownerForm.formState.errors.phone && (
-                          <p className="text-sm text-destructive">
+                          <p className="text-xs text-destructive">
                             {ownerForm.formState.errors.phone.message}
                           </p>
                         )}
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="gender">Gender *</Label>
+                        <Label htmlFor="gender" className="text-sm font-medium">
+                          Gender *
+                        </Label>
                         <Select
                           onValueChange={(value) =>
                             ownerForm.setValue("gender", value as any)
                           }
                           defaultValue={ownerForm.watch("gender")}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="h-10">
                             <SelectValue placeholder="Select gender" />
                           </SelectTrigger>
                           <SelectContent>
@@ -499,14 +526,19 @@ export default function AddVehiclePage() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="maritalStatus">Marital Status *</Label>
+                        <Label
+                          htmlFor="maritalStatus"
+                          className="text-sm font-medium"
+                        >
+                          Marital Status *
+                        </Label>
                         <Select
                           onValueChange={(value) =>
                             ownerForm.setValue("maritalStatus", value as any)
                           }
                           defaultValue={ownerForm.watch("maritalStatus")}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="h-10">
                             <SelectValue placeholder="Select marital status" />
                           </SelectTrigger>
                           <SelectContent>
@@ -523,34 +555,49 @@ export default function AddVehiclePage() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="email">Email *</Label>
+                        <Label htmlFor="email" className="text-sm font-medium">
+                          Email *
+                        </Label>
                         <Input
                           id="email"
                           type="email"
                           placeholder="Enter email of owner"
+                          className="h-10"
                           {...ownerForm.register("email")}
                         />
                         {ownerForm.formState.errors.email && (
-                          <p className="text-sm text-destructive">
+                          <p className="text-xs text-destructive">
                             {ownerForm.formState.errors.email.message}
                           </p>
                         )}
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="whatsappNumber">WhatsApp Number</Label>
+                        <Label
+                          htmlFor="whatsappNumber"
+                          className="text-sm font-medium"
+                        >
+                          WhatsApp Number
+                        </Label>
                         <Input
                           id="whatsappNumber"
                           placeholder="Enter WhatsApp number"
+                          className="h-10"
                           {...ownerForm.register("whatsappNumber")}
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="maidenName">Maiden Name</Label>
+                        <Label
+                          htmlFor="maidenName"
+                          className="text-sm font-medium"
+                        >
+                          Maiden Name
+                        </Label>
                         <Input
                           id="maidenName"
                           placeholder="Enter maiden name if applicable"
+                          className="h-10"
                           {...ownerForm.register("maidenName")}
                         />
                       </div>
@@ -561,19 +608,25 @@ export default function AddVehiclePage() {
 
                   {/* Address Information */}
                   <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Address Information</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2 md:col-span-2">
-                        <Label htmlFor="residentialAddress">
+                    <h3 className="text-base sm:text-lg font-medium">
+                      Address Information
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                      <div className="space-y-2 sm:col-span-2">
+                        <Label
+                          htmlFor="residentialAddress"
+                          className="text-sm font-medium"
+                        >
                           Residential Address *
                         </Label>
                         <Input
                           id="residentialAddress"
                           placeholder="Enter address of owner"
+                          className="h-10"
                           {...ownerForm.register("residentialAddress")}
                         />
                         {ownerForm.formState.errors.residentialAddress && (
-                          <p className="text-sm text-destructive">
+                          <p className="text-xs text-destructive">
                             {
                               ownerForm.formState.errors.residentialAddress
                                 .message
@@ -583,28 +636,33 @@ export default function AddVehiclePage() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="city">City *</Label>
+                        <Label htmlFor="city" className="text-sm font-medium">
+                          City *
+                        </Label>
                         <Input
                           id="city"
                           placeholder="Enter city"
+                          className="h-10"
                           {...ownerForm.register("city")}
                         />
                         {ownerForm.formState.errors.city && (
-                          <p className="text-sm text-destructive">
+                          <p className="text-xs text-destructive">
                             {ownerForm.formState.errors.city.message}
                           </p>
                         )}
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="lgaId">LGA *</Label>
+                        <Label htmlFor="lgaId" className="text-sm font-medium">
+                          LGA *
+                        </Label>
                         <Select
                           onValueChange={(value) =>
                             ownerForm.setValue("lgaId", value)
                           }
                           defaultValue={ownerForm.watch("lgaId")}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="h-10">
                             <SelectValue placeholder="Select LGA" />
                           </SelectTrigger>
                           <SelectContent>
@@ -616,40 +674,57 @@ export default function AddVehiclePage() {
                           </SelectContent>
                         </Select>
                         {ownerForm.formState.errors.lgaId && (
-                          <p className="text-sm text-destructive">
+                          <p className="text-xs text-destructive">
                             {ownerForm.formState.errors.lgaId.message}
                           </p>
                         )}
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="country">Country *</Label>
+                        <Label
+                          htmlFor="country"
+                          className="text-sm font-medium"
+                        >
+                          Country *
+                        </Label>
                         <Input
                           id="country"
                           value="Nigeria"
                           disabled
+                          className="h-10 bg-muted"
                           {...ownerForm.register("country")}
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="postalCode">Postal Code</Label>
+                        <Label
+                          htmlFor="postalCode"
+                          className="text-sm font-medium"
+                        >
+                          Postal Code
+                        </Label>
                         <Input
                           id="postalCode"
                           placeholder="Enter postal code"
+                          className="h-10"
                           {...ownerForm.register("postalCode")}
                         />
                       </div>
                     </div>
                   </div>
                 </CardContent>
-                <CardFooter className="flex justify-between">
-                  <Button variant="outline" onClick={() => router.back()}>
+                <CardFooter className="flex flex-col sm:flex-row justify-between gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={() => router.back()}
+                    className="w-full sm:w-auto"
+                  >
                     Cancel
                   </Button>
                   <Button
                     type="button"
                     onClick={() => setActiveTab("nextofkin")}
+                    className="w-full sm:w-auto"
                   >
                     Next: Next of Kin
                   </Button>
@@ -661,66 +736,89 @@ export default function AddVehiclePage() {
             <TabsContent value="nextofkin" className="space-y-4 mt-4">
               <Card>
                 <CardHeader>
-                  <CardTitle>Next of Kin Information</CardTitle>
-                  <CardDescription>
+                  <CardTitle className="text-lg sm:text-xl">
+                    Next of Kin Information
+                  </CardTitle>
+                  <CardDescription className="text-sm">
                     Enter emergency contact details
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <div className="space-y-2">
-                      <Label htmlFor="nextOfKinName">Next of Kin Name *</Label>
+                      <Label
+                        htmlFor="nextOfKinName"
+                        className="text-sm font-medium"
+                      >
+                        Next of Kin Name *
+                      </Label>
                       <Input
                         id="nextOfKinName"
                         placeholder="Enter next of kin name"
+                        className="h-10"
                         {...nextOfKinForm.register("name")}
                       />
                       {nextOfKinForm.formState.errors.name && (
-                        <p className="text-sm text-destructive">
+                        <p className="text-xs text-destructive">
                           {nextOfKinForm.formState.errors.name.message}
                         </p>
                       )}
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="nextOfKinPhone">
+                      <Label
+                        htmlFor="nextOfKinPhone"
+                        className="text-sm font-medium"
+                      >
                         Next of Kin Phone *
                       </Label>
                       <Input
                         id="nextOfKinPhone"
                         placeholder="Enter next of kin phone"
+                        className="h-10"
                         {...nextOfKinForm.register("phone")}
                       />
                       {nextOfKinForm.formState.errors.phone && (
-                        <p className="text-sm text-destructive">
+                        <p className="text-xs text-destructive">
                           {nextOfKinForm.formState.errors.phone.message}
                         </p>
                       )}
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="relationship">Relationship *</Label>
+                    <div className="space-y-2 sm:col-span-2">
+                      <Label
+                        htmlFor="relationship"
+                        className="text-sm font-medium"
+                      >
+                        Relationship *
+                      </Label>
                       <Input
                         id="relationship"
                         placeholder="Enter relationship (e.g., Sibling)"
+                        className="h-10"
                         {...nextOfKinForm.register("relationship")}
                       />
                       {nextOfKinForm.formState.errors.relationship && (
-                        <p className="text-sm text-destructive">
+                        <p className="text-xs text-destructive">
                           {nextOfKinForm.formState.errors.relationship.message}
                         </p>
                       )}
                     </div>
                   </div>
                 </CardContent>
-                <CardFooter className="flex justify-between">
+                <CardFooter className="flex flex-col sm:flex-row justify-between gap-3">
                   <Button
                     variant="outline"
                     onClick={() => setActiveTab("owner")}
+                    className="w-full sm:w-auto"
                   >
                     Back
                   </Button>
-                  <Button type="button" onClick={() => setActiveTab("vehicle")}>
+                  <Button
+                    type="button"
+                    onClick={() => setActiveTab("vehicle")}
+                    className="w-full sm:w-auto"
+                  >
                     Next: Vehicle Info
                   </Button>
                 </CardFooter>
@@ -731,15 +829,17 @@ export default function AddVehiclePage() {
             <TabsContent value="vehicle" className="space-y-4 mt-4">
               <Card>
                 <CardHeader>
-                  <CardTitle>Vehicle Information</CardTitle>
-                  <CardDescription>
+                  <CardTitle className="text-lg sm:text-xl">
+                    Vehicle Information
+                  </CardTitle>
+                  <CardDescription className="text-sm">
                     Enter vehicle details and specifications
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {/* Vehicle Image */}
                   <div className="space-y-4">
-                    <Label>Vehicle Image</Label>
+                    <Label className="text-sm font-medium">Vehicle Image</Label>
                     <AvatarUploader
                       onAvatarUpload={handleVehicleImageUpload}
                       currentAvatarUrl={vehicleForm.watch("image")}
@@ -749,30 +849,55 @@ export default function AddVehiclePage() {
                   <Separator />
 
                   {/* Basic Vehicle Details */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
                     <div className="space-y-2">
-                      <Label htmlFor="plateNumber">Plate Number *</Label>
+                      <Label
+                        htmlFor="plateNumber"
+                        className="text-sm font-medium"
+                      >
+                        Plate Number *
+                      </Label>
                       <Input
                         id="plateNumber"
                         placeholder="Enter plate number"
+                        className="h-10"
                         {...vehicleForm.register("plateNumber")}
                       />
                       {vehicleForm.formState.errors.plateNumber && (
-                        <p className="text-sm text-destructive">
+                        <p className="text-xs text-destructive">
                           {vehicleForm.formState.errors.plateNumber.message}
                         </p>
                       )}
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="category">Category *</Label>
+                      <Label htmlFor="color" className="text-sm font-medium">
+                        Color *
+                      </Label>
+                      <Input
+                        id="color"
+                        placeholder="Enter vehicle color"
+                        className="h-10"
+                        {...vehicleForm.register("color")}
+                      />
+                      {vehicleForm.formState.errors.color && (
+                        <p className="text-xs text-destructive">
+                          {vehicleForm.formState.errors.color.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="category" className="text-sm font-medium">
+                        Category *
+                      </Label>
                       <Select
                         onValueChange={(value) =>
                           vehicleForm.setValue("category", value)
                         }
                         defaultValue={vehicleForm.watch("category")}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="h-10">
                           <SelectValue placeholder="Select category" />
                         </SelectTrigger>
                         <SelectContent>
@@ -786,14 +911,62 @@ export default function AddVehiclePage() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="registeredLgaId">Registered LGA *</Label>
+                      <Label htmlFor="type" className="text-sm font-medium">
+                        Type *
+                      </Label>
+                      <Select
+                        onValueChange={(value) =>
+                          vehicleForm.setValue("type", value)
+                        }
+                        defaultValue={vehicleForm.watch("type")}
+                      >
+                        <SelectTrigger className="h-10">
+                          <SelectValue placeholder="Select type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {VEHICLE_CATEGORIES.map((option) => (
+                            <SelectItem key={option} value={option}>
+                              {option.replace("_", " ")}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="stateCode"
+                        className="text-sm font-medium"
+                      >
+                        State Code *
+                      </Label>
+                      <Input
+                        id="stateCode"
+                        placeholder="Enter state code (e.g., LA, AB)"
+                        className="h-10"
+                        {...vehicleForm.register("stateCode")}
+                      />
+                      {vehicleForm.formState.errors.stateCode && (
+                        <p className="text-xs text-destructive">
+                          {vehicleForm.formState.errors.stateCode.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="registeredLgaId"
+                        className="text-sm font-medium"
+                      >
+                        Registered LGA *
+                      </Label>
                       <Select
                         onValueChange={(value) =>
                           vehicleForm.setValue("registeredLgaId", value)
                         }
                         defaultValue={vehicleForm.watch("registeredLgaId")}
                       >
-                        <SelectTrigger>
+                        <SelectTrigger className="h-10">
                           <SelectValue placeholder="Select LGA for registration" />
                         </SelectTrigger>
                         <SelectContent>
@@ -805,7 +978,7 @@ export default function AddVehiclePage() {
                         </SelectContent>
                       </Select>
                       {vehicleForm.formState.errors.registeredLgaId && (
-                        <p className="text-sm text-destructive">
+                        <p className="text-xs text-destructive">
                           {vehicleForm.formState.errors.registeredLgaId.message}
                         </p>
                       )}
@@ -813,11 +986,29 @@ export default function AddVehiclePage() {
 
                     {/* Technical Details */}
                     <div className="space-y-2">
-                      <Label htmlFor="vin">VIN</Label>
+                      <Label htmlFor="vin" className="text-sm font-medium">
+                        VIN
+                      </Label>
                       <Input
                         id="vin"
                         placeholder="Enter VIN"
+                        className="h-10"
                         {...vehicleForm.register("vin")}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label
+                        htmlFor="fairFlexImei"
+                        className="text-sm font-medium"
+                      >
+                        FairFlex IMEI / Tracker ID
+                      </Label>
+                      <Input
+                        id="fairFlexImei"
+                        placeholder="Enter FairFlex IMEI"
+                        className="h-10"
+                        {...vehicleForm.register("fairFlexImei")}
                       />
                     </div>
                   </div>
@@ -843,14 +1034,19 @@ export default function AddVehiclePage() {
                     </div>
                   </div>
                 </CardContent>
-                <CardFooter className="flex justify-between">
+                <CardFooter className="flex flex-col sm:flex-row justify-between gap-3">
                   <Button
                     variant="outline"
                     onClick={() => setActiveTab("nextofkin")}
+                    className="w-full sm:w-auto"
                   >
                     Back
                   </Button>
-                  <Button type="button" onClick={() => setActiveTab("review")}>
+                  <Button
+                    type="button"
+                    onClick={() => setActiveTab("review")}
+                    className="w-full sm:w-auto"
+                  >
                     Next: Review
                   </Button>
                 </CardFooter>
@@ -861,36 +1057,37 @@ export default function AddVehiclePage() {
             <TabsContent value="review" className="space-y-4 mt-4">
               <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                  <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
                     <CheckCircle className="h-5 w-5" />
                     Review & Submit Registration
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-sm">
                     Review all information and submit the registration
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <Alert>
                     <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>
+                    <AlertDescription className="text-sm">
                       Please review all information carefully. Once submitted,
                       the owner and vehicle records will be created in the
-                      system. You'll then have the option to create a virtual
+                      system. You'll then be redirected to create a virtual
                       account for payments.
                     </AlertDescription>
                   </Alert>
                 </CardContent>
-                <CardFooter className="flex justify-between">
+                <CardFooter className="flex flex-col sm:flex-row justify-between gap-3">
                   <Button
                     variant="outline"
                     onClick={() => setActiveTab("vehicle")}
+                    className="w-full sm:w-auto"
                   >
                     Back
                   </Button>
                   <Button
                     onClick={onSubmit}
                     disabled={isLoading}
-                    className="flex items-center gap-2"
+                    className="flex items-center gap-2 w-full sm:w-auto"
                   >
                     {isLoading ? (
                       <Loader2 className="h-4 w-4 animate-spin" />

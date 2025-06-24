@@ -53,13 +53,17 @@ export default function VehicleDetailsTab({ vehicle }: VehicleDetailsTabProps) {
               <Label className="text-sm font-medium text-muted-foreground">
                 Type
               </Label>
-              <p className="text-sm">{vehicle.type.replace(/_/g, " ")}</p>
+              <p className="text-sm">
+                {vehicle.type ? vehicle.type.replace(/_/g, " ") : ""}
+              </p>
             </div>
             <div className="space-y-1">
               <Label className="text-sm font-medium text-muted-foreground">
                 State Code
               </Label>
-              <p className="text-sm">{vehicle.stateCode}</p>
+              <p className="text-sm">
+                {vehicle.stateCode ? vehicle.stateCode.replace(/_/g, " ") : ""}
+              </p>
             </div>
             <div className="space-y-1">
               <Label className="text-sm font-medium text-muted-foreground">

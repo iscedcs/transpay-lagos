@@ -20,7 +20,7 @@ export const getVehicles = async (page?: string, limit?: string) => {
   const res = await fetch(url, { headers, cache: "no-store" });
   if (!res.ok) {
     const errorText = await res.text();
-    console.error(
+    console.log(
       `Failed to fetch vehicles: ${res.status} ${res.statusText}`,
       errorText
     );
@@ -85,7 +85,7 @@ export const getVehicleById = async (id: string) => {
     const res = await fetch(url, { headers, cache: "no-store" });
     // console.log("Response Status:", res.status, res.statusText);
     if (!res.ok) {
-      console.error(`Failed to fetch vehicle: ${res.status} ${res.statusText}`);
+      console.log(`Failed to fetch vehicle: ${res.status} ${res.statusText}`);
       return undefined;
     }
 
@@ -93,7 +93,7 @@ export const getVehicleById = async (id: string) => {
     // console.log("API Result:", result);
     if (!result.success) {
       // Check result.success instead of result.status
-      console.error("API returned success false:", result.message);
+      console.log("API returned success false:", result.message);
       return undefined;
     }
 
@@ -110,7 +110,7 @@ export const getVehicleById = async (id: string) => {
 
     return vehicle;
   } catch (error: any) {
-    console.error("Error fetching vehicle:", error.message);
+    console.log("Error fetching vehicle:", error.message);
     return undefined;
   }
 };
@@ -172,7 +172,7 @@ export const getVehicleByTCodeOrPlateNumber = async (id: string) => {
     }
     return existingVehicle;
   } catch (error) {
-    console.error("Error fetching or updating vehicle:", error);
+    console.log("Error fetching or updating vehicle:", error);
     return undefined;
   }
 };

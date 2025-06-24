@@ -115,6 +115,14 @@ export type VehicleFilter = {
   search?: string;
 };
 
+export interface SingleVehicleResponse {
+  success: boolean;
+  message: string;
+  data: {
+    data: Vehicle;
+  };
+}
+
 const GetVehiclesSchema = z.object({
   limit: z.number().optional().default(10),
   offset: z.number().optional().default(0),
@@ -129,16 +137,16 @@ type GetVehiclesParams = z.infer<typeof GetVehiclesSchema>;
 
 // Vehicle stats response interface
 export interface VehicleStatsResponse {
-  success: boolean
-  message: string
+  success: boolean;
+  message: string;
   data: {
-    total: number
-    active: number
-    blacklisted: number
-    suspended: number
-    pending: number
-    deleted: number
-  }
+    total: number;
+    active: number;
+    blacklisted: number;
+    suspended: number;
+    pending: number;
+    deleted: number;
+  };
 }
 
 /**
@@ -162,22 +170,26 @@ export async function getVehicleStats(): Promise<VehicleStatsResponse> {
         Authorization: `Bearer ${token}`,
       },
       cache: "no-store", // Ensure we get fresh data
-    })
+    });
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch vehicle stats: ${response.status} ${response.statusText}`)
+      throw new Error(
+        `Failed to fetch vehicle stats: ${response.status} ${response.statusText}`
+      );
     }
 
-    const data: VehicleStatsResponse = await response.json()
+    const data: VehicleStatsResponse = await response.json();
 
     if (!data.success) {
-      throw new Error(data.message || "Failed to fetch vehicle stats")
+      throw new Error(data.message || "Failed to fetch vehicle stats");
     }
 
-    return data
+    return data;
   } catch (error) {
-    console.error("Error fetching vehicle stats:", error)
-    throw new Error(error instanceof Error ? error.message : "Failed to fetch vehicle stats")
+    console.log("Error fetching vehicle stats:", error);
+    throw new Error(
+      error instanceof Error ? error.message : "Failed to fetch vehicle stats"
+    );
   }
 }
 
@@ -224,7 +236,7 @@ export async function updateVehicle(
 
     return data.data;
   } catch (error) {
-    console.error("Error updating vehicle:", error);
+    console.log("Error updating vehicle:", error);
     throw new Error(
       error instanceof Error ? error.message : "Failed to update vehicle"
     );
@@ -286,7 +298,7 @@ export async function getVehicles(
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error fetching vehicles:", error);
+    console.log("Error fetching vehicles:", error);
     throw new Error(
       error instanceof Error ? error.message : "Failed to fetch vehicles"
     );
@@ -295,15 +307,18 @@ export async function getVehicles(
 
 export async function createVehicleWithOwner(
   vehicleData: CreateVehicleRequest
-): Promise<Vehicle> {
+): Promise<
+  { success: true; data: Vehicle } | { success: false; error: string }
+> {
   try {
     const session = await auth();
     if (!session || !session.user) {
-      throw new Error("Unauthorized access: No session found");
+      return { success: false, error: "Unauthorized access: No session found" };
     }
+
     const token = session?.user.access_token;
     if (!token) {
-      throw new Error("Unauthorized access: No token found");
+      return { success: false, error: "Unauthorized access: No token found" };
     }
 
     const response = await fetch(`${API}/api/vehicles`, {
@@ -317,28 +332,35 @@ export async function createVehicleWithOwner(
     });
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(
-        errorData.message ||
-          `Failed to create vehicle: ${response.status} ${response.statusText}`
-      );
+      const errorData = await response.json().catch(() => ({}));
+      return {
+        success: false,
+        error:
+          errorData.message ||
+          `Failed to create vehicle: ${response.status} ${response.statusText}`,
+      };
     }
 
     const data = await response.json();
 
     if (!data.success) {
-      throw new Error(data.message || "Failed to create vehicle");
+      return {
+        success: false,
+        error: data.message || "Failed to create vehicle",
+      };
     }
 
     // Revalidate the vehicles page to reflect the new vehicle
     revalidatePath("/vehicles");
 
-    return data.data;
+    return { success: true, data: data.data };
   } catch (error) {
     console.error("Error creating vehicle:", error);
-    throw new Error(
-      error instanceof Error ? error.message : "Failed to create vehicle"
-    );
+    return {
+      success: false,
+      error:
+        error instanceof Error ? error.message : "Failed to create vehicle",
+    };
   }
 }
 
@@ -382,7 +404,7 @@ export async function createVehicleVirtualAccount(walletData: {
 
     return data.data;
   } catch (error) {
-    console.error("Error creating virtual account:", error);
+    console.log("Error creating virtual account:", error);
     throw new Error(
       error instanceof Error
         ? error.message
@@ -391,7 +413,11 @@ export async function createVehicleVirtualAccount(walletData: {
   }
 }
 
-export async function getVehicleById(id: string): Promise<Vehicle> {
+export async function getVehicleById(
+  id: string
+): Promise<
+  { success: true; data: Vehicle } | { success: false; error: string }
+> {
   try {
     const session = await auth();
     const token = session?.user.access_token;
@@ -403,18 +429,32 @@ export async function getVehicleById(id: string): Promise<Vehicle> {
       cache: "no-store",
     });
 
+    if (!response.ok) {
+      if (response.status === 404) {
+        return { success: false, error: "Vehicle not found" };
+      }
+      return {
+        success: false,
+        error: `Failed to fetch vehicle: ${response.status} ${response.statusText}`,
+      };
+    }
+
     const data = await response.json();
 
     if (!data.success || !data.data) {
-      throw new Error(data.message || "Failed to fetch vehicle");
+      return {
+        success: false,
+        error: data.message || "Failed to fetch vehicle",
+      };
     }
 
-    return data.data;
+    return { success: true, data: data.data };
   } catch (error) {
-    console.error("Error fetching vehicle by ID:", error);
-    throw new Error(
-      error instanceof Error ? error.message : "Failed to fetch vehicle"
-    );
+    console.log("Error fetching vehicle by ID:", error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Failed to fetch vehicle",
+    };
   }
 }
 
@@ -438,7 +478,7 @@ export async function getVehicleByBarcode(barcode: string): Promise<Vehicle> {
 
     return data.data;
   } catch (error) {
-    console.error("Error fetching vehicle by ID:", error);
+    console.log("Error fetching vehicle by ID:", error);
     throw new Error(
       error instanceof Error ? error.message : "Failed to fetch vehicle"
     );
@@ -501,7 +541,7 @@ export const allVehicles = async ({
       },
     };
   } catch (error) {
-    console.error("Error fetching vehicles:", error);
+    console.log("Error fetching vehicles:", error);
     return { error: "Something went wrong!!!" };
   }
 };
@@ -558,7 +598,7 @@ export const allVehiclesRegisteredByAgentId = async (userId: string) => {
       },
     };
   } catch (error) {
-    console.error(error);
+    console.log(error);
     return { error: "Something went wrong!!!" };
   }
 };
@@ -604,7 +644,7 @@ export const allVehiclesByAgentId = async (userId: string) => {
       },
     };
   } catch (error) {
-    console.error(error);
+    console.log(error);
     return { error: "Something went wrong!!!" };
   }
 };
@@ -688,7 +728,7 @@ export const getVehicleCategoriesData = async (
     // Return the counts for the predefined categories
     return categoryCounts;
   } catch (error) {
-    console.error("Error fetching vehicle data: ", error);
+    console.log("Error fetching vehicle data: ", error);
     throw new Error("Failed to get vehicle category data");
   }
 };
@@ -720,7 +760,7 @@ export const getVehicleCategoriesCounts = async () => {
       categories: categoryCounts, // Count of vehicles per category
     };
   } catch (error) {
-    console.error("Error fetching vehicle data: ", error);
+    console.log("Error fetching vehicle data: ", error);
     throw new Error("Failed to get vehicle category data");
   }
 };

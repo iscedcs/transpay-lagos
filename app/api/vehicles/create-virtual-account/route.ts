@@ -42,7 +42,7 @@ export async function POST(request: Request) {
       data: result,
     });
   } catch (error) {
-    console.error("Error creating virtual account:", error);
+    console.log("Error creating virtual account:", error);
     return NextResponse.json(
       {
         success: false,

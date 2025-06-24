@@ -124,7 +124,7 @@ export function VehicleRoutesManager({
         setLgas(result.data);
       }
     } catch (error) {
-      console.error("Error loading LGAs:", error);
+      console.log("Error loading LGAs:", error);
     }
   };
 

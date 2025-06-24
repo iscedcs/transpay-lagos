@@ -17,7 +17,6 @@ export const ownerFormSchema = z.object({
     .string()
     .min(1, "Phone number is required")
     .regex(/^\+234\d{10}$/, "Please enter a valid Nigerian phone number"),
-  dateOfBirth: z.string().min(1, "Date of birth is required"),
   gender: z.enum(["MALE", "FEMALE", "OTHERS"], {
     required_error: "Please select a gender",
   }),
@@ -34,12 +33,6 @@ export const ownerFormSchema = z.object({
   lgaId: z.string().min(1, "LGA is required"),
   country: z.string().default("Nigeria"),
   postalCode: z.string().optional(),
-
-  // Financial Information
-  bvn: z
-    .string()
-    .length(11, "BVN must be exactly 11 digits")
-    .regex(/^\d{11}$/, "BVN must contain only numbers"),
 });
 
 // Next of kin validation schema
@@ -55,19 +48,12 @@ export const nextOfKinSchema = z.object({
 // Vehicle form validation schema
 export const vehicleFormSchema = z.object({
   plateNumber: z.string().min(1, "Plate number is required"),
-  color: z.string().min(1, "Color is required"),
   category: z.string().min(1, "Category is required"),
-  type: z.string().min(1, "Type is required"),
-  status: z.enum(["ACTIVE", "INACTIVE", "SUSPENDED", "PENDING"]),
+  status: z
+    .enum(["ACTIVE", "INACTIVE", "SUSPENDED", "PENDING"])
+    .default("ACTIVE"),
   registeredLgaId: z.string().min(1, "LGA is required"),
-  stateCode: z.string().min(1, "State code is required"),
   vin: z.string().optional(),
-  barcode: z.string().optional(),
-  fairFlexImei: z.string().optional(),
-  vCode: z.string().optional(),
-  securityCode: z.string().optional(),
-  startDate: z.string().optional(),
-  groupId: z.string().optional(),
   image: z.string().optional(),
   blacklisted: z.boolean().default(false),
 });
@@ -143,22 +129,11 @@ export interface CreateVehicleRequest {
     nok_phone: string;
     nok_relationship: string;
     maiden_name?: string;
-    bvn?: string;
     dateOfBirth?: string;
   };
-  stateCode: string;
   lgaId: string;
-  color: string;
   image?: string;
   status: "ACTIVE" | "INACTIVE" | "SUSPENDED" | "PENDING";
-  type: string;
   vin?: string;
-  trackerId?: string;
-  fairFlexImei?: string;
-  barcode?: string;
-  vCode?: string;
-  securityCode?: string;
-  startDate?: string;
-  groupId?: string;
   blacklisted?: boolean;
 }

@@ -8,6 +8,7 @@ import {
   Loader2,
   Save,
   ArrowLeft,
+  CreditCard,
   CheckCircle,
   AlertCircle,
   User,
@@ -38,6 +39,24 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Progress } from "@/components/ui/progress";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useToast } from "@/hooks/use-toast";
+import ImageUploader from "@/components/image-uploader";
+import {
+  createVehicleWithOwner,
+  createVehicleVirtualAccount,
+  type CreateVehicleRequest,
+} from "@/app/actions/vehicles";
+import { getLGAs } from "@/app/actions/lgas";
+import {
   ownerFormSchema,
   nextOfKinSchema,
   vehicleFormSchema,
@@ -46,13 +65,9 @@ import {
   type VehicleFormValues,
   genderOptions,
   maritalStatusOptions,
-  CreateVehicleRequest,
-} from "../vehicle-form-validation";
-import { getLGAs } from "@/actions/lga";
-import { toast } from "sonner";
-import { createVehicleWithOwner } from "@/actions/vehicles";
-import { VEHICLE_CATEGORIES } from "@/lib/const";
-import AvatarUploader from "@/components/shared/avatar-uploader";
+  vehicleCategoryOptions,
+  vehicleTypeOptions,
+} from "@/components/vehicle-form-validation";
 
 interface RegistrationStep {
   id: string;
@@ -64,11 +79,21 @@ interface RegistrationStep {
 
 export default function AddVehiclePage() {
   const router = useRouter();
+  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [lgas, setLgas] = useState<{ id: string; name: string }[]>([]);
   const [activeTab, setActiveTab] = useState("owner");
   const [registrationProgress, setRegistrationProgress] = useState(0);
   const [createdVehicle, setCreatedVehicle] = useState<any>(null);
+  const [showVirtualAccountDialog, setShowVirtualAccountDialog] =
+    useState(false);
+  const [isCreatingVirtualAccount, setIsCreatingVirtualAccount] =
+    useState(false);
+  const [virtualAccountError, setVirtualAccountError] = useState<string | null>(
+    null
+  );
+
+  // Registration steps
   const [steps, setSteps] = useState<RegistrationStep[]>([
     {
       id: "form",
@@ -107,6 +132,7 @@ export default function AddVehiclePage() {
       firstName: "",
       lastName: "",
       phone: "+234",
+      dateOfBirth: "",
       gender: "MALE",
       maritalStatus: "SINGLE",
       email: "",
@@ -117,6 +143,7 @@ export default function AddVehiclePage() {
       lgaId: "",
       country: "Nigeria",
       postalCode: "",
+      bvn: "",
     },
   });
 
@@ -135,10 +162,21 @@ export default function AddVehiclePage() {
     resolver: zodResolver(vehicleFormSchema),
     defaultValues: {
       plateNumber: "",
+      color: "",
       category: "TRICYCLE",
+      type: "PASSENGER",
+      status: "PENDING",
       registeredLgaId: "",
+      stateCode: "",
       vin: "",
+      barcode: "",
+      fairFlexImei: "",
+      vCode: "",
+      securityCode: "",
+      startDate: "",
+      groupId: "",
       image: "",
+      blacklisted: false,
     },
   });
 
@@ -146,33 +184,22 @@ export default function AddVehiclePage() {
   useEffect(() => {
     const fetchLGAs = async () => {
       try {
-        const lgaResponse = await getLGAs({ limit: 50, page: 1 });
+        const lgaResponse = await getLGAs({ limit: 100, page: 1 });
         setLgas(
           lgaResponse.data.map((lga) => ({ id: lga.id, name: lga.name }))
         );
       } catch (error) {
         console.log("Failed to fetch LGAs:", error);
-        toast.error("Error", {
+        toast({
+          title: "Error",
           description: "Failed to load LGAs. Please try again later.",
+          variant: "destructive",
         });
       }
     };
 
     fetchLGAs();
   }, [toast]);
-
-  const resetFormState = () => {
-    setIsLoading(false);
-    setRegistrationProgress(0);
-    setCreatedVehicle(null);
-    setSteps((prev) =>
-      prev.map((step) => ({
-        ...step,
-        completed: false,
-        current: step.id === "form",
-      }))
-    );
-  };
 
   // Update step status
   const updateStepStatus = (
@@ -189,6 +216,19 @@ export default function AddVehiclePage() {
     );
   };
 
+  const formatVehicleCategory = (category: string) => {
+    switch (category) {
+      case "TRICYCLE":
+        return "Tricycle";
+      case "MOTORCYCLE":
+        return "Motorcycle";
+      case "CAR":
+        return "Car";
+      default:
+        return "N/A";
+    }
+  };
+
   // Handle vehicle creation (first step)
   const onSubmit = async () => {
     setIsLoading(true);
@@ -196,25 +236,12 @@ export default function AddVehiclePage() {
 
     try {
       // Validate all forms
-      const [ownerValid, nextOfKinValid, vehicleValid] = await Promise.all([
-        ownerForm.trigger(),
-        nextOfKinForm.trigger(),
-        vehicleForm.trigger(),
-      ]);
+      const ownerValid = await ownerForm.trigger();
+      const nextOfKinValid = await nextOfKinForm.trigger();
+      const vehicleValid = await vehicleForm.trigger();
 
-      if (!ownerValid) {
-        toast.error("Owner details are incomplete or invalid");
-        return; // Stop early if invalid
-      }
-
-      if (!nextOfKinValid) {
-        toast.error("Next of Kin details are incomplete or invalid");
-        return;
-      }
-
-      if (!vehicleValid) {
-        toast.error("Vehicle details are incomplete or invalid");
-        return;
+      if (!ownerValid || !nextOfKinValid || !vehicleValid) {
+        throw new Error("Please fill in all required fields correctly");
       }
 
       // Step 1: Form validation complete
@@ -245,72 +272,160 @@ export default function AddVehiclePage() {
             text: ownerData.residentialAddress,
             lga: selectedLga?.name || "",
             city: ownerData.city,
-            state: "Edo", // You might want to make this dynamic
+            state: "Lagos", // You might want to make this dynamic
             unit: selectedLga?.name || "",
-            country: "Nigeria",
+            country: ownerData.country,
             postal_code: ownerData.postalCode,
           },
           gender: ownerData.gender,
-          marital_status: ownerData.maritalStatus,
+          marital_status: ownerData.maritalStatus.toLowerCase(),
           whatsapp: ownerData.whatsappNumber,
           email: ownerData.email,
           nok_name: nextOfKinData.name,
           nok_phone: nextOfKinData.phone,
           nok_relationship: nextOfKinData.relationship,
           maiden_name: ownerData.maidenName,
+          bvn: ownerData.bvn,
+          dateOfBirth: ownerData.dateOfBirth,
         },
+        stateCode: vehicleData.stateCode,
         lgaId: vehicleData.registeredLgaId,
+        color: vehicleData.color,
         image: vehicleData.image,
         status: vehicleData.status,
+        type: vehicleData.type,
         vin: vehicleData.vin,
+        trackerId: vehicleData.fairFlexImei, // Using fairFlexImei as trackerId
+        fairFlexImei: vehicleData.fairFlexImei,
+        barcode: vehicleData.barcode,
+        vCode: vehicleData.vCode,
+        securityCode: vehicleData.securityCode,
+        startDate: vehicleData.startDate,
+        groupId: vehicleData.groupId,
         blacklisted: vehicleData.blacklisted,
       };
 
       // Create vehicle with owner
       const vehicle = await createVehicleWithOwner(vehicleRequest);
 
-      if (!vehicle.success) {
-        toast.error("Registration Failed", {
-          description: vehicle.error
-            ? vehicle.error
-            : "Failed to register. Please try again.",
-        });
-        resetFormState();
-        setActiveTab("vehicle");
-        return null;
-      }
-
       // Step 3: Vehicle created successfully
-      updateStepStatus("create", false, true);
-      setRegistrationProgress(100);
+      updateStepStatus("create", true);
+      setRegistrationProgress(75);
       setCreatedVehicle(vehicle);
-      console.log("Vehicle created:", vehicle);
 
       // Show success message
-      toast.success("Success", {
+      toast({
+        title: "Success",
         description: "Vehicle and owner created successfully!",
       });
-      if (createdVehicle?.id) {
-        router.push(`/vehicles/${createdVehicle.id}`);
-      } else {
-        router.push("/vehicles");
-      }
-      router.refresh();
+
+      // Show virtual account creation dialog
+      setShowVirtualAccountDialog(true);
     } catch (error) {
       console.log("Failed to create vehicle:", error);
-      toast.error("Registration Failed", {
+      toast({
+        title: "Registration Failed",
         description:
           error instanceof Error
             ? error.message
             : "Failed to register. Please try again.",
+        variant: "destructive",
       });
-      resetFormState();
-      setActiveTab("vehicle");
+
+      // Reset progress
+      setRegistrationProgress(0);
+      setSteps((prev) =>
+        prev.map((step) => ({
+          ...step,
+          completed: false,
+          current: step.id === "form",
+        }))
+      );
+    } finally {
+      setIsLoading(false);
+      setTimeout(() => {
+        if (createdVehicle?.id) {
+          router.push(`/vehicles/${createdVehicle.id}`);
+        } else {
+          router.push("/vehicles");
+        }
+        router.refresh();
+      }, 2000);
     }
   };
 
+  // Handle virtual account creation
+  const handleCreateVirtualAccount = async () => {
+    setIsCreatingVirtualAccount(true);
+    setVirtualAccountError(null); // Reset any previous errors
+
+    try {
+      const ownerData = ownerForm.getValues();
+
+      updateStepStatus("wallet", false, true);
+      setRegistrationProgress(90);
+
+      // Create virtual account
+      await createVehicleVirtualAccount({
+        walletId: createdVehicle.id,
+        bvn: ownerData.bvn,
+        dob: ownerData.dateOfBirth,
+      });
+
+      updateStepStatus("wallet", true);
+      updateStepStatus("complete", true, true);
+      setRegistrationProgress(100);
+
+      toast({
+        title: "Success",
+        description: "Virtual account created successfully!",
+      });
+
+      // Close dialog and redirect
+      setShowVirtualAccountDialog(false);
+      setTimeout(() => {
+        router.push(`/vehicles/${createdVehicle.id}`);
+        router.refresh();
+      }, 2000);
+    } catch (error) {
+      console.log("Failed to create virtual account:", error);
+      setVirtualAccountError(
+        error instanceof Error
+          ? error.message
+          : "Failed to create virtual account."
+      );
+
+      // Don't close the dialog, allow user to try again or skip
+      toast({
+        title: "Virtual Account Creation Failed",
+        description: "You can try again or continue without a virtual account.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsCreatingVirtualAccount(false);
+    }
+  };
+
+  // Handle skip virtual account
+  const handleSkipVirtualAccount = () => {
+    updateStepStatus("complete", true, true);
+    setRegistrationProgress(100);
+    setShowVirtualAccountDialog(false);
+
+    toast({
+      title: "Registration Complete",
+      description: "Vehicle registration completed successfully!",
+    });
+
+    setTimeout(() => {
+      // Redirect to the vehicle detail page instead of the list
+      router.push(`/vehicles/${createdVehicle.id}`);
+      router.refresh();
+    }, 2000);
+  };
+
   // Handle vehicle image upload
-  const handleVehicleImageUpload = async (imageUrl: string) => {
+  const handleVehicleImageUpload = (imageUrl: string) => {
     vehicleForm.setValue("image", imageUrl);
     return { success: "Vehicle image uploaded successfully" };
   };
@@ -391,6 +506,80 @@ export default function AddVehiclePage() {
           </CardContent>
         </Card>
       )}
+
+      {/* Virtual Account Creation Dialog */}
+      <AlertDialog
+        open={showVirtualAccountDialog}
+        onOpenChange={setShowVirtualAccountDialog}
+      >
+        <AlertDialogContent className="max-w-md">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <CreditCard className="h-5 w-5" />
+              Create Virtual Account?
+            </AlertDialogTitle>
+            <AlertDialogDescription className="space-y-2">
+              <p>Vehicle and owner have been created successfully!</p>
+
+              {/* Vehicle Information Summary */}
+              <div className="mt-4 p-3 bg-muted rounded-md">
+                <h4 className="font-medium mb-2">Vehicle Information:</h4>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div className="font-medium">Plate Number:</div>
+                  <div>{createdVehicle?.plateNumber || "N/A"}</div>
+                  <div className="font-medium">Category:</div>
+                  <div>
+                    {formatVehicleCategory(createdVehicle?.category || "")}
+                  </div>
+                  <div className="font-medium">Color:</div>
+                  <div>{createdVehicle?.color || "N/A"}</div>
+                  <div className="font-medium">ID:</div>
+                  <div className="truncate">{createdVehicle?.id || "N/A"}</div>
+                </div>
+              </div>
+
+              <p className="mt-2">
+                Would you like to create a virtual account for payments using
+                the provided BVN ({ownerForm.watch("bvn")}) and date of birth (
+                {ownerForm.watch("dateOfBirth")})?
+              </p>
+
+              {/* Error message if virtual account creation failed */}
+              {virtualAccountError && (
+                <Alert variant="destructive" className="mt-2">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{virtualAccountError}</AlertDescription>
+                </Alert>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              onClick={handleSkipVirtualAccount}
+              disabled={isCreatingVirtualAccount}
+            >
+              {virtualAccountError
+                ? "Continue Without Virtual Account"
+                : "Skip for Now"}
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleCreateVirtualAccount}
+              disabled={isCreatingVirtualAccount}
+            >
+              {isCreatingVirtualAccount ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  Creating...
+                </>
+              ) : virtualAccountError ? (
+                "Try Again"
+              ) : (
+                "Create Virtual Account"
+              )}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Registration Form */}
       {!isLoading && registrationProgress === 0 && (
@@ -475,6 +664,20 @@ export default function AddVehiclePage() {
                       </div>
 
                       <div className="space-y-2">
+                        <Label htmlFor="dateOfBirth">Date of Birth *</Label>
+                        <Input
+                          id="dateOfBirth"
+                          type="date"
+                          {...ownerForm.register("dateOfBirth")}
+                        />
+                        {ownerForm.formState.errors.dateOfBirth && (
+                          <p className="text-sm text-destructive">
+                            {ownerForm.formState.errors.dateOfBirth.message}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
                         <Label htmlFor="gender">Gender *</Label>
                         <Select
                           onValueChange={(value) =>
@@ -553,6 +756,21 @@ export default function AddVehiclePage() {
                           placeholder="Enter maiden name if applicable"
                           {...ownerForm.register("maidenName")}
                         />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="bvn">BVN *</Label>
+                        <Input
+                          id="bvn"
+                          placeholder="Enter 11-digit BVN"
+                          maxLength={11}
+                          {...ownerForm.register("bvn")}
+                        />
+                        {ownerForm.formState.errors.bvn && (
+                          <p className="text-sm text-destructive">
+                            {ownerForm.formState.errors.bvn.message}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -740,9 +958,11 @@ export default function AddVehiclePage() {
                   {/* Vehicle Image */}
                   <div className="space-y-4">
                     <Label>Vehicle Image</Label>
-                    <AvatarUploader
-                      onAvatarUpload={handleVehicleImageUpload}
-                      currentAvatarUrl={vehicleForm.watch("image")}
+                    <ImageUploader
+                      onImageUpload={handleVehicleImageUpload}
+                      currentImageUrl={vehicleForm.watch("image")}
+                      placeholder="Upload vehicle image"
+                      maxSizeMB={5}
                     />
                   </div>
 
@@ -765,6 +985,20 @@ export default function AddVehiclePage() {
                     </div>
 
                     <div className="space-y-2">
+                      <Label htmlFor="color">Color *</Label>
+                      <Input
+                        id="color"
+                        placeholder="Enter vehicle color"
+                        {...vehicleForm.register("color")}
+                      />
+                      {vehicleForm.formState.errors.color && (
+                        <p className="text-sm text-destructive">
+                          {vehicleForm.formState.errors.color.message}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="space-y-2">
                       <Label htmlFor="category">Category *</Label>
                       <Select
                         onValueChange={(value) =>
@@ -776,13 +1010,48 @@ export default function AddVehiclePage() {
                           <SelectValue placeholder="Select category" />
                         </SelectTrigger>
                         <SelectContent>
-                          {VEHICLE_CATEGORIES.map((option) => (
-                            <SelectItem key={option} value={option}>
-                              {option}
+                          {vehicleCategoryOptions.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
                             </SelectItem>
                           ))}
                         </SelectContent>
                       </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="type">Type *</Label>
+                      <Select
+                        onValueChange={(value) =>
+                          vehicleForm.setValue("type", value)
+                        }
+                        defaultValue={vehicleForm.watch("type")}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select type" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {vehicleTypeOptions.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="stateCode">State Code *</Label>
+                      <Input
+                        id="stateCode"
+                        placeholder="Enter state code (e.g., LA, AB)"
+                        {...vehicleForm.register("stateCode")}
+                      />
+                      {vehicleForm.formState.errors.stateCode && (
+                        <p className="text-sm text-destructive">
+                          {vehicleForm.formState.errors.stateCode.message}
+                        </p>
+                      )}
                     </div>
 
                     <div className="space-y-2">
@@ -818,6 +1087,17 @@ export default function AddVehiclePage() {
                         id="vin"
                         placeholder="Enter VIN"
                         {...vehicleForm.register("vin")}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="fairFlexImei">
+                        FairFlex IMEI / Tracker ID
+                      </Label>
+                      <Input
+                        id="fairFlexImei"
+                        placeholder="Enter FairFlex IMEI"
+                        {...vehicleForm.register("fairFlexImei")}
                       />
                     </div>
                   </div>

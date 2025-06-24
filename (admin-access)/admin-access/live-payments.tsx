@@ -30,7 +30,7 @@ export default function LivePaymentNotificationsAdminAccess() {
               setcvofPaymentData(data);
               setIsLoading(false);
           } catch (error) {
-              console.error("Error fetching payments:", error);
+              console.log("Error fetching payments:", error);
               setError("Failed to fetch payment notifications");
               setIsLoading(false);
           }

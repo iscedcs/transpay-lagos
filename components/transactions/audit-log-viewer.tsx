@@ -25,7 +25,7 @@ export function AuditLogViewer({ transactionId }: AuditLogViewerProps) {
         const logs = await getTransactionAuditLog(transactionId)
         setAuditLogs(logs)
       } catch (error) {
-        console.error("Error loading audit logs:", error)
+        console.log("Error loading audit logs:", error);
       } finally {
         setLoading(false)
       }

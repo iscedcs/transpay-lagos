@@ -34,57 +34,57 @@ export const getRevenueStats = async (
 };
 
 export const getDashboardTotalRevenue = async (
-     startDate?: string,
-     endDate?: string,
+  startDate?: string,
+  endDate?: string
 ) => {
-     try {
-          const session = await getSSession();
-          const headers = {
-               "Content-Type": "application/json",
-               "api-secret": process.env.API_SECRET || "",
-               Authorization: `Bearer ${session.access_token}`,
-          };
-          const url = `${API}${URLS.transactions["total-revenue"]}?startDate=${startDate}&endDate=${endDate}`;
-          const res = await fetch(url, { headers, cache: "no-store" });
-          const result = await res.json();
-          if (!result.status) {
-               console.error(`HTTP error! Status: ${res.status}`);
-               return undefined;
-          }
-          return result.data;
-     } catch (error: any) {
-          // Handle other errors (e.g., network issues, JSON parsing errors)
-          console.error("An error occurred:", error.message);
-          return undefined;
-     }
+  try {
+    const session = await getSSession();
+    const headers = {
+      "Content-Type": "application/json",
+      "api-secret": process.env.API_SECRET || "",
+      Authorization: `Bearer ${session.access_token}`,
+    };
+    const url = `${API}${URLS.transactions["total-revenue"]}?startDate=${startDate}&endDate=${endDate}`;
+    const res = await fetch(url, { headers, cache: "no-store" });
+    const result = await res.json();
+    if (!result.status) {
+      console.log(`HTTP error! Status: ${res.status}`);
+      return undefined;
+    }
+    return result.data;
+  } catch (error: any) {
+    // Handle other errors (e.g., network issues, JSON parsing errors)
+    console.log("An error occurred:", error.message);
+    return undefined;
+  }
 };
 
 export const getDashboardTotalTracker = async (
-     startDate: string,
-     endDate: string,
+  startDate: string,
+  endDate: string
 ) => {
-     try {
-          const session = await getSSession();
-          const headers = {
-               "Content-Type": "application/json",
-               "api-secret": process.env.API_SECRET || "",
-               Authorization: `Bearer ${session.access_token}`,
-          };
-          const url = `${API}${URLS.transactions["total-tracker"]}?startDate=${startDate}&endDate=${endDate}`;
-          const res = await fetch(url, { headers, cache: "no-store" });
-          const result = await res.json();
+  try {
+    const session = await getSSession();
+    const headers = {
+      "Content-Type": "application/json",
+      "api-secret": process.env.API_SECRET || "",
+      Authorization: `Bearer ${session.access_token}`,
+    };
+    const url = `${API}${URLS.transactions["total-tracker"]}?startDate=${startDate}&endDate=${endDate}`;
+    const res = await fetch(url, { headers, cache: "no-store" });
+    const result = await res.json();
 
-          if (!result.status) {
-               console.error(`HTTP error! Status: ${res.status}`);
-               return undefined;
-          }
+    if (!result.status) {
+      console.log(`HTTP error! Status: ${res.status}`);
+      return undefined;
+    }
 
-          return result.data;
-     } catch (error: any) {
-          // Handle other errors (e.g., network issues, JSON parsing errors)
-          console.error("An error occurred:", error.message);
-          return undefined;
-     }
+    return result.data;
+  } catch (error: any) {
+    // Handle other errors (e.g., network issues, JSON parsing errors)
+    console.log("An error occurred:", error.message);
+    return undefined;
+  }
 };
 
 export const getTotalRevenue = async (

@@ -152,7 +152,7 @@ export async function scanVehicle(data: ScanRequest): Promise<ScanResponse> {
 
     return result;
   } catch (error) {
-    console.error("Error scanning vehicle:", error);
+    console.log("Error scanning vehicle:", error);
     throw new Error("Failed to scan vehicle");
   }
 }
@@ -182,7 +182,7 @@ export async function getVehicleByBarcode(
     const result = await response.json();
     return result;
   } catch (error) {
-    console.error("Error fetching vehicle by barcode:", error);
+    console.log("Error fetching vehicle by barcode:", error);
     return {
       success: false,
       message: "Failed to fetch vehicle",

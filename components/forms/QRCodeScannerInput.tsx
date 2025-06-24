@@ -50,49 +50,49 @@ export default function QRCodeScannerInput<
      const [selectedCamera, setSelectedCamera] = useState<string>("");
 
      const getCameras = useCallback(async () => {
-          try {
-               const devices = await navigator.mediaDevices.enumerateDevices();
-               const videoDevices = devices.filter(
-                    (device) => device.kind === "videoinput",
-               );
-               setCameras(
-                    videoDevices.map((device) => ({
-                         deviceId: device.deviceId,
-                         label: device.label,
-                    })),
-               );
-               if (videoDevices.length > 0) {
-                    setSelectedCamera(videoDevices[0].deviceId);
-               }
-          } catch (error) {
-               console.error("Error getting cameras:", error);
-          }
+       try {
+         const devices = await navigator.mediaDevices.enumerateDevices();
+         const videoDevices = devices.filter(
+           (device) => device.kind === "videoinput"
+         );
+         setCameras(
+           videoDevices.map((device) => ({
+             deviceId: device.deviceId,
+             label: device.label,
+           }))
+         );
+         if (videoDevices.length > 0) {
+           setSelectedCamera(videoDevices[0].deviceId);
+         }
+       } catch (error) {
+         console.log("Error getting cameras:", error);
+       }
      }, []);
 
      useEffect(() => {
-          getCameras();
+       getCameras();
      }, [getCameras]);
 
      const extractIdFromUrl = (url: string): string => {
-          const match = url.match(/\/status\/(\d+)\/?$/);
-          return match ? match[1] : "";
+       const match = url.match(/\/status\/(\d+)\/?$/);
+       return match ? match[1] : "";
      };
 
      const handleScan = useCallback(
-          (result: { text: string } | null | undefined) => {
-               if (result?.text) {
-                    const extractedId = extractIdFromUrl(result.text);
-                    if (extractedId) {
-                         form.setValue(name, extractedId as any);
-                         setIsDialogOpen(false);
-                    }
-               }
-          },
-          [form, name],
+       (result: { text: string } | null | undefined) => {
+         if (result?.text) {
+           const extractedId = extractIdFromUrl(result.text);
+           if (extractedId) {
+             form.setValue(name, extractedId as any);
+             setIsDialogOpen(false);
+           }
+         }
+       },
+       [form, name]
      );
 
      const handleError = (error: Error) => {
-          console.error(error);
+       console.log(error);
      };
 
      const handleCameraChange = (deviceId: string) => {

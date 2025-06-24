@@ -56,7 +56,7 @@ const [agentCount, setAgentCount] = useState<number | null>(null);
         setPaymentTotals(data as any);
         setIsLoading(false);
       } catch (err) {
-        console.error("Error loading data:", err);
+        console.log("Error loading data:", err);
         setError("Failed to load payment totals");
         setIsLoading(false);
       }

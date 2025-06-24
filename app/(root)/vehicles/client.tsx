@@ -58,7 +58,7 @@ export default function VehiclesClient({ initialVehicles, initialPagination, use
                     setPagination(pagination);
                     setFilter(newFilter);
                } catch (error) {
-                    console.error("Error fetching vehicles:", error);
+                    console.log("Error fetching vehicles:", error);
                } finally {
                     setIsLoading(false);
                }
