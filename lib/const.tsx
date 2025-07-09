@@ -6,6 +6,8 @@ import {
   MapPin,
   QrCodeIcon,
   SettingsIcon,
+  Shield,
+  ShieldCheck,
 } from "lucide-react";
 import {
   aboutIcon,
@@ -77,6 +79,16 @@ export const SIDEBAR_LINKS = [
     title: "Fund Vehicle",
     href: "/fund-vehicle",
     icon: <CreditCard className="h-5 w-5" />,
+  },
+  {
+    title: "Insurance",
+    href: "/insurance",
+    icon: <ShieldCheck className="h-5 w-5" />,
+  },
+  {
+    title: "Insurer",
+    href: "/insurance-company",
+    icon: <Shield className="h-5 w-5" />,
   },
 ];
 export const SIDEBAR_LINKS_ADMIN = [
