@@ -1,146 +1,44 @@
-"use client";
+"use client"
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Loader2,
-  Save,
-  ArrowLeft,
-  CheckCircle,
-  AlertCircle,
-  User,
-  Users,
-  Car,
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Progress } from "@/components/ui/progress";
-import {
-  ownerFormSchema,
-  nextOfKinSchema,
-  vehicleFormSchema,
-  type OwnerFormValues,
-  type NextOfKinFormValues,
-  type VehicleFormValues,
-  genderOptions,
-  maritalStatusOptions,
-  CreateVehicleRequest,
-} from "../vehicle-form-validation";
-import { getLGAs } from "@/actions/lga";
-import { toast } from "sonner";
-import { createVehicleWithOwner } from "@/actions/vehicles";
-import { VEHICLE_CATEGORIES } from "@/lib/const";
-import AvatarUploader from "@/components/shared/avatar-uploader";
+import { FormDescription } from "@/components/ui/form"
 
-interface RegistrationStep {
-  id: string;
-  title: string;
-  description: string;
-  completed: boolean;
-  current: boolean;
-}
+import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { toast } from "sonner"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Textarea } from "@/components/ui/textarea"
+import { ImageIcon } from "@radix-ui/react-icons"
+import Image from "next/image"
+import { getLGAs } from "@/actions/lga"
+import { CreateVehicleRequest, genderOptions, nextOfKinSchema, ownerFormSchema, vehicleFormSchema } from "../vehicle-form-validation"
+import { maritalStatusOptions } from "../../users/user-edit-form-validation"
+import { createVehicleWithOwner } from "@/actions/vehicles"
+import { VEHICLE_CATEGORIES } from "@/lib/const"
+import AvatarUploader from "@/components/shared/avatar-uploader"
 
-export default function AddVehiclePage() {
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+const AddVehiclePage = () => {
+  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(false)
+  const [activeTab, setActiveTab] = useState("owner")
   const [lgas, setLgas] = useState<{ id: string; name: string }[]>([]);
-  const [activeTab, setActiveTab] = useState("owner");
-  const [registrationProgress, setRegistrationProgress] = useState(0);
-  const [createdVehicle, setCreatedVehicle] = useState<any>(null);
-  const [steps, setSteps] = useState<RegistrationStep[]>([
-    {
-      id: "form",
-      title: "Information Collection",
-      description: "Collect owner and vehicle details",
-      completed: false,
-      current: true,
-    },
-    {
-      id: "create",
-      title: "Create Vehicle & Owner",
-      description: "Register in system",
-      completed: false,
-      current: false,
-    },
-    {
-      id: "wallet",
-      title: "Virtual Account",
-      description: "Create payment wallet",
-      completed: false,
-      current: false,
-    },
-    {
-      id: "complete",
-      title: "Complete",
-      description: "Registration finished",
-      completed: false,
-      current: false,
-    },
-  ]);
-
-  // Owner form
-  const ownerForm = useForm<OwnerFormValues>({
-    resolver: zodResolver(ownerFormSchema),
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      phone: "+234",
-      gender: "MALE",
-      maritalStatus: "SINGLE",
-      email: "",
-      whatsappNumber: "",
-      maidenName: "",
-      residentialAddress: "",
-      city: "",
-      lgaId: "",
-      country: "Nigeria",
-      postalCode: "",
-    },
-  });
-
-  // Next of kin form
-  const nextOfKinForm = useForm<NextOfKinFormValues>({
-    resolver: zodResolver(nextOfKinSchema),
-    defaultValues: {
-      name: "",
-      phone: "+234",
-      relationship: "",
-    },
-  });
-
-  // Vehicle form
-  const vehicleForm = useForm<VehicleFormValues>({
-    resolver: zodResolver(vehicleFormSchema),
-    defaultValues: {
-      plateNumber: "",
-      category: "TRICYCLE",
-      registeredLgaId: "",
-      vin: "",
-      image: "",
-    },
-  });
 
   // Fetch LGAs on component mount
   useEffect(() => {
@@ -161,77 +59,120 @@ export default function AddVehiclePage() {
     fetchLGAs();
   }, [toast]);
 
-  const resetFormState = () => {
-    setIsLoading(false);
-    setRegistrationProgress(0);
-    setCreatedVehicle(null);
-    setSteps((prev) =>
-      prev.map((step) => ({
-        ...step,
-        completed: false,
-        current: step.id === "form",
-      }))
-    );
-  };
+  const ownerForm = useForm({
+    resolver: zodResolver(ownerFormSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      phone: "",
+      residentialAddress: "",
+      lgaId: "",
+      city: "",
+      postalCode: "",
+      gender: 'MALE',
+      maritalStatus: 'SINGLE',
+      whatsappNumber: "",
+      email: "",
+      maidenName: "",
+    },
+  })
 
-  // Update step status
-  const updateStepStatus = (
-    stepId: string,
-    completed: boolean,
-    current = false
-  ) => {
-    setSteps((prev) =>
-      prev.map((step) => ({
-        ...step,
-        completed: step.id === stepId ? completed : step.completed,
-        current: step.id === stepId ? current : false,
-      }))
-    );
-  };
+  const nextOfKinForm = useForm({
+    resolver: zodResolver(nextOfKinSchema),
+    defaultValues: {
+      name: "",
+      phone: "",
+      relationship: "",
+    },
+  })
 
-  // Handle vehicle creation (first step)
+  const vehicleForm = useForm({
+    resolver: zodResolver(vehicleFormSchema),
+    defaultValues: {
+      category: "",
+      plateNumber: "",
+      registeredLgaId: "",
+      image: "",
+      status: "ACTIVE",
+      vin: "",
+      blacklisted: false,
+    },
+  })
+
+  const validateOwnerTab = async () => {
+    const isValid = await ownerForm.trigger()
+    if (!isValid) {
+      toast.error("Please complete all required owner information fields")
+      return false
+    }
+    return true
+  }
+
+  const validateNextOfKinTab = async () => {
+    const isValid = await nextOfKinForm.trigger()
+    if (!isValid) {
+      toast.error("Please complete all required next of kin information fields")
+      return false
+    }
+    return true
+  }
+
+  const validateVehicleTab = async () => {
+    const isValid = await vehicleForm.trigger()
+    if (!isValid) {
+      toast.error("Please complete all required vehicle information fields")
+      return false
+    }
+    return true
+  }
+
+  const handleVehicleImageUpload = async (imageUrl: string) => {
+    vehicleForm.setValue("image", imageUrl)
+    return { success: "Vehicle image uploaded successfully" }
+  }
+
+  const handleTabChange = async (newTab: string) => {
+    if (newTab === "nextofkin" && activeTab === "owner") {
+      const isValid = await validateOwnerTab()
+      if (!isValid) return
+    }
+
+    if (newTab === "vehicle" && activeTab === "nextofkin") {
+      const isValid = await validateNextOfKinTab()
+      if (!isValid) return
+    }
+
+    if (newTab === "review" && activeTab === "vehicle") {
+      const isValid = await validateVehicleTab()
+      if (!isValid) return
+    }
+
+    setActiveTab(newTab)
+  }
+
   const onSubmit = async () => {
-    setIsLoading(true);
-    setRegistrationProgress(0);
-
+    setIsLoading(true)
     try {
       // Validate all forms
       const [ownerValid, nextOfKinValid, vehicleValid] = await Promise.all([
         ownerForm.trigger(),
         nextOfKinForm.trigger(),
         vehicleForm.trigger(),
-      ]);
+      ])
 
-      if (!ownerValid) {
-        toast.error("Owner details are incomplete or invalid");
-        return; // Stop early if invalid
+      if (!ownerValid || !nextOfKinValid || !vehicleValid) {
+        toast.error("Please complete all required fields")
+        setIsLoading(false)
+        return
       }
-
-      if (!nextOfKinValid) {
-        toast.error("Next of Kin details are incomplete or invalid");
-        return;
-      }
-
-      if (!vehicleValid) {
-        toast.error("Vehicle details are incomplete or invalid");
-        return;
-      }
-
-      // Step 1: Form validation complete
-      updateStepStatus("form", true);
-      setRegistrationProgress(25);
 
       // Get form data
-      const ownerData = ownerForm.getValues();
-      const nextOfKinData = nextOfKinForm.getValues();
-      const vehicleData = vehicleForm.getValues();
-
-      // Step 2: Create vehicle with owner
-      updateStepStatus("create", false, true);
-      setRegistrationProgress(50);
+      const ownerData = ownerForm.getValues()
+      const nextOfKinData = nextOfKinForm.getValues()
+      const vehicleData = vehicleForm.getValues()
 
       // Get the selected LGA name for address
-      const selectedLga = lgas.find((lga) => lga.id === ownerData.lgaId);
+      const selectedLga = lgas.find((lga) => lga.id === ownerData.lgaId)
 
       // Prepare vehicle creation request according to API structure
       const vehicleRequest: CreateVehicleRequest = {
@@ -245,7 +186,7 @@ export default function AddVehiclePage() {
             text: ownerData.residentialAddress,
             lga: selectedLga?.name || "",
             city: ownerData.city,
-            state: "Edo", // You might want to make this dynamic
+            state: "Edo",
             unit: selectedLga?.name || "",
             country: "Nigeria",
             postal_code: ownerData.postalCode,
@@ -264,349 +205,206 @@ export default function AddVehiclePage() {
         status: vehicleData.status,
         vin: vehicleData.vin,
         blacklisted: vehicleData.blacklisted,
-      };
+      }
 
       // Create vehicle with owner
-      const vehicle = await createVehicleWithOwner(vehicleRequest);
+      const vehicle = await createVehicleWithOwner(vehicleRequest)
 
       if (!vehicle.success) {
         toast.error("Registration Failed", {
-          description: vehicle.error
-            ? vehicle.error
-            : "Failed to register. Please try again.",
-        });
-        resetFormState();
-        setActiveTab("vehicle");
-        return null;
+          description: vehicle.error || "Failed to register. Please try again.",
+        })
+        setIsLoading(false)
+        return
       }
-
-      // Step 3: Vehicle created successfully
-      updateStepStatus("create", false, true);
-      setRegistrationProgress(100);
-      setCreatedVehicle(vehicle);
-      console.log("Vehicle created:", vehicle);
 
       // Show success message
-      toast.success("Success", {
-        description: "Vehicle and owner created successfully!",
-      });
-      if (createdVehicle?.id) {
-        router.push(`/vehicles/${createdVehicle.id}`);
-      } else {
-        router.push("/vehicles");
-      }
-      router.refresh();
-    } catch (error) {
-      console.log("Failed to create vehicle:", error);
-      toast.error("Registration Failed", {
-        description:
-          error instanceof Error
-            ? error.message
-            : "Failed to register. Please try again.",
-      });
-      resetFormState();
-      setActiveTab("vehicle");
-    }
-  };
+      toast.success("Registration Successful", {
+        description: "Vehicle and owner have been registered successfully!",
+      })
 
-  // Handle vehicle image upload
-  const handleVehicleImageUpload = async (imageUrl: string) => {
-    vehicleForm.setValue("image", imageUrl);
-    return { success: "Vehicle image uploaded successfully" };
-  };
+      // Redirect to vehicle details or list
+      if (vehicle.data?.id) {
+        router.push(`/vehicles/${vehicle.data.id}`)
+      } else {
+        router.push("/vehicles")
+      }
+      router.refresh()
+    } catch (error) {
+      console.log("Failed to create vehicle:", error)
+      toast.error("Registration Failed", {
+        description: error instanceof Error ? error.message : "Failed to register. Please try again.",
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return (
-    <div className="container mx-auto py-8 space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Vehicle Owner Onboarding
-          </h1>
-          <p className="text-muted-foreground">
-            Complete registration for vehicle owner and vehicle
-          </p>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            onClick={() => router.back()}
-            className="flex items-center gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back
-          </Button>
-        </div>
-      </div>
-
-      {/* Registration Progress */}
-      {(isLoading || registrationProgress > 0) && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              {isLoading ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
-              ) : (
-                <CheckCircle className="h-5 w-5" />
-              )}
-              Registration Progress
-            </CardTitle>
-            <CardDescription>
-              {isLoading
-                ? "Creating vehicle and owner..."
-                : "Registration in progress"}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Progress value={registrationProgress} className="w-full" />
-            <div className="space-y-2">
-              {steps.map((step) => (
-                <div key={step.id} className="flex items-center gap-3">
-                  {step.completed ? (
-                    <CheckCircle className="h-5 w-5 text-green-500" />
-                  ) : step.current ? (
-                    <Loader2 className="h-5 w-5 animate-spin text-blue-500" />
-                  ) : (
-                    <div className="h-5 w-5 rounded-full border-2 border-gray-300" />
-                  )}
-                  <div>
-                    <p
-                      className={`font-medium ${
-                        step.completed
-                          ? "text-green-600"
-                          : step.current
-                          ? "text-blue-600"
-                          : "text-gray-500"
-                      }`}
-                    >
-                      {step.title}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {step.description}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Registration Form */}
-      {!isLoading && registrationProgress === 0 && (
-        <div className="space-y-6">
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid grid-cols-4 w-full sm:w-auto">
-              <TabsTrigger value="owner" className="flex items-center gap-2">
-                <User className="h-4 w-4" />
-                Owner Info
-              </TabsTrigger>
-              <TabsTrigger
-                value="nextofkin"
-                className="flex items-center gap-2"
-              >
-                <Users className="h-4 w-4" />
-                Next of Kin
-              </TabsTrigger>
-              <TabsTrigger value="vehicle" className="flex items-center gap-2">
-                <Car className="h-4 w-4" />
-                Vehicle Info
-              </TabsTrigger>
-              <TabsTrigger value="review" className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4" />
-                Review
-              </TabsTrigger>
+    <div className="container py-10">
+      <Card>
+        <CardHeader>
+          <CardTitle>Register Vehicle</CardTitle>
+          <CardDescription>Fill in the details below to register a new vehicle.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Tabs value={activeTab} onValueChange={handleTabChange}>
+            <TabsList>
+              <TabsTrigger value="owner">Owner</TabsTrigger>
+              <TabsTrigger value="nextofkin">Next of Kin</TabsTrigger>
+              <TabsTrigger value="vehicle">Vehicle</TabsTrigger>
+              <TabsTrigger value="review">Review</TabsTrigger>
             </TabsList>
-
-            {/* Owner Information Tab */}
-            <TabsContent value="owner" className="space-y-4 mt-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Owner Information</CardTitle>
-                  <CardDescription>
-                    Enter the vehicle owner's personal details
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {/* Basic Information */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Basic Information</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2">
-                        <Label htmlFor="firstName">First Name *</Label>
-                        <Input
-                          id="firstName"
-                          placeholder="Enter owner firstname"
-                          {...ownerForm.register("firstName")}
-                        />
-                        {ownerForm.formState.errors.firstName && (
-                          <p className="text-sm text-destructive">
-                            {ownerForm.formState.errors.firstName.message}
-                          </p>
-                        )}
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="lastName">Last Name *</Label>
-                        <Input
-                          id="lastName"
-                          placeholder="Enter owner lastname"
-                          {...ownerForm.register("lastName")}
-                        />
-                        {ownerForm.formState.errors.lastName && (
-                          <p className="text-sm text-destructive">
-                            {ownerForm.formState.errors.lastName.message}
-                          </p>
-                        )}
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="phone">Phone *</Label>
-                        <Input
-                          id="phone"
-                          placeholder="+234"
-                          {...ownerForm.register("phone")}
-                        />
-                        {ownerForm.formState.errors.phone && (
-                          <p className="text-sm text-destructive">
-                            {ownerForm.formState.errors.phone.message}
-                          </p>
-                        )}
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="gender">Gender *</Label>
-                        <Select
-                          onValueChange={(value) =>
-                            ownerForm.setValue("gender", value as any)
-                          }
-                          defaultValue={ownerForm.watch("gender")}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select gender" />
-                          </SelectTrigger>
+            <TabsContent value="owner">
+              <Form {...ownerForm}>
+                <form className="grid gap-4 md:grid-cols-2">
+                  <FormField
+                    control={ownerForm.control}
+                    name="firstName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>First Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="John" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={ownerForm.control}
+                    name="lastName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Last Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Doe" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={ownerForm.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone Number</FormLabel>
+                        <FormControl>
+                          <Input placeholder="08012345678" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={ownerForm.control}
+                    name="whatsappNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Whatsapp Number</FormLabel>
+                        <FormControl>
+                          <Input placeholder="08012345678" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={ownerForm.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email Address</FormLabel>
+                        <FormControl>
+                          <Input placeholder="johndoe@example.com" type="email" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={ownerForm.control}
+                    name="maidenName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Mother's Maiden Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Jane" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={ownerForm.control}
+                    name="gender"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Gender</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a gender" />
+                            </SelectTrigger>
+                          </FormControl>
                           <SelectContent>
-                            {genderOptions.map((option) => (
-                              <SelectItem
-                                key={option.value}
-                                value={option.value}
-                              >
-                                {option.label}
-                              </SelectItem>
+                            {genderOptions.map((Gender, i) =>(
+                              <SelectItem key={i} value={Gender.value}>{Gender.label}</SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="maritalStatus">Marital Status *</Label>
-                        <Select
-                          onValueChange={(value) =>
-                            ownerForm.setValue("maritalStatus", value as any)
-                          }
-                          defaultValue={ownerForm.watch("maritalStatus")}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select marital status" />
-                          </SelectTrigger>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={ownerForm.control}
+                    name="maritalStatus"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Marital Status</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select marital status" />
+                            </SelectTrigger>
+                          </FormControl>
                           <SelectContent>
-                            {maritalStatusOptions.map((option) => (
-                              <SelectItem
-                                key={option.value}
-                                value={option.value}
-                              >
-                                {option.label}
-                              </SelectItem>
+                            {maritalStatusOptions.map((MaritalStatus, i) =>(
+                              <SelectItem key={i} value={MaritalStatus.value}>{MaritalStatus.label}</SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="email">Email *</Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          placeholder="Enter email of owner"
-                          {...ownerForm.register("email")}
-                        />
-                        {ownerForm.formState.errors.email && (
-                          <p className="text-sm text-destructive">
-                            {ownerForm.formState.errors.email.message}
-                          </p>
-                        )}
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="whatsappNumber">WhatsApp Number</Label>
-                        <Input
-                          id="whatsappNumber"
-                          placeholder="Enter WhatsApp number"
-                          {...ownerForm.register("whatsappNumber")}
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="maidenName">Maiden Name</Label>
-                        <Input
-                          id="maidenName"
-                          placeholder="Enter maiden name if applicable"
-                          {...ownerForm.register("maidenName")}
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <Separator />
-
-                  {/* Address Information */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-medium">Address Information</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                      <div className="space-y-2 md:col-span-2">
-                        <Label htmlFor="residentialAddress">
-                          Residential Address *
-                        </Label>
-                        <Input
-                          id="residentialAddress"
-                          placeholder="Enter address of owner"
-                          {...ownerForm.register("residentialAddress")}
-                        />
-                        {ownerForm.formState.errors.residentialAddress && (
-                          <p className="text-sm text-destructive">
-                            {
-                              ownerForm.formState.errors.residentialAddress
-                                .message
-                            }
-                          </p>
-                        )}
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="city">City *</Label>
-                        <Input
-                          id="city"
-                          placeholder="Enter city"
-                          {...ownerForm.register("city")}
-                        />
-                        {ownerForm.formState.errors.city && (
-                          <p className="text-sm text-destructive">
-                            {ownerForm.formState.errors.city.message}
-                          </p>
-                        )}
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="lgaId">LGA *</Label>
-                        <Select
-                          onValueChange={(value) =>
-                            ownerForm.setValue("lgaId", value)
-                          }
-                          defaultValue={ownerForm.watch("lgaId")}
-                        >
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select LGA" />
-                          </SelectTrigger>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={ownerForm.control}
+                    name="residentialAddress"
+                    render={({ field }) => (
+                      <FormItem className="md:col-span-2">
+                        <FormLabel>Residential Address</FormLabel>
+                        <FormControl>
+                          <Textarea placeholder="123 Main Street, City" className="resize-none" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={ownerForm.control}
+                    name="lgaId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>LGA</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select an LGA" />
+                            </SelectTrigger>
+                          </FormControl>
                           <SelectContent>
                             {lgas.map((lga) => (
                               <SelectItem key={lga.id} value={lga.id}>
@@ -615,158 +413,95 @@ export default function AddVehiclePage() {
                             ))}
                           </SelectContent>
                         </Select>
-                        {ownerForm.formState.errors.lgaId && (
-                          <p className="text-sm text-destructive">
-                            {ownerForm.formState.errors.lgaId.message}
-                          </p>
-                        )}
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="country">Country *</Label>
-                        <Input
-                          id="country"
-                          value="Nigeria"
-                          disabled
-                          {...ownerForm.register("country")}
-                        />
-                      </div>
-
-                      <div className="space-y-2">
-                        <Label htmlFor="postalCode">Postal Code</Label>
-                        <Input
-                          id="postalCode"
-                          placeholder="Enter postal code"
-                          {...ownerForm.register("postalCode")}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-between">
-                  <Button variant="outline" onClick={() => router.back()}>
-                    Cancel
-                  </Button>
-                  <Button
-                    type="button"
-                    onClick={() => setActiveTab("nextofkin")}
-                  >
-                    Next: Next of Kin
-                  </Button>
-                </CardFooter>
-              </Card>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={ownerForm.control}
+                    name="city"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>City</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Benin" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={ownerForm.control}
+                    name="postalCode"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Postal Code</FormLabel>
+                        <FormControl>
+                          <Input placeholder="12345" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </form>
+              </Form>
             </TabsContent>
-
-            {/* Next of Kin Tab */}
-            <TabsContent value="nextofkin" className="space-y-4 mt-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Next of Kin Information</CardTitle>
-                  <CardDescription>
-                    Enter emergency contact details
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="nextOfKinName">Next of Kin Name *</Label>
-                      <Input
-                        id="nextOfKinName"
-                        placeholder="Enter next of kin name"
-                        {...nextOfKinForm.register("name")}
-                      />
-                      {nextOfKinForm.formState.errors.name && (
-                        <p className="text-sm text-destructive">
-                          {nextOfKinForm.formState.errors.name.message}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="nextOfKinPhone">
-                        Next of Kin Phone *
-                      </Label>
-                      <Input
-                        id="nextOfKinPhone"
-                        placeholder="Enter next of kin phone"
-                        {...nextOfKinForm.register("phone")}
-                      />
-                      {nextOfKinForm.formState.errors.phone && (
-                        <p className="text-sm text-destructive">
-                          {nextOfKinForm.formState.errors.phone.message}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="relationship">Relationship *</Label>
-                      <Input
-                        id="relationship"
-                        placeholder="Enter relationship (e.g., Sibling)"
-                        {...nextOfKinForm.register("relationship")}
-                      />
-                      {nextOfKinForm.formState.errors.relationship && (
-                        <p className="text-sm text-destructive">
-                          {nextOfKinForm.formState.errors.relationship.message}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-between">
-                  <Button
-                    variant="outline"
-                    onClick={() => setActiveTab("owner")}
-                  >
-                    Back
-                  </Button>
-                  <Button type="button" onClick={() => setActiveTab("vehicle")}>
-                    Next: Vehicle Info
-                  </Button>
-                </CardFooter>
-              </Card>
+            <TabsContent value="nextofkin">
+              <Form {...nextOfKinForm}>
+                <form className="grid gap-4">
+                  <FormField
+                    control={nextOfKinForm.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Jane Doe" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={nextOfKinForm.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone Number</FormLabel>
+                        <FormControl>
+                          <Input placeholder="08012345678" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={nextOfKinForm.control}
+                    name="relationship"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Relationship</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Sister" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </form>
+              </Form>
             </TabsContent>
-
-            {/* Vehicle Information Tab */}
-            <TabsContent value="vehicle" className="space-y-4 mt-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Vehicle Information</CardTitle>
-                  <CardDescription>
-                    Enter vehicle details and specifications
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {/* Vehicle Image */}
-                  <div className="space-y-4">
-                    <Label>Vehicle Image</Label>
-                    <AvatarUploader
-                      onAvatarUpload={handleVehicleImageUpload}
-                      currentAvatarUrl={vehicleForm.watch("image")}
-                    />
-                  </div>
-
-                  <Separator />
-
-                  {/* Basic Vehicle Details */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <Label htmlFor="plateNumber">Plate Number *</Label>
-                      <Input
-                        id="plateNumber"
-                        placeholder="Enter plate number"
-                        {...vehicleForm.register("plateNumber")}
-                      />
-                      {vehicleForm.formState.errors.plateNumber && (
-                        <p className="text-sm text-destructive">
-                          {vehicleForm.formState.errors.plateNumber.message}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="category">Category *</Label>
-                      <Select
+            <TabsContent value="vehicle">
+              <Form {...vehicleForm}>
+                <form className="grid gap-4">
+                  <FormField
+                    control={vehicleForm.control}
+                    name="category"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Vehicle Category</FormLabel>
+                        <FormControl>
+                          <Select
                         onValueChange={(value) =>
                           vehicleForm.setValue("category", value)
                         }
@@ -783,128 +518,218 @@ export default function AddVehiclePage() {
                           ))}
                         </SelectContent>
                       </Select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="registeredLgaId">Registered LGA *</Label>
-                      <Select
-                        onValueChange={(value) =>
-                          vehicleForm.setValue("registeredLgaId", value)
-                        }
-                        defaultValue={vehicleForm.watch("registeredLgaId")}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select LGA for registration" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {lgas.map((lga) => (
-                            <SelectItem key={lga.id} value={lga.id}>
-                              {lga.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      {vehicleForm.formState.errors.registeredLgaId && (
-                        <p className="text-sm text-destructive">
-                          {vehicleForm.formState.errors.registeredLgaId.message}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Technical Details */}
-                    <div className="space-y-2">
-                      <Label htmlFor="vin">VIN</Label>
-                      <Input
-                        id="vin"
-                        placeholder="Enter VIN"
-                        {...vehicleForm.register("vin")}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="flex items-center space-x-2">
-                      <Checkbox
-                        id="blacklisted"
-                        checked={vehicleForm.watch("blacklisted")}
-                        onCheckedChange={(checked) =>
-                          vehicleForm.setValue(
-                            "blacklisted",
-                            checked as boolean
-                          )
-                        }
-                      />
-                      <Label
-                        htmlFor="blacklisted"
-                        className="text-sm font-medium"
-                      >
-                        Blacklist this vehicle
-                      </Label>
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-between">
-                  <Button
-                    variant="outline"
-                    onClick={() => setActiveTab("nextofkin")}
-                  >
-                    Back
-                  </Button>
-                  <Button type="button" onClick={() => setActiveTab("review")}>
-                    Next: Review
-                  </Button>
-                </CardFooter>
-              </Card>
-            </TabsContent>
-
-            {/* Review Tab */}
-            <TabsContent value="review" className="space-y-4 mt-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <CheckCircle className="h-5 w-5" />
-                    Review & Submit Registration
-                  </CardTitle>
-                  <CardDescription>
-                    Review all information and submit the registration
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <Alert>
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>
-                      Please review all information carefully. Once submitted,
-                      the owner and vehicle records will be created in the
-                      system. You'll then have the option to create a virtual
-                      account for payments.
-                    </AlertDescription>
-                  </Alert>
-                </CardContent>
-                <CardFooter className="flex justify-between">
-                  <Button
-                    variant="outline"
-                    onClick={() => setActiveTab("vehicle")}
-                  >
-                    Back
-                  </Button>
-                  <Button
-                    onClick={onSubmit}
-                    disabled={isLoading}
-                    className="flex items-center gap-2"
-                  >
-                    {isLoading ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Save className="h-4 w-4" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
                     )}
-                    {isLoading ? "Creating..." : "Create Vehicle & Owner"}
-                  </Button>
-                </CardFooter>
-              </Card>
+                  />
+                  <FormField
+                    control={vehicleForm.control}
+                    name="plateNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Plate Number</FormLabel>
+                        <FormControl>
+                          <Input placeholder="ABC-123-XY" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={vehicleForm.control}
+                    name="vin"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Vehicle Identification Number (VIN)</FormLabel>
+                        <FormControl>
+                          <Input placeholder="VIN" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={vehicleForm.control}
+                    name="registeredLgaId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Registered LGA</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select an LGA" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {lgas.map((lga) => (
+                              <SelectItem key={lga.id} value={lga.id}>
+                                {lga.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={vehicleForm.control}
+                    name="status"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Vehicle Status</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Functional" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={vehicleForm.control}
+                    name="image"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Vehicle Image</FormLabel>
+                        <FormControl>
+                          <AvatarUploader
+                            onAvatarUpload={handleVehicleImageUpload}
+                            currentAvatarUrl={vehicleForm.watch("image")}
+                            userInitials="VH"
+                            size="xl"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={vehicleForm.control}
+                    name="blacklisted"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-sm">Blacklisted</FormLabel>
+                          <FormDescription>Is this vehicle blacklisted?</FormDescription>
+                        </div>
+                        <FormControl>
+                          <Input
+                            type="checkbox"
+                            checked={field.value}
+                            onChange={(e) => field.onChange(e.target.checked)}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </form>
+              </Form>
+            </TabsContent>
+            <TabsContent value="review">
+              <div className="grid gap-4">
+                <div>
+                  <h3 className="text-lg font-semibold">Owner Information</h3>
+                  <div className="grid gap-2">
+                    <p>
+                      <strong>Name:</strong> {ownerForm.getValues().firstName} {ownerForm.getValues().lastName}
+                    </p>
+                    <p>
+                      <strong>Phone:</strong> {ownerForm.getValues().phone}
+                    </p>
+                    <p>
+                      <strong>Email:</strong> {ownerForm.getValues().email}
+                    </p>
+                    <p>
+                      <strong>Address:</strong> {ownerForm.getValues().residentialAddress}, {ownerForm.getValues().city}
+                    </p>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold">Next of Kin</h3>
+                  <div className="grid gap-2">
+                    <p>
+                      <strong>Name:</strong> {nextOfKinForm.getValues().name}
+                    </p>
+                    <p>
+                      <strong>Phone:</strong> {nextOfKinForm.getValues().phone}
+                    </p>
+                    <p>
+                      <strong>Relationship:</strong> {nextOfKinForm.getValues().relationship}
+                    </p>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold">Vehicle Information</h3>
+                  <div className="grid gap-2">
+                    <p>
+                      <strong>Category:</strong> {vehicleForm.getValues().category}
+                    </p>
+                    <p>
+                      <strong>Plate Number:</strong> {vehicleForm.getValues().plateNumber}
+                    </p>
+                    <p>
+                      <strong>Status:</strong> {vehicleForm.getValues().status}
+                    </p>
+                  </div>
+                </div>
+              </div>
             </TabsContent>
           </Tabs>
-        </div>
-      )}
+        </CardContent>
+        <CardFooter className="flex justify-between">
+          {activeTab !== "owner" && (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() =>
+                setActiveTab(activeTab === "nextofkin" ? "owner" : activeTab === "vehicle" ? "nextofkin" : "vehicle")
+              }
+            >
+              Previous
+            </Button>
+          )}
+
+          {activeTab !== "review" ? (
+            activeTab === "owner" ? (
+              <Button type="button" onClick={() => handleTabChange("nextofkin")}>
+                Next: Next of Kin
+              </Button>
+            ) : activeTab === "nextofkin" ? (
+              <Button type="button" onClick={() => handleTabChange("vehicle")}>
+                Next: Vehicle Info
+              </Button>
+            ) : (
+              <Button type="button" onClick={() => handleTabChange("review")}>
+                Next: Review
+              </Button>
+            )
+          ) : (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button type="button" disabled={isLoading}>
+                  {isLoading ? "Submitting..." : "Submit"}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    This action cannot be undone. Are you sure you want to submit?
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction onClick={onSubmit}>{isLoading ? "Submitting..." : "Submit"}</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+        </CardFooter>
+      </Card>
     </div>
-  );
+  )
 }
+
+export default AddVehiclePage

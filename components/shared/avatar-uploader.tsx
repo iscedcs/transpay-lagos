@@ -138,6 +138,7 @@ export default function AvatarUploader({
       </Avatar>
 
       <Button
+        type="button"
         variant="outline"
         size="sm"
         className="absolute -bottom-1 -right-1 h-6 w-6 rounded-full p-0"

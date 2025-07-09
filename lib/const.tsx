@@ -8,6 +8,7 @@ import {
   SettingsIcon,
   Shield,
   ShieldCheck,
+  Split,
 } from "lucide-react";
 import {
   aboutIcon,
@@ -74,6 +75,11 @@ export const SIDEBAR_LINKS = [
     title: "Settings",
     href: "/settings",
     icon: <SettingsIcon className="h-5 w-5" />,
+  },
+  {
+    title: "Settlement",
+    href: "/settlement",
+    icon: <Split className="h-5 w-5" />,
   },
   {
     title: "Fund Vehicle",
