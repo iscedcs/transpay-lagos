@@ -13,7 +13,6 @@ export default async function DashboardPage() {
     redirect("/sign-in");
   }
   const user = await getMe();
-  console.log(user)
   if (!user) {
     redirect("/sign-in");
   }
