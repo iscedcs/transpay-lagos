@@ -62,7 +62,7 @@ export function UserNav() {
             </Avatar>
           </Button>
           <div className="hidden w-32 flex-col md:flex">
-            <div className="text-xs text-background font-bold">
+            <div className="text-xs text-secondary font-bold">
               {user.name || "Agent User"}
             </div>
             <div className="text-xs capitalize text-primary">{user.role}</div>
