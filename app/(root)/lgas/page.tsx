@@ -165,16 +165,14 @@ export default function AllLGAsPage() {
           <Button
             variant="outline"
             onClick={() => setShowMap(!showMap)}
-            className="flex items-center gap-2"
-          >
+            className="flex items-center gap-2">
             <MapPin className="h-4 w-4" />
             {showMap ? "Hide Map" : "Show Map"}
           </Button>
           {["ADMIN", "SUPERADMIN"].includes(String(session.data?.user.role)) ? (
             <Button
               onClick={() => setIsImportModalOpen(true)}
-              className="flex items-center gap-2"
-            >
+              className="flex text-secondary items-center gap-2">
               <Plus className="h-4 w-4" />
               Import LGAs
             </Button>
@@ -262,8 +260,7 @@ export default function AllLGAsPage() {
             <div className="flex gap-2">
               <Select
                 value={pageSize.toString()}
-                onValueChange={handlePageSizeChange}
-              >
+                onValueChange={handlePageSizeChange}>
                 <SelectTrigger className="w-32">
                   <SelectValue />
                 </SelectTrigger>
@@ -348,8 +345,7 @@ export default function AllLGAsPage() {
                       <TableCell className="font-medium">
                         <Link
                           href={`/lgas/${lga.id}`}
-                          className="flex items-center gap-2"
-                        >
+                          className="flex items-center gap-2">
                           <MapPin className="h-4 w-4 text-muted-foreground" />
                           {lga.name}
                         </Link>
@@ -380,8 +376,7 @@ export default function AllLGAsPage() {
                             className={buttonVariants({
                               variant: "ghost",
                               size: "sm",
-                            })}
-                          >
+                            })}>
                             <Eye className="h-4 w-4" />
                           </Link>
                           <Link
@@ -389,16 +384,14 @@ export default function AllLGAsPage() {
                             className={buttonVariants({
                               variant: "ghost",
                               size: "sm",
-                            })}
-                          >
+                            })}>
                             <Edit className="h-4 w-4" />
                           </Link>
                           <Button
                             variant="ghost"
                             size="sm"
                             className="text-destructive hover:text-destructive"
-                            onClick={() => handleDeleteLGA(lga)}
-                          >
+                            onClick={() => handleDeleteLGA(lga)}>
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </div>
@@ -427,8 +420,7 @@ export default function AllLGAsPage() {
                   variant="outline"
                   size="sm"
                   onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage <= 1}
-                >
+                  disabled={currentPage <= 1}>
                   Previous
                 </Button>
 
@@ -454,20 +446,17 @@ export default function AllLGAsPage() {
                         }
                         size="sm"
                         onClick={() => handlePageChange(pageNum)}
-                        className="w-8 h-8 p-0"
-                      >
+                        className="w-8 h-8 p-0">
                         {pageNum}
                       </Button>
                     );
                   })}
                 </div>
-
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage >= totalPages}
-                >
+                  disabled={currentPage >= totalPages}>
                   Next
                 </Button>
               </div>

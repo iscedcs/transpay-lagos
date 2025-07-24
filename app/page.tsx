@@ -33,7 +33,7 @@ export default async function Home({
         <MaxWidthWrapper className="flex h-full w-full items-center justify-between gap-1 px-2 xl:px-0">
           <Link href={"/"} className="w-32 shrink-0 px-5 md:w-52">
             <Image
-              src={"/assets/transflex_standalone_logo.png"}
+              src={"/logo.png"}
               height={30}
               width={150}
               className="shrink-0"
@@ -44,8 +44,7 @@ export default async function Home({
             <Button
               asChild
               className="w-10 items-center rounded-lg bg-transparent md:w-32"
-              variant={"outline"}
-            >
+              variant={"outline"}>
               <Link href={"/scan"}>Scan</Link>
             </Button>
             <div className="flex items-center justify-center gap-3 text-primary-700">
