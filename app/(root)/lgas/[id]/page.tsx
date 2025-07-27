@@ -71,7 +71,7 @@ export default async function LGAPage({
   ]);
   const users = users_res.data;
   const vehicles = vehicles_res.data;
-  const scans = scans_res.data;
+  const scans = scans_res;
   const routes = routes_res.data;
 
   const canEdit = ADMIN_ROLES.includes(currentUser.role);
@@ -88,13 +88,13 @@ export default async function LGAPage({
       case "non_compliant":
         return "destructive";
       case "grace_period":
-        return "secondary";
+        return "destructive";
       default:
         return "outline";
     }
   };
 
-  const optionalLocations = scans;
+  const optionalLocations = scans.data;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -112,7 +112,7 @@ export default async function LGAPage({
               <h1 className="text-2xl font-bold">{lga.name}</h1>
               <div className="flex items-center gap-2 mt-1">
                 <Badge variant="outline">Edo State</Badge>
-                <Badge>
+                <Badge className="text-foreground">
                   {formatFees(JSON.parse(lga.fee) as VehicleFee[])} levy
                 </Badge>
               </div>
@@ -168,9 +168,9 @@ export default async function LGAPage({
               <Scan className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{scans.length}</div>
+              <div className="text-2xl font-bold">{scans.meta.count}</div>
               <p className="text-xs text-muted-foreground">
-                {scans.filter((s) => s.declaredRouteHit).length} passed
+                {scans.data.filter((s) => s.declaredRouteHit).length} passed
               </p>
             </CardContent>
           </Card>
@@ -379,10 +379,10 @@ export default async function LGAPage({
               <TabsContent value="scans">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Compliance Scans ({scans.length})</CardTitle>
+                    <CardTitle>Compliance Scans ({scans.meta.count})</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    {scans.length === 0 ? (
+                    {scans.meta.count === 0 ? (
                       <div className="text-center py-8 text-muted-foreground">
                         No compliance scans recorded
                       </div>
@@ -398,7 +398,7 @@ export default async function LGAPage({
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {scans.map((scan) => (
+                          {scans.data.map((scan) => (
                             <TableRow key={scan.id}>
                               <TableCell>
                                 {scan.user.firstName} {scan.user.lastName}
@@ -487,6 +487,7 @@ export default async function LGAPage({
               locations={optionalLocations}
               title="LGA Boundary and Scans"
               height="300px"
+              totalScan={scans.meta.count}
             />
             {/* Quick Stats */}
             <Card>
@@ -520,7 +521,7 @@ export default async function LGAPage({
                     <span className="text-sm">Recent Scans</span>
                     <span className="font-medium">
                       {
-                        scans.filter(
+                        scans.data.filter(
                           (s) =>
                             new Date(s.createdAt.split("T")[0]) >
                             new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
@@ -578,7 +579,7 @@ export default async function LGAPage({
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {scans.slice(0, 5).map((scan) => (
+                  {scans.data.slice(0, 5).map((scan) => (
                     <div
                       key={scan.id}
                       className="flex items-center gap-3 text-sm"
@@ -594,7 +595,7 @@ export default async function LGAPage({
                       </div>
                     </div>
                   ))}
-                  {scans.length === 0 && (
+                  {scans.meta.count === 0 && (
                     <div className="text-center py-4 text-muted-foreground text-sm">
                       No recent activity
                     </div>
