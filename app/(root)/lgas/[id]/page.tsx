@@ -1,30 +1,3 @@
-import { notFound, redirect } from "next/navigation";
-import {
-  ArrowLeft,
-  Edit,
-  Trash2,
-  MapPin,
-  Users,
-  Car,
-  Scan,
-  Route,
-  Calendar,
-} from "lucide-react";
-import Link from "next/link";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { getMe } from "@/actions/users";
-import { ADMIN_ROLES } from "@/lib/const";
 import {
   VehicleFee,
   getLGAById,
@@ -33,9 +6,36 @@ import {
   getLGAUsers,
   getLGAVehicles,
 } from "@/actions/lga";
-import { cn, formatFees } from "@/lib/utils";
-import CONFIG from "@/config";
+import { getMe } from "@/actions/users";
 import PolygonMapViewer from "@/components/polygon-map-viewer";
+import { Badge } from "@/components/ui/badge";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import CONFIG from "@/config";
+import { ADMIN_ROLES } from "@/lib/const";
+import { cn, formatFees } from "@/lib/utils";
+import {
+  ArrowLeft,
+  Calendar,
+  Car,
+  Edit,
+  MapPin,
+  Route,
+  Scan,
+  Trash2,
+  Users,
+} from "lucide-react";
+import Link from "next/link";
+import { notFound, redirect } from "next/navigation";
 
 export default async function LGAPage({
   params,
@@ -45,7 +45,11 @@ export default async function LGAPage({
   }>;
 }) {
   const id = (await params).id;
-  const currentUser = await getMe();
+  const currentUser = (await getMe()).user;
+
+  if (!currentUser) {
+    redirect("/sign-in");
+  }
 
   // Check access permissions
   if (!ADMIN_ROLES.includes(currentUser.role)) {
