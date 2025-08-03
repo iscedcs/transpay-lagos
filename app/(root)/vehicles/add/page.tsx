@@ -62,6 +62,7 @@ const AddVehiclePage = () => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState("vehicle");
+  const [displayDialog, setDisplayDialog] = useState(false);
   const [lgas, setLgas] = useState<{ id: string; name: string }[]>([]);
 
   // Fetch LGAs on component mount
