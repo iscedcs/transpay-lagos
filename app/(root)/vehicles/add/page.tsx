@@ -335,11 +335,9 @@ const AddVehiclePage = () => {
                     name="vin"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>
-                          Vehicle Identification Number (VIN)
-                        </FormLabel>
+                        <FormLabel>Chassis Number</FormLabel>
                         <FormControl>
-                          <Input placeholder="VIN" {...field} />
+                          <Input placeholder="Chasis Number" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -390,7 +388,7 @@ const AddVehiclePage = () => {
                     name="image"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Vehicle Image</FormLabel>
+                        <FormLabel>Driver Image</FormLabel>
                         <FormControl>
                           <AvatarUploader
                             onAvatarUpload={handleVehicleImageUpload}
