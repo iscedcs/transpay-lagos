@@ -238,6 +238,7 @@ const AddVehiclePage = () => {
 
       // Create vehicle with owner
       const vehicle = await createVehicleWithOwner(vehicleRequest);
+      // console.log({ vehicle });
 
       if (!vehicle.success) {
         toast.error("Registration Failed", {
@@ -251,10 +252,11 @@ const AddVehiclePage = () => {
       toast.success("Registration Successful", {
         description: "Vehicle and owner have been registered successfully!",
       });
+      // router.push(`/vehicles/${vehicle.data?.vehicle.id}`);
 
       // Redirect to vehicle details or list
-      if (vehicle.data?.id) {
-        router.push(`/vehicles/${vehicle.data.id}`);
+      if (vehicle.data?.vehicle.id) {
+        router.push(`/vehicles/${vehicle.data?.vehicle.id}`);
       } else {
         router.push("/vehicles");
       }
@@ -328,7 +330,7 @@ const AddVehiclePage = () => {
                       <FormItem>
                         <FormLabel>Plate Number</FormLabel>
                         <FormControl>
-                          <Input placeholder="ABC-123-XY" {...field} />
+                          <Input {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -341,7 +343,7 @@ const AddVehiclePage = () => {
                       <FormItem>
                         <FormLabel>Chassis Number</FormLabel>
                         <FormControl>
-                          <Input placeholder="Chasis Number" {...field} />
+                          <Input {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -381,7 +383,7 @@ const AddVehiclePage = () => {
                       <FormItem>
                         <FormLabel>Vehicle Status</FormLabel>
                         <FormControl>
-                          <Input placeholder="Functional" {...field} />
+                          <Input {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -440,7 +442,7 @@ const AddVehiclePage = () => {
                       <FormItem>
                         <FormLabel>First Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="John" {...field} />
+                          <Input {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -453,7 +455,7 @@ const AddVehiclePage = () => {
                       <FormItem>
                         <FormLabel>Last Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="Doe" {...field} />
+                          <Input {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -466,7 +468,7 @@ const AddVehiclePage = () => {
                       <FormItem>
                         <FormLabel>Phone Number</FormLabel>
                         <FormControl>
-                          <Input placeholder="08012345678" {...field} />
+                          <Input {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -479,11 +481,7 @@ const AddVehiclePage = () => {
                       <FormItem>
                         <FormLabel>Email Address</FormLabel>
                         <FormControl>
-                          <Input
-                            placeholder="johndoe@example.com"
-                            type="email"
-                            {...field}
-                          />
+                          <Input type="email" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -523,11 +521,7 @@ const AddVehiclePage = () => {
                       <FormItem className="md:col-span-2">
                         <FormLabel>Residential Address</FormLabel>
                         <FormControl>
-                          <Textarea
-                            placeholder="123 Main Street, City"
-                            className="resize-none"
-                            {...field}
-                          />
+                          <Textarea className="resize-none" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -540,7 +534,7 @@ const AddVehiclePage = () => {
                       <FormItem>
                         <FormLabel>City</FormLabel>
                         <FormControl>
-                          <Input placeholder="Benin" {...field} />
+                          <Input {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -553,7 +547,7 @@ const AddVehiclePage = () => {
                       <FormItem>
                         <FormLabel>Postal Code</FormLabel>
                         <FormControl>
-                          <Input placeholder="12345" {...field} />
+                          <Input {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -626,7 +620,7 @@ const AddVehiclePage = () => {
                       <FormItem>
                         <FormLabel>Whatsapp Number</FormLabel>
                         <FormControl>
-                          <Input placeholder="08012345678" {...field} />
+                          <Input {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -639,7 +633,7 @@ const AddVehiclePage = () => {
                       <FormItem>
                         <FormLabel>Mother's Maiden Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="Jane" {...field} />
+                          <Input {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -652,7 +646,7 @@ const AddVehiclePage = () => {
                       <FormItem>
                         <FormLabel>Next of Kin Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="Jane Doe" {...field} />
+                          <Input {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -665,7 +659,7 @@ const AddVehiclePage = () => {
                       <FormItem>
                         <FormLabel>Next of Kin Phone Number</FormLabel>
                         <FormControl>
-                          <Input placeholder="08012345678" {...field} />
+                          <Input {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -678,7 +672,7 @@ const AddVehiclePage = () => {
                       <FormItem>
                         <FormLabel>Relationship with Next of Kin</FormLabel>
                         <FormControl>
-                          <Input placeholder="Sister" {...field} />
+                          <Input {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
