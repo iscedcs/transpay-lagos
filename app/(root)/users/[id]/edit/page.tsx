@@ -99,7 +99,6 @@ export default function EditUserPage() {
     try {
       return JSON.parse(identification) as IdentificationData;
     } catch (error) {
-      console.log("Error parsing identification:", error);
       return null;
     }
   };
@@ -155,7 +154,6 @@ export default function EditUserPage() {
         setError(
           err instanceof Error ? err.message : "Failed to fetch user data"
         );
-        console.log("Error fetching data:", err);
       } finally {
         setIsFetching(false);
       }
@@ -239,7 +237,6 @@ export default function EditUserPage() {
         });
       }
     } catch (error) {
-      console.log("Failed to update field:", error);
       toast.error("Error", {
         description:
           error instanceof Error

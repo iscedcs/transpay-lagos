@@ -182,7 +182,6 @@ export async function getVehicleStats(): Promise<VehicleStatsResponse> {
 
     return data;
   } catch (error) {
-    console.log("Error fetching vehicle stats:", error);
     throw new Error(
       error instanceof Error ? error.message : "Failed to fetch vehicle stats"
     );
@@ -240,7 +239,6 @@ export async function updateVehicle(
 
     return { success: true, data: data.data };
   } catch (error) {
-    console.error("Error updating vehicle:", error);
     return {
       success: false,
       error:
@@ -304,7 +302,6 @@ export async function getVehicles(
     const data = await response.json();
     return data;
   } catch (error) {
-    console.log("Error fetching vehicles:", error);
     throw new Error(
       error instanceof Error ? error.message : "Failed to fetch vehicles"
     );
@@ -359,7 +356,6 @@ export async function createVehicleWithOwner(
 
     return { success: true, data: data.data };
   } catch (error) {
-    console.error("Error creating vehicle:", error);
     return {
       success: false,
       error:
@@ -408,7 +404,6 @@ export async function createVehicleVirtualAccount(walletData: {
 
     return data.data;
   } catch (error) {
-    console.log("Error creating virtual account:", error);
     throw new Error(
       error instanceof Error
         ? error.message
@@ -454,7 +449,6 @@ export async function getVehicleById(
 
     return { success: true, data: data.data };
   } catch (error) {
-    console.log("Error fetching vehicle by ID:", error);
     return {
       success: false,
       error: error instanceof Error ? error.message : "Failed to fetch vehicle",
@@ -482,7 +476,6 @@ export async function getVehicleByBarcode(barcode: string): Promise<Vehicle> {
 
     return data.data;
   } catch (error) {
-    console.log("Error fetching vehicle by ID:", error);
     throw new Error(
       error instanceof Error ? error.message : "Failed to fetch vehicle"
     );
@@ -545,7 +538,6 @@ export const allVehicles = async ({
       },
     };
   } catch (error) {
-    console.log("Error fetching vehicles:", error);
     return { error: "Something went wrong!!!" };
   }
 };
@@ -602,7 +594,6 @@ export const allVehiclesRegisteredByAgentId = async (userId: string) => {
       },
     };
   } catch (error) {
-    console.log(error);
     return { error: "Something went wrong!!!" };
   }
 };
@@ -648,7 +639,6 @@ export const allVehiclesByAgentId = async (userId: string) => {
       },
     };
   } catch (error) {
-    console.log(error);
     return { error: "Something went wrong!!!" };
   }
 };
@@ -732,7 +722,6 @@ export const getVehicleCategoriesData = async (
     // Return the counts for the predefined categories
     return categoryCounts;
   } catch (error) {
-    console.log("Error fetching vehicle data: ", error);
     throw new Error("Failed to get vehicle category data");
   }
 };
@@ -764,7 +753,6 @@ export const getVehicleCategoriesCounts = async () => {
       categories: categoryCounts, // Count of vehicles per category
     };
   } catch (error) {
-    console.log("Error fetching vehicle data: ", error);
     throw new Error("Failed to get vehicle category data");
   }
 };

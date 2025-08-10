@@ -10,7 +10,6 @@ import { getMe } from "./users";
 export const getComplianceRate = async () => {
   const session = await auth();
   if (!session || !session.user) {
-    console.log("No session or user found");
     return {
       totalVehicles: 0,
       owingVehicles: 0,
@@ -20,7 +19,6 @@ export const getComplianceRate = async () => {
   }
   const token = session?.user.access_token;
   if (!token) {
-    console.log("No access token found in the session");
     return {
       totalVehicles: 0,
       owingVehicles: 0,
@@ -35,7 +33,6 @@ export const getComplianceRate = async () => {
   };
   const res = await fetch(URL, { headers, cache: "no-store" });
   if (!res.ok) {
-    console.log("Failed to fetch compliance rate:", res.statusText);
     return {
       totalVehicles: 0,
       owingVehicles: 0,
@@ -47,7 +44,6 @@ export const getComplianceRate = async () => {
 
   const compliance_rate = data;
   if (!compliance_rate) {
-    console.log("Compliance rate not found in the response data");
     return {
       totalVehicles: 0,
       owingVehicles: 0,
@@ -66,7 +62,6 @@ export const getComplianceRate = async () => {
 export const getTransactionSummary = async () => {
   const session = await auth();
   if (!session || !session.user) {
-    console.log("No session or user found");
     return {
       totalAmount: 0,
       totalCount: 0,
@@ -74,7 +69,6 @@ export const getTransactionSummary = async () => {
   }
   const token = session?.user.access_token;
   if (!token) {
-    console.log("No access token found in the session");
     return {
       totalAmount: 0,
       totalCount: 0,
@@ -87,7 +81,6 @@ export const getTransactionSummary = async () => {
   };
   const res = await fetch(URL, { headers, cache: "no-store" });
   if (!res.ok) {
-    console.log("Failed to fetch transaction summary:", res.statusText);
     return {
       totalAmount: 0,
       totalCount: 0,
@@ -97,7 +90,6 @@ export const getTransactionSummary = async () => {
 
   const transaction_summary = data;
   if (!transaction_summary) {
-    console.log("Transaction summary not found in the response data");
     return {
       totalAmount: 0,
       totalCount: 0,
@@ -109,7 +101,6 @@ export const getTransactionSummary = async () => {
 export const getOutstandingFees = async () => {
   const session = await auth();
   if (!session || !session.user) {
-    console.log("No session or user found");
     return {
       totalAmount: 0,
       totalCount: 0,
@@ -117,7 +108,6 @@ export const getOutstandingFees = async () => {
   }
   const token = session?.user.access_token;
   if (!token) {
-    console.log("No access token found in the session");
     return {
       totalAmount: 0,
       totalCount: 0,
@@ -130,7 +120,6 @@ export const getOutstandingFees = async () => {
   };
   const res = await fetch(URL, { headers, cache: "no-store" });
   if (!res.ok) {
-    console.log("Failed to fetch Owing summary:", res.statusText);
     return {
       totalAmount: 0,
       totalCount: 0,
@@ -140,7 +129,6 @@ export const getOutstandingFees = async () => {
 
   const owing_summary = data;
   if (!owing_summary) {
-    console.log("Owing summary not found in the response data");
     return {
       totalAmount: 0,
       totalCount: 0,
@@ -155,7 +143,6 @@ export const getOutstandingFees = async () => {
 export const getMonthlyRevenueChange = async () => {
   const session = await auth();
   if (!session || !session.user) {
-    console.log("No session or user found");
     return {
       currentMonthRevenue: 0,
       lastMonthRevenue: 0,
@@ -164,7 +151,6 @@ export const getMonthlyRevenueChange = async () => {
   }
   const token = session?.user.access_token;
   if (!token) {
-    console.log("No access token found in the session");
     return {
       currentMonthRevenue: 0,
       lastMonthRevenue: 0,
@@ -178,7 +164,7 @@ export const getMonthlyRevenueChange = async () => {
   };
   const res = await fetch(URL, { headers, cache: "no-store" });
   if (!res.ok) {
-    console.log("Failed to fetch monthly revenue change:", res.statusText);
+    
     return {
       currentMonthRevenue: 0,
       lastMonthRevenue: 0,
@@ -189,7 +175,7 @@ export const getMonthlyRevenueChange = async () => {
 
   const monthly_revenue_change = data;
   if (!monthly_revenue_change) {
-    console.log("Monthly revenue change not found in the response data");
+    
     return {
       currentMonthRevenue: 0,
       lastMonthRevenue: 0,
@@ -207,7 +193,6 @@ export const getMonthlyRevenueChange = async () => {
 export const getUsersByRole = async () => {
   const session = await auth();
   if (!session || !session.user) {
-    console.log("No session or user found");
     return [
       { role: "ADMIN", count: 0 },
       { role: "EIRS_ADMIN", count: 0 },
@@ -220,7 +205,6 @@ export const getUsersByRole = async () => {
   }
   const token = session?.user.access_token;
   if (!token) {
-    console.log("No access token found in the session");
     return [
       { role: "ADMIN", count: 0 },
       { role: "EIRS_ADMIN", count: 0 },
@@ -238,7 +222,7 @@ export const getUsersByRole = async () => {
   };
   const res = await fetch(URL, { headers, cache: "no-store" });
   if (!res.ok) {
-    console.log("Failed to fetch users by role:", res.statusText);
+    
     return [
       { role: "ADMIN", count: 0 },
       { role: "EIRS_ADMIN", count: 0 },
@@ -253,7 +237,7 @@ export const getUsersByRole = async () => {
 
   const user_count = data.data;
   if (!user_count) {
-    console.log("users by role not found in the response data");
+    
     return [
       { role: "ADMIN", count: 0 },
       { role: "EIRS_ADMIN", count: 0 },
@@ -270,7 +254,6 @@ export const getUsersByRole = async () => {
 export async function fetchVehicleTypes() {
   const session = await auth();
   if (!session || !session.user) {
-    console.log("No session or user found");
     return [
       { type: "TRICYCLE", count: 0 },
       { type: "BUS_INTRASTATE", count: 0 },
@@ -278,7 +261,6 @@ export async function fetchVehicleTypes() {
   }
   const token = session?.user.access_token;
   if (!token) {
-    console.log("No access token found in the session");
     return [
       { type: "TRICYCLE", count: 0 },
       { type: "BUS_INTRASTATE", count: 0 },
@@ -291,7 +273,7 @@ export async function fetchVehicleTypes() {
   };
   const res = await fetch(URL, { headers, cache: "no-store" });
   if (!res.ok) {
-    console.log("Failed to fetch vehicle category:", res.statusText);
+    
     return [
       { type: "TRICYCLE", count: 0 },
       { type: "BUS_INTRASTATE", count: 0 },
@@ -301,7 +283,7 @@ export async function fetchVehicleTypes() {
 
   const vehicle_category_count = data.data;
   if (!vehicle_category_count) {
-    console.log("users by role not found in the response data");
+    
     return [
       { type: "TRICYCLE", count: 0 },
       { type: "BUS_INTRASTATE", count: 0 },
@@ -313,7 +295,6 @@ export async function fetchVehicleTypes() {
 export async function fetchLGARevenue() {
   const session = await auth();
   if (!session || !session.user) {
-    console.log("No session or user found");
     return [
       { lga: "ESAN SOUTH-EAST", count: 1, percentage: 50 },
       { lga: "OREDO", count: 1, percentage: 50 },
@@ -321,7 +302,6 @@ export async function fetchLGARevenue() {
   }
   const token = session?.user.access_token;
   if (!token) {
-    console.log("No access token found in the session");
     return [
       { lga: "ESAN SOUTH-EAST", count: 1, percentage: 50 },
       { lga: "OREDO", count: 1, percentage: 50 },
@@ -334,7 +314,7 @@ export async function fetchLGARevenue() {
   };
   const res = await fetch(URL, { headers, cache: "no-store" });
   if (!res.ok) {
-    console.log("Failed to fetch vehicle count by lga:", res.statusText);
+    
     return [
       { lga: "ESAN SOUTH-EAST", count: 1, percentage: 50 },
       { lga: "OREDO", count: 1, percentage: 50 },
@@ -344,7 +324,7 @@ export async function fetchLGARevenue() {
 
   const lga_revenue_all = data.data;
   if (!lga_revenue_all) {
-    console.log("vehicle count by lga not found in the response data");
+    
     return [
       { lgaName: "Warri South", vehicleCount: 450 },
       { lgaName: "Ndokwa East", vehicleCount: 320 },
@@ -359,7 +339,6 @@ export async function fetchLGARevenue() {
 export async function fetchVehicleDistribution() {
   const session = await auth();
   if (!session || !session.user) {
-    console.log("No session or user found");
     return [
       { lga: "ESAN SOUTH-EAST", count: 1, percentage: 50 },
       { lga: "OREDO", count: 1, percentage: 50 },
@@ -367,7 +346,6 @@ export async function fetchVehicleDistribution() {
   }
   const token = session?.user.access_token;
   if (!token) {
-    console.log("No access token found in the session");
     return [
       { lga: "ESAN SOUTH-EAST", count: 1, percentage: 50 },
       { lga: "OREDO", count: 1, percentage: 50 },
@@ -380,7 +358,7 @@ export async function fetchVehicleDistribution() {
   };
   const res = await fetch(URL, { headers, cache: "no-store" });
   if (!res.ok) {
-    console.log("Failed to fetch vehicle count by lga:", res.statusText);
+    
     return [
       { lga: "ESAN SOUTH-EAST", count: 1, percentage: 50 },
       { lga: "OREDO", count: 1, percentage: 50 },
@@ -390,7 +368,7 @@ export async function fetchVehicleDistribution() {
 
   const vehicle_count_by_lga = data.data;
   if (!vehicle_count_by_lga) {
-    console.log("vehicle count by lga not found in the response data");
+    
     return [
       { lgaName: "Warri South", vehicleCount: 450 },
       { lgaName: "Ndokwa East", vehicleCount: 320 },
@@ -526,7 +504,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
       },
     };
   } catch (error) {
-    console.log("Error fetching dashboard stats:", error);
+    
     throw new Error("Failed to fetch dashboard statistics");
   }
 }
@@ -564,7 +542,7 @@ export async function getRecentScans(limit = 10) {
 
     return scans;
   } catch (error) {
-    console.log("Error fetching recent scans:", error);
+    
     throw new Error("Failed to fetch recent scans");
   }
 }
@@ -671,7 +649,7 @@ export async function getLGAAgentDashboardStats(): Promise<DashboardStats> {
       },
     };
   } catch (error) {
-    console.log("Error fetching LGA agent dashboard stats:", error);
+    
     throw new Error("Failed to fetch dashboard statistics");
   }
 }
@@ -721,7 +699,7 @@ export async function getLGAAgentRecentScans(limit = 10) {
 
     return scans;
   } catch (error) {
-    console.log("Error fetching LGA agent recent scans:", error);
+    
     throw new Error("Failed to fetch recent scans");
   }
 }
@@ -905,7 +883,7 @@ export async function getLGAAdminDashboardStats(): Promise<
       monthlyRevenue: Number(monthlyRevenue._sum.amount || 0),
     };
   } catch (error) {
-    console.log("Error fetching LGA admin dashboard stats:", error);
+    
     throw new Error("Failed to fetch dashboard statistics");
   }
 }
@@ -996,7 +974,7 @@ export async function getLGAAdminAgentPerformance() {
 
     return agentPerformance;
   } catch (error) {
-    console.log("Error fetching agent performance:", error);
+    
     throw new Error("Failed to fetch agent performance data");
   }
 }
@@ -1059,7 +1037,7 @@ export async function getLGAAdminActivities(limit = 20) {
 
     return activities;
   } catch (error) {
-    console.log("Error fetching LGA admin activities:", error);
+    
     throw new Error("Failed to fetch activities");
   }
 }

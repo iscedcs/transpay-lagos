@@ -45,7 +45,6 @@ async function LGAEditContent({ id }: { id: string }) {
       </div>
     );
   } catch (error) {
-    console.log("Error loading LGA:", error);
     notFound();
   }
 }

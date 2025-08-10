@@ -139,7 +139,6 @@ export const allVehicles = async ({
       },
     };
   } catch (error) {
-    console.log("Error fetching vehicles:", error);
     return { error: "Something went wrong!!!" };
   }
 };
@@ -196,7 +195,6 @@ export const allVehiclesRegisteredByAgentId = async (userId: string) => {
       },
     };
   } catch (error) {
-    console.log(error);
     return { error: "Something went wrong!!!" };
   }
 };
@@ -242,7 +240,6 @@ export const allVehiclesByAgentId = async (userId: string) => {
       },
     };
   } catch (error) {
-    console.log(error);
     return { error: "Something went wrong!!!" };
   }
 };
@@ -326,7 +323,6 @@ export const getVehicleCategoriesData = async (
     // Return the counts for the predefined categories
     return categoryCounts;
   } catch (error) {
-    console.log("Error fetching vehicle data: ", error);
     throw new Error("Failed to get vehicle category data");
   }
 };
@@ -358,7 +354,6 @@ export const getVehicleCategoriesCounts = async () => {
       categories: categoryCounts, // Count of vehicles per category
     };
   } catch (error) {
-    console.log("Error fetching vehicle data: ", error);
     throw new Error("Failed to get vehicle category data");
   }
 };

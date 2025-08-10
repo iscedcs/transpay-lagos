@@ -695,7 +695,6 @@ export function getNextPaymentDate(
       nextPaymentDate = addDays(nextPaymentDate, 1);
     }
   }
-  // console.log(nextPaymentDate, "PAYMENT DATE");
   return nextPaymentDate;
 }
 
@@ -809,7 +808,6 @@ export function parseAddressExtended(addressString: string | null): {
       postal_code: parsed.POSTAL_CODE,
     };
   } catch (error) {
-    console.log("Error parsing address:", error);
     return {};
   }
 }
