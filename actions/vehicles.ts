@@ -6,7 +6,7 @@ import { API } from "@/lib/const";
 import { db } from "@/lib/db";
 import { devLog } from "@/lib/utils";
 import { VehicleOwner } from "@/types/vehicles";
-import { TransactionCategories } from "@prisma/client";
+import { TransactionCategories, VehicleCategories } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -774,7 +774,7 @@ export const getVehicleByFareFlexImei = async (fairFlexImei: string) => {
   }
 };
 export const getVehicleCategoriesData = async (
-  categories: TransactionCategories[]
+  categories: VehicleCategories[]
 ) => {
   try {
     // Query the database to count vehicles in each category

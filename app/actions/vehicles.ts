@@ -1,7 +1,11 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { Prisma, TransactionCategories } from "@prisma/client";
+import {
+  Prisma,
+  TransactionCategories,
+  VehicleCategories,
+} from "@prisma/client";
 
 interface FetchVehicleParams {
   page?: number;
@@ -10,7 +14,7 @@ interface FetchVehicleParams {
 
 export type VehicleFilter = {
   status?: "INACTIVE" | "ACTIVE" | "CLEARED" | "OWING";
-  category?: TransactionCategories;
+  category?: VehicleCategories;
   type?: string;
   search?: string;
 };
@@ -297,7 +301,7 @@ export const getVehicleByFareFlexImei = async (fairFlexImei: string) => {
   }
 };
 export const getVehicleCategoriesData = async (
-  categories: TransactionCategories[]
+  categories: VehicleCategories[]
 ) => {
   try {
     // Query the database to count vehicles in each category
@@ -415,22 +419,22 @@ export const getFullVehicleById = async (id: string) => {
 };
 
 export const getVehicleIdByPlate = async (plateNumber: string) => {
-     try {
-          const vehicle = await db.vehicle.findFirst({
-               where: {
-                    plateNumber,
-               },
-               select: {
-                    id: true,
-                    User: true
-               },
-          });
-          if (vehicle) {
-               return vehicle
-          } else {
-               return undefined;
-          }
-     } catch (error) {
-          return undefined;
-     }
-}
+  try {
+    const vehicle = await db.vehicle.findFirst({
+      where: {
+        plateNumber,
+      },
+      select: {
+        id: true,
+        User: true,
+      },
+    });
+    if (vehicle) {
+      return vehicle;
+    } else {
+      return undefined;
+    }
+  } catch (error) {
+    return undefined;
+  }
+};
