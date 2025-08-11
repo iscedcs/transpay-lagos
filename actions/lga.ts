@@ -221,9 +221,17 @@ export async function getLGAs(
 
     return data;
   } catch (error) {
-    throw new Error(
-      error instanceof Error ? error.message : "Failed to fetch LGAs"
-    );
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "Failed to fetch LGAs",
+      meta: {
+        total: 0,
+        page: params.page || 1,
+        limit: params.limit || 50,
+        pages: 0,
+      },
+      data: [],
+    };
   }
 }
 

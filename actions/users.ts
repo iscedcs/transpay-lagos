@@ -62,10 +62,12 @@ export interface UsersResponse {
   data: {
     users: User[];
     count: number;
+    roleSummary: Record<string, number>; // Summary of users by role
     pagination: {
       limit: number;
       offset: number;
     };
+    showDeleted: boolean; // Flag to show deleted users
   };
 }
 
