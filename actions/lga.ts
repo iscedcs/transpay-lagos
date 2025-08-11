@@ -221,10 +221,17 @@ export async function getLGAs(
 
     return data;
   } catch (error) {
-    console.log("Error fetching LGAs:", error);
-    throw new Error(
-      error instanceof Error ? error.message : "Failed to fetch LGAs"
-    );
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "Failed to fetch LGAs",
+      meta: {
+        total: 0,
+        page: params.page || 1,
+        limit: params.limit || 50,
+        pages: 0,
+      },
+      data: [],
+    };
   }
 }
 
@@ -256,7 +263,6 @@ export async function getLGAById(id: string): Promise<LGA> {
       fee: lga.fee,
     };
   } catch (error) {
-    console.log("Error fetching LGA by ID:", error);
     throw new Error(
       error instanceof Error ? error.message : "Failed to fetch LGA"
     );
@@ -270,7 +276,6 @@ export async function getLGAUsers(
   try {
     const session = await auth();
     if (!session || !session.user) {
-      console.log("No session or user found");
       return {
         success: false,
         message: "No session or user found",
@@ -285,7 +290,6 @@ export async function getLGAUsers(
     }
     const token = session?.user.access_token;
     if (!token) {
-      console.log("No access token found in the session");
       return {
         success: false,
         message: "No access token found in the session",
@@ -322,7 +326,6 @@ export async function getLGAUsers(
 
     if (!response.ok) {
       if (response.status === 404) {
-        console.log("LGA not found or no users found");
         return {
           success: false,
           message: "LGA not found or no users found",
@@ -335,9 +338,6 @@ export async function getLGAUsers(
           },
         };
       }
-      console.log(
-        `Failed to fetch LGA users: ${response.status} ${response.statusText}`
-      );
       return {
         success: false,
         message: `Failed to fetch LGA users: ${response.status} ${response.statusText}`,
@@ -354,13 +354,12 @@ export async function getLGAUsers(
     const data: LGAUsersResponse = await response.json();
 
     if (!data.success) {
-      console.log(data.message || "Failed to fetch LGA users");
+      
       return data;
     }
 
     return data;
   } catch (error) {
-    console.log("Error fetching LGA users:", error);
     return {
       success: false,
       message:
@@ -383,7 +382,6 @@ export async function getLGAVehicles(
   try {
     const session = await auth();
     if (!session || !session.user) {
-      console.log("No session or user found");
       return {
         success: false,
         message: "No session or user found",
@@ -397,7 +395,6 @@ export async function getLGAVehicles(
     }
     const token = session?.user.access_token;
     if (!token) {
-      console.log("No access token found in the session");
       return {
         success: false,
         message: "No access token found in the session",
@@ -428,7 +425,6 @@ export async function getLGAVehicles(
 
     if (!response.ok) {
       if (response.status === 404) {
-        console.log("LGA not found or no vehicles found");
         return {
           success: false,
           message: "LGA not found or no vehicles found",
@@ -440,9 +436,6 @@ export async function getLGAVehicles(
           },
         };
       }
-      console.log(
-        `Failed to fetch LGA vehicles: ${response.status} ${response.statusText}`
-      );
       return {
         success: false,
         message: `Failed to fetch LGA vehicles: ${response.status} ${response.statusText}`,
@@ -458,7 +451,7 @@ export async function getLGAVehicles(
     const data: LGAVehiclesResponse = await response.json();
 
     if (!data.success) {
-      console.log(data.message || "Failed to fetch LGA vehicles");
+      
       return {
         success: false,
         message: data.message || "Failed to fetch LGA vehicles",
@@ -473,7 +466,6 @@ export async function getLGAVehicles(
 
     return data;
   } catch (error) {
-    console.log("Error fetching LGA vehicles:", error);
     return {
       success: false,
       message:
@@ -495,7 +487,6 @@ export async function getLGAScans(
   try {
     const session = await auth();
     if (!session || !session.user) {
-      console.log("No session or user found");
       return {
         success: false,
         message: "No session or user found",
@@ -510,7 +501,6 @@ export async function getLGAScans(
     }
     const token = session?.user.access_token;
     if (!token) {
-      console.log("No access token found in the session");
       return {
         success: false,
         message: "No access token found in the session",
@@ -542,7 +532,7 @@ export async function getLGAScans(
 
     if (!response.ok) {
       const errorMessage = `Failed to fetch LGA scans: ${response.status} ${response.statusText}`;
-      console.log(errorMessage);
+      
       return {
         success: false,
         message: errorMessage,
@@ -560,7 +550,7 @@ export async function getLGAScans(
 
     if (!data.success) {
       const errorMessage = data.message || "Failed to fetch LGA scans";
-      console.log(errorMessage);
+      
       return {
         success: false,
         message: errorMessage,
@@ -578,7 +568,7 @@ export async function getLGAScans(
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "Failed to fetch LGA scans";
-    console.log("Error fetching LGA scans:", error);
+
     return {
       success: false,
       message: errorMessage,
@@ -600,7 +590,6 @@ export async function getLGARoutes(
   try {
     const session = await auth();
     if (!session || !session.user) {
-      console.log("No session or user found");
       return {
         success: false,
         message: "No session or user found",
@@ -614,7 +603,6 @@ export async function getLGARoutes(
     }
     const token = session?.user.access_token;
     if (!token) {
-      console.log("No access token found in the session");
       return {
         success: false,
         message: "No access token found in the session",
@@ -646,7 +634,7 @@ export async function getLGARoutes(
 
     if (!response.ok) {
       const errorMessage = `Failed to fetch LGA routes: ${response.status} ${response.statusText}`;
-      console.log(errorMessage);
+      
       return {
         success: false,
         message: errorMessage,
@@ -663,7 +651,7 @@ export async function getLGARoutes(
 
     if (!data.success) {
       const errorMessage = data.message || "Failed to fetch LGA routes";
-      console.log(errorMessage);
+      
       return {
         success: false,
         message: errorMessage,
@@ -680,7 +668,7 @@ export async function getLGARoutes(
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "Failed to fetch LGA routes";
-    console.log("Error fetching LGA routes:", error);
+
     return {
       success: false,
       message: errorMessage,
@@ -723,7 +711,6 @@ export async function createLGAsBulk(
     const data = await response.json();
     return data;
   } catch (error) {
-    console.log("Error creating LGAs in bulk:", error);
     throw new Error(
       error instanceof Error ? error.message : "Failed to create LGAs"
     );
@@ -757,7 +744,6 @@ export async function softDeleteLGA(
       message: data.message || "LGA soft deleted successfully",
     };
   } catch (error) {
-    console.log("Error soft deleting LGA:", error);
     throw new Error(
       error instanceof Error ? error.message : "Failed to soft delete LGA"
     );
@@ -791,7 +777,6 @@ export async function hardDeleteLGA(
       message: data.message || "LGA permanently deleted",
     };
   } catch (error) {
-    console.log("Error permanently deleting LGA:", error);
     throw new Error(
       error instanceof Error
         ? error.message
@@ -836,7 +821,6 @@ export async function createLga(
 
     return { success: true, data };
   } catch (error) {
-    console.log("Error creating lga:", error);
     return { success: false, error: "Failed to create lga" };
   }
 }
@@ -905,7 +889,6 @@ export async function updateLGA(
       data: result.data,
     };
   } catch (error) {
-    console.log("Error updating LGA:", error);
     throw new Error(
       error instanceof Error ? error.message : "Failed to update LGA"
     );
@@ -950,7 +933,7 @@ export async function updateLGA(
 //       data: result.data,
 //     };
 //   } catch (error) {
-//     console.log("Error updating LGA fee:", error);
+//
 //     throw new Error(
 //       error instanceof Error ? error.message : "Failed to update LGA fee"
 //     );
@@ -1013,7 +996,6 @@ export async function updateLGAFee(
       data: result.data,
     };
   } catch (error) {
-    console.log("Error updating LGA fee:", error);
     throw new Error(
       error instanceof Error ? error.message : "Failed to update LGA fee"
     );

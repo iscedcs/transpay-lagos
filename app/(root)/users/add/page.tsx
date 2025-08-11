@@ -180,7 +180,6 @@ export default function AddUserPage() {
         const response = await getLGAs({ limit: 50, page: 1 });
         setLgas(response.data.map((lga) => ({ id: lga.id, name: lga.name })));
       } catch (error) {
-        console.log("Failed to fetch LGAs:", error);
         toast.error("Error", {
           description: "Failed to load LGA data. Please try again later.",
         });
@@ -214,7 +213,6 @@ export default function AddUserPage() {
         router.push("/users");
       }
     } catch (error) {
-      console.log("Failed to create user:", error);
       toast.error("Error", {
         description:
           error instanceof Error

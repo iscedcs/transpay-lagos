@@ -160,8 +160,7 @@ export function LGAImportModal({
       onSuccess?.();
       onClose();
     } catch (error) {
-      console.log("Failed to import LGAs:", error);
-      // You might want to show a toast notification here
+      // TODO: show a toast notification here
     } finally {
       setIsLoading(false);
     }

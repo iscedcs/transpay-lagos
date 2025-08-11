@@ -61,7 +61,6 @@ export default function QrIdPage() {
         setVehicle(vehicleData);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Vehicle not found");
-        console.log("Error fetching vehicle:", err);
       } finally {
         setLoading(false);
       }

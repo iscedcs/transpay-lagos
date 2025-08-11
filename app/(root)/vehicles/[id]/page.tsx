@@ -27,10 +27,8 @@ export default async function VehiclePage({ params }: VehiclePageProps) {
 
   try {
     vehicle = await getVehicleById(id);
-    console.log({ vehicle });
   } catch (err) {
     error = err instanceof Error ? err.message : "Failed to fetch vehicle";
-    console.log("Error fetching vehicle:", err);
   }
 
   // Handle error state

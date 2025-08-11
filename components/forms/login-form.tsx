@@ -69,7 +69,6 @@ export function LoginForm({ error }: { error?: string }) {
       toast({
         title: error?.message || "Check Internet",
       });
-      console.log({ error });
       setIsLoading(false);
       throw new Error(error);
     }

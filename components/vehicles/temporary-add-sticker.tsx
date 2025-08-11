@@ -59,7 +59,6 @@ export default function NotificationAddStickers({
   const [assignLoading, setAssignLoading] = useState(false);
   const [vehicleId, setVehicleId] = useState(vehicle.id);
 
-  //   console.log({ selectedSticker });
   const now = new Date();
   const isTenMinutesPassed =
     now.getTime() - new Date(vehicle.createdAt).getTime() < 20 * 60 * 1000;

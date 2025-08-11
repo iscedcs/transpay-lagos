@@ -74,7 +74,6 @@ const AddVehiclePage = () => {
           lgaResponse.data.map((lga) => ({ id: lga.id, name: lga.name }))
         );
       } catch (error) {
-        console.log("Failed to fetch LGAs:", error);
         toast.error("Error", {
           description: "Failed to load LGAs. Please try again later.",
         });
@@ -238,7 +237,6 @@ const AddVehiclePage = () => {
 
       // Create vehicle with owner
       const vehicle = await createVehicleWithOwner(vehicleRequest);
-      // console.log({ vehicle });
 
       if (!vehicle.success) {
         toast.error("Registration Failed", {
@@ -262,7 +260,6 @@ const AddVehiclePage = () => {
       }
       router.refresh();
     } catch (error) {
-      console.log("Failed to create vehicle:", error);
       toast.error("Registration Failed", {
         description:
           error instanceof Error

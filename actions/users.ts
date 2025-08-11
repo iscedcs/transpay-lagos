@@ -62,10 +62,12 @@ export interface UsersResponse {
   data: {
     users: User[];
     count: number;
+    roleSummary: Record<string, number>; // Summary of users by role
     pagination: {
       limit: number;
       offset: number;
     };
+    showDeleted: boolean; // Flag to show deleted users
   };
 }
 
@@ -137,7 +139,6 @@ export async function getUsers(
 
     return processedData;
   } catch (error) {
-    console.log("Error fetching users:", error);
     throw new Error(
       error instanceof Error ? error.message : "Failed to fetch users"
     );
@@ -179,7 +180,6 @@ export async function getUserById(id: string): Promise<User> {
 
     return data.data;
   } catch (error) {
-    console.log("Error fetching user by ID:", error);
     throw new Error(
       error instanceof Error ? error.message : "Failed to fetch user"
     );
@@ -230,7 +230,6 @@ export async function updateUser(
 
     return data.data;
   } catch (error) {
-    console.log("Error updating user:", error);
     throw new Error(
       error instanceof Error ? error.message : "Failed to update user"
     );
@@ -308,7 +307,6 @@ export const allUsers = async ({
         },
       };
     } catch (error) {
-      console.log("Error fetching users:", error);
       return { error: "Something went wrong!!!" };
     }
 };
@@ -362,7 +360,6 @@ export const allAgentsCreatedByAdminId = async ({
       },
     };
   } catch (error) {
-    console.log("Error fetching users:", error);
     return { error: "Something went wrong!!!" };
   }
 };
@@ -395,7 +392,6 @@ export const getMe = async () => {
     }
     return { user };
   } catch (error) {
-    console.log("Error fetching user data:", error);
     return { error: "Something went wrong while fetching user data" };
   }
 };
@@ -440,7 +436,6 @@ export async function createUser(
 
     return { success: true, data: result.data };
   } catch (error) {
-    console.log("Error creating user:", error);
     return {
       success: false,
       error:
