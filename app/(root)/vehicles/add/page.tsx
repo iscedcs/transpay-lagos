@@ -1,6 +1,5 @@
 "use client";
 
-
 import { getLGAs } from "@/actions/lga";
 import { createVehicleWithOwner } from "@/actions/vehicles";
 import AvatarUploader from "@/components/shared/avatar-uploader";
@@ -48,8 +47,9 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import type { z } from "zod";
 import {
-  CreateVehicleRequest,
+  type CreateVehicleRequest,
   genderOptions,
   maritalStatusOptions,
   nokFormSchema,
@@ -97,9 +97,10 @@ const AddVehiclePage = () => {
     mode: "all",
   });
 
-  const ownerForm = useForm({
+  const ownerForm = useForm<z.infer<typeof ownerFormSchema>>({
     resolver: zodResolver(ownerFormSchema),
     defaultValues: {
+      email: "",
       gender: "MALE",
       maritalStatus: "SINGLE",
       whatsappNumber: "",
@@ -110,7 +111,6 @@ const AddVehiclePage = () => {
       firstName: "",
       lastName: "",
       lgaId: "",
-      postalCode: "",
       residentialAddress: "",
     },
     mode: "all",
@@ -131,7 +131,7 @@ const AddVehiclePage = () => {
   });
 
   const validateOwnerTab = async () => {
-    const isValid = await nokForm.trigger();
+    const isValid = await ownerForm.trigger();
     if (!isValid) {
       toast.error("Please complete all required owner information fields");
       return false;
@@ -185,15 +185,13 @@ const AddVehiclePage = () => {
     setIsLoading(true);
     try {
       // Validate all forms
-      const [ownerValid, nextOfKinValid, vehicleValid] = await Promise.all([
-        nokForm.trigger(),
+      const [ownerValid, vehicleValid] = await Promise.all([
         ownerForm.trigger(),
         vehicleForm.trigger(),
       ]);
 
-      if (!ownerValid || !nextOfKinValid || !vehicleValid) {
+      if (!ownerValid || !vehicleValid) {
         toast.error("Please complete all required fields");
-        setIsLoading(false);
         return;
       }
 
@@ -220,7 +218,6 @@ const AddVehiclePage = () => {
             state: "Edo",
             unit: selectedLga?.name || "",
             country: "Nigeria",
-            postal_code: ownerData.postalCode,
           },
           gender: ownerData.gender,
           marital_status: ownerData.maritalStatus,
@@ -444,7 +441,7 @@ const AddVehiclePage = () => {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email Address</FormLabel>
+                        <FormLabel>Email Address (Optional)</FormLabel>
                         <FormControl>
                           <Input type="email" {...field} />
                         </FormControl>
@@ -512,7 +509,7 @@ const AddVehiclePage = () => {
                     name="whatsappNumber"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Whatsapp Number</FormLabel>
+                        <FormLabel>Whatsapp Number (Optional)</FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -586,19 +583,6 @@ const AddVehiclePage = () => {
                       </FormItem>
                     )}
                   />
-                  <FormField
-                    control={ownerForm.control}
-                    name="postalCode"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Postal Code</FormLabel>
-                        <FormControl>
-                          <Input {...field} />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
                 </form>
               </Form>
             </TabsContent>
@@ -610,7 +594,12 @@ const AddVehiclePage = () => {
                     name="nextOfKinName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Next of Kin Name</FormLabel>
+                        <FormLabel>
+                          Next of Kin Name{" "}
+                          <span className="text-muted-foreground">
+                            (Optional)
+                          </span>
+                        </FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -623,7 +612,12 @@ const AddVehiclePage = () => {
                     name="nextOfKinPhone"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Next of Kin Phone Number</FormLabel>
+                        <FormLabel>
+                          Next of Kin Phone Number{" "}
+                          <span className="text-muted-foreground">
+                            (Optional)
+                          </span>
+                        </FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -636,7 +630,12 @@ const AddVehiclePage = () => {
                     name="nextOfKinRelationship"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Relationship with Next of Kin</FormLabel>
+                        <FormLabel>
+                          Relationship with Next of Kin{" "}
+                          <span className="text-muted-foreground">
+                            (Optional)
+                          </span>
+                        </FormLabel>
                         <FormControl>
                           <Input {...field} />
                         </FormControl>
@@ -660,7 +659,7 @@ const AddVehiclePage = () => {
                       <strong>Phone:</strong> {ownerForm.getValues().phone}
                     </p>
                     <p>
-                      <strong>Email:</strong> {ownerForm.getValues().email}
+                      <strong>Email:</strong> {ownerForm.getValues().email || "Not provided"}
                     </p>
                     <p>
                       <strong>Address:</strong>{" "}
@@ -672,18 +671,24 @@ const AddVehiclePage = () => {
                 <div>
                   <h3 className="text-lg font-semibold">Owner Information</h3>
                   <div className="grid gap-2">
-                    <p>
-                      <strong>Next of Kin Name:</strong>{" "}
-                      {nokForm.getValues().nextOfKinName}
-                    </p>
-                    <p>
-                      <strong>Next of Kin Phone Number:</strong>{" "}
-                      {nokForm.getValues().nextOfKinPhone}
-                    </p>
-                    <p>
-                      <strong>Relationship with Next of Kin:</strong>{" "}
-                      {nokForm.getValues().nextOfKinRelationship}
-                    </p>
+                    {nokForm.getValues().nextOfKinName && (
+                      <p>
+                        <strong>Next of Kin Name:</strong>{" "}
+                        {nokForm.getValues().nextOfKinName}
+                      </p>
+                    )}
+                    {nokForm.getValues().nextOfKinPhone && (
+                      <p>
+                        <strong>Next of Kin Phone Number:</strong>{" "}
+                        {nokForm.getValues().nextOfKinPhone}
+                      </p>
+                    )}
+                    {nokForm.getValues().nextOfKinRelationship && (
+                      <p>
+                        <strong>Relationship with Next of Kin:</strong>{" "}
+                        {nokForm.getValues().nextOfKinRelationship}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div>

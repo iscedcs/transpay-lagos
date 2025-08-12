@@ -69,16 +69,16 @@ export const ownerFormSchema = z.object({
   city: z.string().min(1, "City is required"),
   lgaId: z.string().min(1, "LGA is required"),
   country: z.string().default("Nigeria"),
-  postalCode: z.string().optional(),
-  email: z.string().email().optional(),
+  postalCode: z.string().optional().or(z.literal("")),
+  email: z.string().email().optional().or(z.literal("")),
   gender: z.enum(["MALE", "FEMALE", "OTHERS"], {
     required_error: "Please select a gender",
   }),
   maritalStatus: z.enum(["SINGLE", "MARRIED", "DIVORCED", "WIDOWED"], {
     required_error: "Please select marital status",
   }),
-  whatsappNumber: z.string().optional(),
-  maidenName: z.string().optional(),
+  whatsappNumber: z.string().optional().or(z.literal("")),
+  maidenName: z.string().optional().or(z.literal("")),
 });
 
 // Next of kin validation schema
