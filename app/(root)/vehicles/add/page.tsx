@@ -57,6 +57,10 @@ import {
   ownerFormSchema,
 } from "../vehicle-form-validation";
 import { devLog } from "@/lib/utils";
+import { useSession } from "next-auth/react";
+import { User, getMe } from "@/actions/users";
+import { AlertTriangle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const AddVehiclePage = () => {
   const router = useRouter();
@@ -64,6 +68,38 @@ const AddVehiclePage = () => {
   const [activeTab, setActiveTab] = useState("vehicle");
   const [displayDialog, setDisplayDialog] = useState(false);
   const [lgas, setLgas] = useState<{ id: string; name: string }[]>([]);
+  const [user, setUser] = useState<User | undefined>(undefined);
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
+  const [filteredLgas, setFilteredLgas] = useState<
+    { id: string; name: string }[]
+  >([]);
+  const { data: session } = useSession();
+  const checkUserAccess = (user: User) => {
+    const allowedRoles = [
+      "ADMIN",
+      "LGA_AGENT",
+      "SUPERADMIN",
+      "EIRS_ADMIN",
+      "EIRS_AGENT",
+      "LGA_ADMIN",
+    ];
+    return allowedRoles.includes(user.role);
+  };
+
+  const filterLgasForUser = (
+    allLgas: { id: string; name: string }[],
+    user: User
+  ) => {
+    // LGA_ADMIN and LGA_AGENT can only create vehicles in their own LGA
+    if (user.role === "LGA_ADMIN" || user.role === "LGA_AGENT") {
+      if (user.lgaId) {
+        return allLgas.filter((lga) => lga.id === user.lgaId);
+      }
+      return [];
+    }
+    // Other allowed roles can create vehicles in any LGA
+    return allLgas;
+  };
 
   // Fetch LGAs on component mount
   useEffect(() => {
@@ -74,9 +110,16 @@ const AddVehiclePage = () => {
         if (!lgaResponse.success) {
           toast.error(lgaResponse.message || "Failed to fetch LGAs");
         }
-        setLgas(
-          lgaResponse.data.map((lga) => ({ id: lga.id, name: lga.name }))
-        );
+        const allLgas = lgaResponse.data.map((lga) => ({
+          id: lga.id,
+          name: lga.name,
+        }));
+        setLgas(allLgas);
+
+        if (user) {
+          const userFilteredLgas = filterLgasForUser(allLgas, user);
+          setFilteredLgas(userFilteredLgas);
+        }
       } catch (error) {
         toast.error("Error", {
           description: "Failed to load LGAs. Please try again later.",
@@ -84,8 +127,67 @@ const AddVehiclePage = () => {
       }
     };
 
+    const fetchUser = async () => {
+      try {
+        const userResponse = await getMe();
+        if (userResponse.error) {
+          toast.error(userResponse.error);
+          setHasAccess(false);
+        } else {
+          console.log("Fetched user:", userResponse.user);
+          setUser(userResponse.user);
+
+          if (userResponse.user?.status !== "ACTIVE") {
+            toast.error("Account Inactive", {
+              description:
+                "Your account is not active. Please contact your administrator.",
+            });
+            setHasAccess(false);
+            return;
+          }
+
+          if (userResponse.user?.blacklisted) {
+            toast.error("Account Restricted", {
+              description:
+                "Your account has been restricted. Please contact your administrator.",
+            });
+            setHasAccess(false);
+            return;
+          }
+
+          const access = checkUserAccess(userResponse.user);
+          setHasAccess(access);
+
+          if (!access) {
+            toast.error("Access Denied", {
+              description: "You don't have permission to create vehicles.",
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch user:", error);
+        setHasAccess(false);
+      }
+    };
+
+    fetchUser();
     fetchLGAs();
-  }, [toast]);
+  }, []);
+
+  useEffect(() => {
+    if (user && lgas.length > 0) {
+      const userFilteredLgas = filterLgasForUser(lgas, user);
+      setFilteredLgas(userFilteredLgas);
+
+      if (
+        (user.role === "LGA_ADMIN" || user.role === "LGA_AGENT") &&
+        userFilteredLgas.length === 1
+      ) {
+        vehicleForm.setValue("registeredLgaId", userFilteredLgas[0].id);
+        ownerForm.setValue("lgaId", userFilteredLgas[0].id);
+      }
+    }
+  }, [user, lgas]);
 
   const nokForm = useForm({
     resolver: zodResolver(nokFormSchema),
@@ -129,6 +231,85 @@ const AddVehiclePage = () => {
     },
     mode: "all",
   });
+
+  if (hasAccess === null) {
+    return (
+      <div className="px-4">
+        <Card>
+          <CardContent className="flex items-center justify-center py-8">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+              <p>Checking permissions...</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (!hasAccess) {
+    return (
+      <div className="px-4">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-destructive-foreground" />
+              Access Denied
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Alert variant="destructive">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>
+                {user?.status !== "ACTIVE"
+                  ? "Your account is not active. Please contact your administrator."
+                  : user?.blacklisted
+                  ? "Your account has been restricted. Please contact your administrator."
+                  : "You don't have permission to create vehicles. Only ADMIN, LGA_AGENT, SUPERADMIN, EIRS_ADMIN, EIRS_AGENT, and LGA_ADMIN roles can create vehicles."}
+              </AlertDescription>
+            </Alert>
+            <div className="mt-4">
+              <Button onClick={() => router.back()} variant="outline">
+                Go Back
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (
+    (user?.role === "LGA_ADMIN" || user?.role === "LGA_AGENT") &&
+    filteredLgas.length === 0
+  ) {
+    return (
+      <div className="px-4">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-destructive-foreground" />
+              No LGA Assigned
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Alert variant="destructive">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>
+                You don't have an LGA assigned to your account. Please contact
+                your administrator to assign an LGA before creating vehicles.
+              </AlertDescription>
+            </Alert>
+            <div className="mt-4">
+              <Button onClick={() => router.back()} variant="outline">
+                Go Back
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   const validateOwnerTab = async () => {
     const isValid = await ownerForm.trigger();
@@ -281,6 +462,20 @@ const AddVehiclePage = () => {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {user && (
+            <div className="mb-4 p-3 bg-muted rounded-lg text-sm">
+              <p>
+                <strong>Logged in as:</strong> {user.firstName} {user.lastName}{" "}
+                ({user.role})
+              </p>
+              {user.lga && (
+                <p>
+                  <strong>Assigned LGA:</strong> {user.lga.name}
+                </p>
+              )}
+            </div>
+          )}
+
           <Tabs value={activeTab} onValueChange={handleTabChange}>
             <TabsList>
               <TabsTrigger value="vehicle">Vehicle</TabsTrigger>
@@ -362,11 +557,13 @@ const AddVehiclePage = () => {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            {lgas.map((lga) => (
-                              <SelectItem key={lga.id} value={lga.id}>
-                                {lga.name}
-                              </SelectItem>
-                            ))}
+                            {filteredLgas
+                              .toSorted((a, b) => a.name.localeCompare(b.name))
+                              .map((lga) => (
+                                <SelectItem key={lga.id} value={lga.id}>
+                                  {lga.name}
+                                </SelectItem>
+                              ))}
                           </SelectContent>
                         </Select>
                         <FormMessage />

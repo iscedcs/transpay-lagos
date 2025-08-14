@@ -28,6 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import BarcodeAdder from "../layout/barcode-adder";
 
 interface NotificationAddStickersProps {
   vehicle: Vehicle;
@@ -60,8 +61,6 @@ export default function NotificationAddStickers({
   const [vehicleId, setVehicleId] = useState(vehicle.id);
 
   const now = new Date();
-  const isTenMinutesPassed =
-    now.getTime() - new Date(vehicle.createdAt).getTime() < 20 * 60 * 1000;
 
   const router = useRouter();
 
@@ -124,7 +123,7 @@ export default function NotificationAddStickers({
 
   return (
     <div>
-      {!vehicle.barcode?.code && !cancel && isTenMinutesPassed && (
+      {!vehicle.barcode?.code && !cancel && (
         <Card className="py-[20px] gap-5 flex md:flex-row md:text-left flex-col text-center items-center px-[30px] bg-red-700/25">
           <div className="w-[40px] flex items-center justify-center h-[40px] rounded-full text-white bg-red-700">
             <IoClose className="w-[20px] h-[20px]" />
@@ -135,7 +134,7 @@ export default function NotificationAddStickers({
               <p>Assign a sticker to this vehicle</p>
             </div>
             <div className="flex gap-3">
-              <Button onClick={() => setAssignDialogOpen(true)}>Assign</Button>
+              <BarcodeAdder id={vehicle.id} />
               <Button onClick={() => setCancel(true)} variant="outline">
                 Cancel
               </Button>

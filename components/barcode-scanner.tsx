@@ -263,7 +263,7 @@ export function BarcodeScanner({
             ) : (
               <Check className="h-4 w-4 mr-2" />
             )}
-            {isSubmitting ? "Adding..." : "Add Barcode"}
+            {isSubmitting ? "Adding..." : "Scan Sticker"}
           </Button>
         </div>
       </CardContent>
