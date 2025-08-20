@@ -310,7 +310,6 @@ export async function fetchLGARevenue() {
   };
   const res = await fetch(URL, { headers, cache: "no-store" });
   if (!res.ok) {
-    
     return [
       { lga: "ESAN SOUTH-EAST", count: 1, percentage: 50 },
       { lga: "OREDO", count: 1, percentage: 50 },
@@ -320,7 +319,6 @@ export async function fetchLGARevenue() {
 
   const lga_revenue_all = data.data;
   if (!lga_revenue_all) {
-    
     return [
       { lgaName: "Warri South", vehicleCount: 450 },
       { lgaName: "Ndokwa East", vehicleCount: 320 },
@@ -354,7 +352,6 @@ export async function fetchVehicleDistribution() {
   };
   const res = await fetch(URL, { headers, cache: "no-store" });
   if (!res.ok) {
-    
     return [
       { lga: "ESAN SOUTH-EAST", count: 1, percentage: 50 },
       { lga: "OREDO", count: 1, percentage: 50 },
@@ -364,7 +361,6 @@ export async function fetchVehicleDistribution() {
 
   const vehicle_count_by_lga = data.data;
   if (!vehicle_count_by_lga) {
-    
     return [
       { lgaName: "Warri South", vehicleCount: 450 },
       { lgaName: "Ndokwa East", vehicleCount: 320 },
@@ -429,7 +425,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
       }),
     ]);
 
-    const statusCounts = vehiclesByStatus.reduce((acc, item) => {
+    const statusCounts = vehiclesByStatus.reduce((acc: any, item: any) => {
       acc[item.status.toLowerCase()] = item._count;
       return acc;
     }, {} as any);
@@ -500,7 +496,6 @@ export async function getDashboardStats(): Promise<DashboardStats> {
       },
     };
   } catch (error) {
-    
     throw new Error("Failed to fetch dashboard statistics");
   }
 }
@@ -538,7 +533,6 @@ export async function getRecentScans(limit = 10) {
 
     return scans;
   } catch (error) {
-    
     throw new Error("Failed to fetch recent scans");
   }
 }
@@ -584,7 +578,7 @@ export async function getLGAAgentDashboardStats(): Promise<DashboardStats> {
       ]
     );
 
-    const statusCounts = vehiclesByStatus.reduce((acc, item) => {
+    const statusCounts = vehiclesByStatus.reduce((acc: any, item: any) => {
       acc[item.status.toLowerCase()] = item._count;
       return acc;
     }, {} as any);
@@ -645,7 +639,6 @@ export async function getLGAAgentDashboardStats(): Promise<DashboardStats> {
       },
     };
   } catch (error) {
-    
     throw new Error("Failed to fetch dashboard statistics");
   }
 }
@@ -695,7 +688,6 @@ export async function getLGAAgentRecentScans(limit = 10) {
 
     return scans;
   } catch (error) {
-    
     throw new Error("Failed to fetch recent scans");
   }
 }
@@ -756,7 +748,7 @@ export async function getLGAAdminDashboardStats(): Promise<
       ]
     );
 
-    const statusCounts = vehiclesByStatus.reduce((acc, item) => {
+    const statusCounts = vehiclesByStatus.reduce((acc: any, item: any) => {
       acc[item.status.toLowerCase()] = item._count;
       return acc;
     }, {} as any);
@@ -879,7 +871,6 @@ export async function getLGAAdminDashboardStats(): Promise<
       monthlyRevenue: Number(monthlyRevenue._sum.amount || 0),
     };
   } catch (error) {
-    
     throw new Error("Failed to fetch dashboard statistics");
   }
 }
@@ -970,7 +961,6 @@ export async function getLGAAdminAgentPerformance() {
 
     return agentPerformance;
   } catch (error) {
-    
     throw new Error("Failed to fetch agent performance data");
   }
 }
