@@ -1803,7 +1803,7 @@ export const LGA = [
 
 export const API =
   process.env.BACKEND_URL ||
-  "https://transpay-api-edo-9ta8i.ondigitalocean.app/";
+  "https://transpay-lagos-api-9jd3y.ondigitalocean.app";
 export const URLS = {
   activity: {
     all: "/api/activities",
@@ -1811,7 +1811,7 @@ export const URLS = {
   "audit-trails": {
     all: "/api/audit-trails",
     vehicle: "/api/audit-trails/vehicles",
-    user: "/api/audit-trails/users",
+    user: "/api/audit-trails/vehicles",
     single: "api/audit-trails",
   },
   admin: {
