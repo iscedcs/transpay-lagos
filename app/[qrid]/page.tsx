@@ -4,7 +4,7 @@ import { getStickerByCode } from "@/actions/stickers";
 import { auth } from "@/auth";
 import { AuthenticatedScanWrapper } from "@/components/authenticated-scan-wrapper";
 import CounterfeitError from "@/components/counterfeit-error";
-import { PublicVehicleView } from "@/components/public-vehicle-view";
+import PublicVehicleInfo from "@/components/public-vehicle-info";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import UnattachedSticker from "@/components/unattached-sticker";
@@ -39,7 +39,7 @@ export default async function QRPage({
   const result = await getVehicleByBarcode(qrid);
   if (!result.success) {
     return (
-      <div className="min-h-screen flex items-center justify-center text-center p-8">
+      <div className="min-h-screen w-full text-center p-8">
         <p>No matching vehicle found for this QR code</p>
       </div>
     );
@@ -48,7 +48,8 @@ export default async function QRPage({
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="container mx-auto px-4 py-8">
-        <PublicVehicleView vehicle={result.data} qrId={qrid} />
+        {/* <PublicVehicleView vehicle={result.data} qrId={qrid} /> */}
+        <PublicVehicleInfo vehicle={result.data} />
       </div>
     </div>
   );

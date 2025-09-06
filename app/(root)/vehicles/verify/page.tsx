@@ -29,7 +29,7 @@ export default function VerifyAsinPage() {
                <input
                     name="search"
                     type="text"
-                    placeholder={"Enter T-code or platenumber"}
+                    placeholder={"platenumber"}
                     value={searchValue}
                     required
                     onChange={(e) => setSearchValue(e.target.value)} // Update searchValue when the input changes
