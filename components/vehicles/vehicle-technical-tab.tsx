@@ -35,7 +35,7 @@ export default function VehicleTechnicalTab({
   const [showSensitiveInfo, setShowSensitiveInfo] = useState(false);
   // Generate QR code URL
   const qrCodeUrl = vehicle.barcode
-    ? `${process.env.NEXT_PUBLIC_APP_URL}${vehicle.barcode.code}`
+    ? `${process.env.NEXT_PUBLIC_APP_URL}/${vehicle.barcode.code}`
     : null;
 
   const downloadQRCode = () => {
