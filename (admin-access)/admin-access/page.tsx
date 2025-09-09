@@ -16,60 +16,75 @@ const ProtectedPage: React.FC = () => {
 
   if (step === undefined) {
     return (
-        <div className="">
-            <div className="h-16 w-full shrink-0 bg-secondary/60 backdrop-blur-sm">
-                <MaxWidthWrapper className="p-2">
-                    <div className="flex h-full items-center justify-between">
-                        <Link href={"/"} className="w-52 shrink-0 px-5">
-                            <Image
+      <div className="">
+        <div className="h-16 w-full shrink-0 bg-secondary/60 backdrop-blur-sm">
+          <MaxWidthWrapper className="p-2">
+            <div className="flex h-full items-center justify-between">
+              <Link href={"/"} className="w-52 shrink-0 px-5">
+                <span
+                  className="text-[#D4A017] font-bold text-3xl tracking-wide"
+                  style={{ textShadow: "1px 1px 2px #2C1C00" }}>
+                  LASITRAS
+                </span>
+                {/* <Image
                                 src={"/logo.png"}
                                 height={30}
                                 width={150}
                                 className="shrink-0"
                                 alt={`Transpay Logo`}
-                            />
-                        </Link>
-                    </div>
-                </MaxWidthWrapper>
+                            /> */}
+              </Link>
             </div>
-            <MaxWidthWrapper className="p-5">
-                <div>Loading...</div>
-            </MaxWidthWrapper>
+          </MaxWidthWrapper>
         </div>
+        <MaxWidthWrapper className="p-5">
+          <div>Loading...</div>
+        </MaxWidthWrapper>
+      </div>
     );
-}
+  }
 
-
-return (
-  <div className="">
+  return (
+    <div className="">
       {step === 1 ? (
-          <StepOne onSubmit={(pin) => handlePinSubmit(pin, 1)} />
+        <StepOne onSubmit={(pin) => handlePinSubmit(pin, 1)} />
       ) : step === 2 ? (
-          <StepTwo onSubmit={(pin) => handlePinSubmit(pin, 2)} />
+        <StepTwo onSubmit={(pin) => handlePinSubmit(pin, 2)} />
       ) : (
-          <>
-              <div className="h-16 w-full shrink-0 bg-secondary/60 backdrop-blur-sm">
-                  <MaxWidthWrapper className="p-2">
-                      <div className="flex h-full items-center justify-between">
-                          <Link href={"/"} className="w-52 shrink-0 px-5">
-                              <Image
-                                  src={"/logo.png"}
-                                  height={30}
-                                  width={150}
-                                  className="shrink-0"
-                                  alt={`Transpay Logo`}
-                              />
-                          </Link>
-                      </div>
-                  </MaxWidthWrapper>
+        <>
+          <div className="h-16 w-full shrink-0 bg-secondary/60 backdrop-blur-sm">
+            <MaxWidthWrapper className="p-2">
+              <div className="flex h-full items-center justify-between">
+                <Link href={"/"} className="w-52 shrink-0 px-5">
+                  <span
+                    className="text-[#D4A017] font-bold text-3xl tracking-wide"
+                    style={{ textShadow: "1px 1px 2px #2C1C00" }}>
+                    LASITRAS
+                  </span>
+
+                  {/* <Image
+                    src={"/logo.png"}
+                    height={30}
+                    width={150}
+                    className="shrink-0"
+                    alt={`Transpay Logo`}
+                  /> */}
+                </Link>
               </div>
-              <Suspense fallback={<MaxWidthWrapper><div>Loading...</div></MaxWidthWrapper>}>
-                  <AdminAccessDashboard />
-              </Suspense>
-          </>
+            </MaxWidthWrapper>
+          </div>
+          <Suspense
+            fallback={
+              <MaxWidthWrapper>
+                <div>Loading...</div>
+              </MaxWidthWrapper>
+            }>
+            <AdminAccessDashboard />
+          </Suspense>
+        </>
       )}
-  </div>
-);
+    </div>
+  );
 };
 
 export default ProtectedPage;

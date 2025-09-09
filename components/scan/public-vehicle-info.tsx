@@ -25,7 +25,7 @@ export function PublicVehicleInfo({
           Verified Vehicle
         </CardTitle>
         <p className="text-sm text-muted-foreground">
-          This vehicle is registered with TransPay
+          This vehicle is registered with LASITRAS
         </p>
       </CardHeader>
 
@@ -83,7 +83,7 @@ export function PublicVehicleInfo({
           <div className="space-y-2 text-sm text-muted-foreground">
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-              <span>Vehicle is registered with TransPay</span>
+              <span>Vehicle is registered with LASITRAS</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>

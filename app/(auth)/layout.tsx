@@ -14,7 +14,7 @@ export default function AuthLayout({
       <div className="hidden w-full items-center justify-center rounded-2xl bg-gradient-to-b from-primary-700 to-primary-500 p-3 text-white md:p-5 lg:flex lg:p-10">
         <div className="flex h-full max-w-[550px] flex-col justify-between">
           <div className="flex flex-col gap-12">
-            <div className="text-h5">TRANSPAY</div>
+            <div className="text-h5">LASITRAS</div>
             <div className="flex flex-col gap-4">
               <div className="text-h2 font-bold 2xl:text-h1">
                 Ensure Drivers are Checked with Maximum Road Safety!!!
@@ -37,13 +37,18 @@ export default function AuthLayout({
           <Link
             href="/"
             className="flex h-20 w-20 items-center justify-center md:h-48 md:w-48">
-            <Image
+            <span
+              className="text-[#D4A017] font-bold text-3xl tracking-wide"
+              style={{ textShadow: "1px 1px 2px #2C1C00" }}>
+              LASITRAS
+            </span>
+            {/* <Image
               src="/logo.png"
               width={250}
               height={250}
               alt="Transpay logo"
               className="h-full w-full object-contain dark:invert"
-            />
+            /> */}
           </Link>
           <div className="w-full max-w-md">{children}</div>
         </div>

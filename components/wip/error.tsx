@@ -1,4 +1,4 @@
-'use client'; // Error components must be Client Components
+"use client"; // Error components must be Client Components
 
 import { buttonVariants } from "@/components/ui/button";
 import { WhatsAppIcon } from "@/lib/icons";
@@ -41,8 +41,7 @@ export default function Error({
                   // Attempt to recover by trying to re-render the segment
                   () => reset()
                 }
-                className=" underline text-primary cursor-pointer"
-              >
+                className=" underline text-primary cursor-pointer">
                 Click Here To Reload Page
               </button>
             </li>
@@ -58,7 +57,7 @@ export default function Error({
             <li>
               <span className="font-bold">Explore Other Areas: </span>
               <span>
-                While we fix this, why not explore other parts of TransPay? You
+                While we fix this, why not explore other parts of LASITRAS? You
                 might discover something new and interesting.
               </span>{" "}
             </li>
@@ -83,25 +82,22 @@ export default function Error({
 						</Link> */}
             <a
               href={"sms:+2348163453826"}
-              className={cn(buttonVariants(), "gap-2")}
-            >
+              className={cn(buttonVariants(), "gap-2")}>
               <MailIcon /> SMS
             </a>
             <a
               href={"tel:+2348163453826"}
-              className={cn(buttonVariants(), "gap-2")}
-            >
+              className={cn(buttonVariants(), "gap-2")}>
               <PhoneCall /> Call
             </a>
             <a
               href={"whatsapp://send?phone=2348163453826"}
-              className={cn(buttonVariants(), "gap-2")}
-            >
+              className={cn(buttonVariants(), "gap-2")}>
               <WhatsAppIcon /> WhatsApp
             </a>
           </div>
           <div className="">
-            We appreciate your cooperation as we work to make your TransPay
+            We appreciate your cooperation as we work to make your LASITRAS
             experience even better!
           </div>
         </div>

@@ -1,5 +1,12 @@
-import MaxWidthWrapper from "@/components/layout/max-width-wrapper"
-import { BarChart2, Eye, Link2, Shield, ShieldCheck, Users } from "lucide-react"
+import MaxWidthWrapper from "@/components/layout/max-width-wrapper";
+import {
+  BarChart2,
+  Eye,
+  Link2,
+  Shield,
+  ShieldCheck,
+  Users,
+} from "lucide-react";
 
 export default function FeaturesSection() {
   return (
@@ -17,7 +24,7 @@ export default function FeaturesSection() {
               management that delivers
             </h2>
             <p className="text-gray-400 max-w-2xl">
-              Unlike traditional systems, Transpay simplifies levy collection
+              Unlike traditional systems, LASITRAS simplifies levy collection
               with secure, user-friendly solutions that transform transportation
               management.
             </p>

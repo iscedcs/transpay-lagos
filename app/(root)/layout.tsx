@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
-  title: "Transpay - Dashboard",
+  title: "LASITRAS - Dashboard",
   description: "Payment system for the government",
 };
 

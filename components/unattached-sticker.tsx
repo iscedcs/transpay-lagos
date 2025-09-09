@@ -25,10 +25,10 @@ export default function UnattachedSticker({ sticker }: UnattachedStickerProps) {
           </div>
 
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Transpay Sticker
+            LASITRAS Sticker
           </h1>
           <p className="text-gray-600 mb-6">
-            This sticker is Transpay Verified but not currently attached to a
+            This sticker is LASITRAS Verified but not currently attached to a
             vehicle.
           </p>
 

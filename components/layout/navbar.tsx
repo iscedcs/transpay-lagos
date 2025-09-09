@@ -7,13 +7,18 @@ export default function NavBar() {
     <div className="fixed z-50 h-16 w-full shrink-0 bg-white/50 backdrop-blur pr-5 shadow">
       <div className="flex h-full items-center justify-between">
         <Link href={"/"} className="w-52 shrink-0 px-5">
-          <Image
+          <span
+            className="text-[#D4A017] font-bold text-3xl tracking-wide"
+            style={{ textShadow: "1px 1px 2px #2C1C00" }}>
+            LASITRAS
+          </span>
+          {/* <Image
             src={"/logo.png"}
             height={30}
             width={150}
             className="shrink-0 "
             alt="Transpay Logo"
-          />
+          /> */}
         </Link>
         <UserNav />
       </div>

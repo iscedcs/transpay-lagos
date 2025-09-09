@@ -2309,12 +2309,12 @@ export const LANDING_CARD_CONTENTS: {
   {
     title: "User-Friendly Interface",
     description:
-      "Transpay offers an interactive interface for both government officials and vehicle operators, making it easy to manage and monitor transactions.",
+      "LASITRAS offers an interactive interface for both government officials and vehicle operators, making it easy to manage and monitor transactions.",
   },
   {
     title: "Secure Transactions",
     description:
-      "Transpay ensures that all transactions are safe and secure, using security protocols to protect sensitive information.",
+      "LASITRAS ensures that all transactions are safe and secure, using security protocols to protect sensitive information.",
   },
 ];
 export const HOW_IT_WORKS: {
@@ -2329,7 +2329,7 @@ export const HOW_IT_WORKS: {
   {
     title: "Revenue Generation",
     description:
-      "Transpay processes the data, calculates the revenue, and facilitates  payment processing.",
+      "LASITRAS processes the data, calculates the revenue, and facilitates  payment processing.",
   },
   {
     title: "Monitoring and Reporting",
