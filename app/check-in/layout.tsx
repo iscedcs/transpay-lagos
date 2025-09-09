@@ -23,7 +23,7 @@ export default function CheckInLayout({
               height={60}
               width={150}
               className="h-full w-full"
-              alt="Transpay Logo"
+              alt="LASITRAS Logo"
             /> */}
           </div>
           {children}

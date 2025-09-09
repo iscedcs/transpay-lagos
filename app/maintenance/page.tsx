@@ -13,12 +13,12 @@ export default function MaintenancePage() {
             style={{ textShadow: "1px 1px 2px #2C1C00" }}>
             LASITRAS
           </span>
-          {/* <Image src={"/logo.png"} height={30} width={150} className="mb-10 shrink-0" alt="Transpay Logo" /> */}
+          {/* <Image src={"/logo.png"} height={30} width={150} className="mb-10 shrink-0" alt="LASITRAS Logo" /> */}
           <h1 className="mb-5 text-2xl font-bold">
             System Update in Progress!
           </h1>
           <div className="mb-5">
-            {`Our system is currently undergoing updates to elevate your TransPay experience. As a result, access to the TransPay platform is momentarily paused.`}
+            {`Our system is currently undergoing updates to elevate your LASITRAS experience. As a result, access to the LASITRAS platform is momentarily paused.`}
           </div>
           <h2 className="text-xl font-bold">{`What's Happening`}</h2>
           <ol className="mb-5 text-center">
@@ -53,7 +53,7 @@ export default function MaintenancePage() {
                               </a> */}
           </div>
           <div className="">
-            We appreciate your cooperation as we work to make your TransPay
+            We appreciate your cooperation as we work to make your LASITRAS
             experience even better!
           </div>
         </div>

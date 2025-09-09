@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: PageProps) {
   if (!company) return notFound();
 
   return {
-    title: `Transpay - ${company.name} Group`,
+    title: `LASITRAS - ${company.name} Group`,
   };
 }
 

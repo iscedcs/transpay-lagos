@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import MaxWidthWrapper from "@/components/layout/max-width-wrapper"
-import { motion } from "framer-motion"
+import MaxWidthWrapper from "@/components/layout/max-width-wrapper";
+import { motion } from "framer-motion";
 
 export default function FeaturesShowcase() {
   return (
@@ -13,24 +13,21 @@ export default function FeaturesShowcase() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
-              className="text-[#ffcc00] text-sm font-medium uppercase tracking-wider"
-            >
+              className="text-[#ffcc00] text-sm font-medium uppercase tracking-wider">
               Features
             </motion.span>
             <motion.h2
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.7, delay: 0.1 }}
-              className="text-4xl md:text-5xl font-bold mt-2"
-            >
+              className="text-4xl md:text-5xl font-bold mt-2">
               Experience our features
             </motion.h2>
             <motion.p
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.7, delay: 0.2 }}
-              className="text-gray-400 max-w-2xl mx-auto mt-4"
-            >
+              className="text-gray-400 max-w-2xl mx-auto mt-4">
               Dive into our features and experience the difference we can make
               in your transportation management and levy collection.
             </motion.p>
@@ -42,8 +39,7 @@ export default function FeaturesShowcase() {
               initial={{ x: -50, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ duration: 0.7, delay: 0.3 }}
-              className="bg-[#0f0f0f] border border-[#1a1a1a] rounded-lg overflow-hidden"
-            >
+              className="bg-[#0f0f0f] border border-[#1a1a1a] rounded-lg overflow-hidden">
               <div className="p-6">
                 <div className="bg-[#0d0d0d] rounded-lg p-4 mb-6 h-48 flex items-center justify-center">
                   <div className="relative w-full h-full">
@@ -82,8 +78,7 @@ export default function FeaturesShowcase() {
               initial={{ x: 50, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ duration: 0.7, delay: 0.4 }}
-              className="bg-[#0f0f0f] border border-[#1a1a1a] rounded-lg overflow-hidden"
-            >
+              className="bg-[#0f0f0f] border border-[#1a1a1a] rounded-lg overflow-hidden">
               <div className="p-6">
                 <div className="bg-[#0d0d0d] rounded-lg p-4 mb-6 h-48 flex items-center justify-center">
                   <div className="relative w-full h-full flex items-center justify-center">
@@ -104,8 +99,7 @@ export default function FeaturesShowcase() {
                             className="w-6 h-6 text-[#ffcc00]"
                             viewBox="0 0 24 24"
                             fill="none"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
+                            xmlns="http://www.w3.org/2000/svg">
                             <path
                               d="M12 11C12.5523 11 13 11.4477 13 12V16C13 16.5523 12.5523 17 12 17C11.4477 17 11 16.5523 11 16V12C11 11.4477 11.4477 11 12 11Z"
                               fill="currentColor"
@@ -150,8 +144,7 @@ export default function FeaturesShowcase() {
               initial={{ x: -50, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ duration: 0.7, delay: 0.5 }}
-              className="bg-[#0f0f0f] border border-[#1a1a1a] rounded-lg overflow-hidden"
-            >
+              className="bg-[#0f0f0f] border border-[#1a1a1a] rounded-lg overflow-hidden">
               <div className="p-6">
                 <div className="bg-[#0d0d0d] rounded-lg p-4 mb-6 h-48 flex items-center justify-center">
                   <div className="relative w-full h-full flex flex-col items-center justify-center">
@@ -173,8 +166,7 @@ export default function FeaturesShowcase() {
                                 Math.random() * 5 + 2
                               }s infinite`,
                               animationDelay: `${Math.random() * 2}s`,
-                            }}
-                          >
+                            }}>
                             {Math.random() > 0.5 ? "1" : "0"}
                           </div>
                         ))}
@@ -186,8 +178,7 @@ export default function FeaturesShowcase() {
                         className="w-16 h-16 text-[#ffcc00] animate-pulse"
                         viewBox="0 0 24 24"
                         fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
+                        xmlns="http://www.w3.org/2000/svg">
                         <path
                           d="M19 11H5C3.89543 11 3 11.8954 3 13V20C3 21.1046 3.89543 22 5 22H19C20.1046 22 21 21.1046 21 20V13C21 11.8954 20.1046 11 19 11Z"
                           stroke="currentColor"
@@ -225,8 +216,7 @@ export default function FeaturesShowcase() {
               initial={{ x: 50, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ duration: 0.7, delay: 0.6 }}
-              className="bg-[#0f0f0f] border border-[#1a1a1a] rounded-lg overflow-hidden"
-            >
+              className="bg-[#0f0f0f] border border-[#1a1a1a] rounded-lg overflow-hidden">
               <div className="p-6">
                 <div className="bg-[#0d0d0d] rounded-lg p-4 mb-6 h-48 flex items-center justify-center">
                   <div className="relative w-full h-full">
@@ -238,7 +228,7 @@ export default function FeaturesShowcase() {
                         <div className="w-2 h-2 rounded-full bg-[#333] mr-1"></div>
                         <div className="w-2 h-2 rounded-full bg-[#333]"></div>
                         <div className="text-[10px] text-[#ffcc00] mx-auto">
-                          Transpay Dashboard
+                          LASITRAS Dashboard
                         </div>
                       </div>
                       {/* Dashboard content */}
@@ -260,8 +250,7 @@ export default function FeaturesShowcase() {
                                 className="absolute inset-0"
                                 width="100%"
                                 height="100%"
-                                viewBox="0 0 100 50"
-                              >
+                                viewBox="0 0 100 50">
                                 <path
                                   d="M0,25 Q20,40 40,20 Q60,0 80,15 Q100,30 100,25"
                                   fill="none"

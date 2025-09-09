@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 export const metadata: Metadata = {
-  title: "Transpay - Vehicles",
+  title: "LASITRAS - Vehicles",
   description: "List of all vehicles",
 };
 

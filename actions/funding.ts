@@ -74,7 +74,7 @@ export async function generateFundingVirtualAccount(
 
     const virtualAccount: VirtualAccountDetails = {
       accountNumber,
-      accountName: `TRANSPAY FUNDING ${reference}`,
+      accountName: `LASITRAS FUNDING ${reference}`,
       bankName: "Providus Bank",
       bankCode: "101",
       amount: request.amount,

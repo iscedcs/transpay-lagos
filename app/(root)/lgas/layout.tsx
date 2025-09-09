@@ -4,7 +4,7 @@ import { Role } from "@prisma/client";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 export const metadata: Metadata = {
-  title: "Transpay - LGAs",
+  title: "LASITRAS - LGAs",
   description: "List of all available LAGs",
 };
 

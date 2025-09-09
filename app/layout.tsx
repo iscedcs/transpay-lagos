@@ -24,7 +24,7 @@ const lato = Lato({
   display: "swap",
 });
 export const metadata: Metadata = {
-  title: "Transpay - Transportation Flexibility",
+  title: "LASITRAS - Transportation Flexibility",
   description: "Powered By ISCE",
 
   // metadataBase: new URL('https://transpaytms.com')
@@ -38,8 +38,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <SessionProvider>
         <body
-          className={`${lato.className} ${geistSans.variable} ${geistMono.variable}`}
-        >
+          className={`${lato.className} ${geistSans.variable} ${geistMono.variable}`}>
           <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
             <div className="">
               <NextTopLoader color="#7F7433" showSpinner={false} />
