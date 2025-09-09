@@ -13,13 +13,18 @@ export default function CheckInLayout({
       <div className="h-full grid p-3 lg:p-10">
         <div className="w-full max-w-xl mx-auto flex flex-col items-center px-5 pt-10 lg:pt-20 gap-10 ">
           <div className="w-60 h-18 shrink-0 px-5">
-            <Image
+            <span
+              className="text-[#D4A017] font-bold text-3xl tracking-wide"
+              style={{ textShadow: "1px 1px 2px #2C1C00" }}>
+              LASITRAS
+            </span>
+            {/* <Image
               src={"/logo.png"}
               height={60}
               width={150}
               className="h-full w-full"
               alt="Transpay Logo"
-            />
+            /> */}
           </div>
           {children}
         </div>

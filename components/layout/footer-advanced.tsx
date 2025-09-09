@@ -22,8 +22,10 @@ export default function FooterAlternative() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
             <div className="lg:col-span-1">
               <div className="flex items-center mb-4">
-                <span className="text-2xl font-bold text-[#ffcc00]">
-                  TRANSPAY
+                <span
+                  className="text-[#D4A017] font-bold text-3xl tracking-wide"
+                  style={{ textShadow: "1px 1px 2px #2C1C00" }}>
+                  LASITRAS
                 </span>
               </div>
               <p className="text-gray-400 mb-6 max-w-xs">
@@ -34,36 +36,31 @@ export default function FooterAlternative() {
                 <Link
                   href="#"
                   className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300"
-                  aria-label="Facebook"
-                >
+                  aria-label="Facebook">
                   <Facebook size={20} />
                 </Link>
                 <Link
                   href="#"
                   className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300"
-                  aria-label="Twitter"
-                >
+                  aria-label="Twitter">
                   <Twitter size={20} />
                 </Link>
                 <Link
                   href="#"
                   className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300"
-                  aria-label="Instagram"
-                >
+                  aria-label="Instagram">
                   <Instagram size={20} />
                 </Link>
                 <Link
                   href="#"
                   className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300"
-                  aria-label="LinkedIn"
-                >
+                  aria-label="LinkedIn">
                   <Linkedin size={20} />
                 </Link>
                 <Link
                   href="#"
                   className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300"
-                  aria-label="Github"
-                >
+                  aria-label="Github">
                   <Github size={20} />
                 </Link>
               </div>
@@ -111,32 +108,28 @@ export default function FooterAlternative() {
                   <li>
                     <Link
                       href="#about"
-                      className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300"
-                    >
+                      className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300">
                       About
                     </Link>
                   </li>
                   <li>
                     <Link
                       href="#features"
-                      className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300"
-                    >
+                      className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300">
                       Features
                     </Link>
                   </li>
                   <li>
                     <Link
                       href="#pricing"
-                      className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300"
-                    >
+                      className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300">
                       Pricing
                     </Link>
                   </li>
                   <li>
                     <Link
                       href="#blog"
-                      className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300"
-                    >
+                      className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300">
                       Blog
                     </Link>
                   </li>
@@ -145,32 +138,28 @@ export default function FooterAlternative() {
                   <li>
                     <Link
                       href="#faq"
-                      className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300"
-                    >
+                      className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300">
                       FAQ
                     </Link>
                   </li>
                   <li>
                     <Link
                       href="#support"
-                      className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300"
-                    >
+                      className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300">
                       Support
                     </Link>
                   </li>
                   <li>
                     <Link
                       href="#careers"
-                      className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300"
-                    >
+                      className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300">
                       Careers
                     </Link>
                   </li>
                   <li>
                     <Link
                       href="#contact"
-                      className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300"
-                    >
+                      className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300">
                       Contact
                     </Link>
                   </li>
@@ -195,8 +184,7 @@ export default function FooterAlternative() {
                 />
                 <button
                   type="submit"
-                  className="bg-[#ffcc00] hover:bg-[#e6b800] text-black transition-colors duration-300 rounded-md px-4 py-2 font-medium"
-                >
+                  className="bg-[#ffcc00] hover:bg-[#e6b800] text-black transition-colors duration-300 rounded-md px-4 py-2 font-medium">
                   Subscribe
                 </button>
               </form>
@@ -213,24 +201,21 @@ export default function FooterAlternative() {
                 <li>
                   <Link
                     href="#pricing"
-                    className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300"
-                  >
+                    className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300">
                     Pricing
                   </Link>
                 </li>
                 <li>
                   <Link
                     href="#integrations"
-                    className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300"
-                  >
+                    className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300">
                     Integrations
                   </Link>
                 </li>
                 <li>
                   <Link
                     href="#changelog"
-                    className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300"
-                  >
+                    className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300">
                     Changelog
                   </Link>
                 </li>
@@ -244,24 +229,21 @@ export default function FooterAlternative() {
                 <li>
                   <Link
                     href="#about"
-                    className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300"
-                  >
+                    className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300">
                     About
                   </Link>
                 </li>
                 <li>
                   <Link
                     href="#blog"
-                    className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300"
-                  >
+                    className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300">
                     Blog
                   </Link>
                 </li>
                 <li>
                   <Link
                     href="#careers"
-                    className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300"
-                  >
+                    className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300">
                     Careers
                   </Link>
                 </li>
@@ -275,24 +257,21 @@ export default function FooterAlternative() {
                 <li>
                   <Link
                     href="#terms"
-                    className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300"
-                  >
+                    className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300">
                     Terms of service
                   </Link>
                 </li>
                 <li>
                   <Link
                     href="#privacy"
-                    className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300"
-                  >
+                    className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300">
                     Privacy policy
                   </Link>
                 </li>
                 <li>
                   <Link
                     href="#security"
-                    className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300"
-                  >
+                    className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300">
                     Security
                   </Link>
                 </li>
@@ -306,24 +285,21 @@ export default function FooterAlternative() {
                 <li>
                   <Link
                     href="#api"
-                    className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300"
-                  >
+                    className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300">
                     API
                   </Link>
                 </li>
                 <li>
                   <Link
                     href="#docs"
-                    className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300"
-                  >
+                    className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300">
                     Documentation
                   </Link>
                 </li>
                 <li>
                   <Link
                     href="#status"
-                    className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300"
-                  >
+                    className="text-gray-400 hover:text-[#ffcc00] transition-colors duration-300">
                     Status
                   </Link>
                 </li>
@@ -334,14 +310,13 @@ export default function FooterAlternative() {
           {/* Bottom section with copyright and status */}
           <div className="pt-8 flex flex-col md:flex-row justify-between items-center">
             <div className="text-gray-400 text-sm mb-4 md:mb-0">
-              © {currentYear} Transpay. All rights reserved.
+              © {currentYear} LASITRAS. All rights reserved.
             </div>
             <div className="flex items-center">
               <div className="w-2 h-2 rounded-full bg-green-500 mr-2"></div>
               <Link
                 href="#system-status"
-                className="text-gray-400 hover:text-[#ffcc00] text-sm"
-              >
+                className="text-gray-400 hover:text-[#ffcc00] text-sm">
                 System Status
               </Link>
             </div>

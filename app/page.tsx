@@ -32,13 +32,18 @@ export default async function Home({
       <div className="fixed z-50 mx-auto h-20 w-full shrink-0 bg-white/50 backdrop-blur">
         <MaxWidthWrapper className="flex h-full w-full items-center justify-between gap-1 px-2 xl:px-0">
           <Link href={"/"} className="w-32 shrink-0 px-5 md:w-52">
-            <Image
+            <span
+              className="text-[#D4A017] font-bold text-3xl tracking-wide"
+              style={{ textShadow: "1px 1px 2px #2C1C00" }}>
+              LASITRAS
+            </span>
+            {/* <Image
               src={"/logo.png"}
               height={30}
               width={150}
               className="shrink-0"
               alt="TransFlex Logo"
-            />
+            /> */}
           </Link>
           <div className="flex h-full w-full items-center justify-end gap-3 xl:w-0">
             <Button

@@ -37,13 +37,18 @@ export default function AuthLayout({
           <Link
             href="/"
             className="flex h-20 w-20 items-center justify-center md:h-48 md:w-48">
-            <Image
+            <span
+              className="text-[#D4A017] font-bold text-3xl tracking-wide"
+              style={{ textShadow: "1px 1px 2px #2C1C00" }}>
+              LASITRAS
+            </span>
+            {/* <Image
               src="/logo.png"
               width={250}
               height={250}
               alt="Transpay logo"
               className="h-full w-full object-contain dark:invert"
-            />
+            /> */}
           </Link>
           <div className="w-full max-w-md">{children}</div>
         </div>
